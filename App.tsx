@@ -22,7 +22,27 @@ import { EditModal } from './components/EditModal';
 import { FinanceChart } from './components/FinanceChart';
 import { AuthScreen } from './components/AuthScreen';
 import { ConfigModal } from './components/ConfigModal';
+import { CategoryManager } from './components/CategoryManager';
 import { LayoutDashboard, Plus, Settings, LogOut, Database, Cloud, Wifi, WifiOff, UploadCloud, Loader2, WalletCards, PieChart } from 'lucide-react';
+
+const DEFAULT_CATEGORIES = [
+  'Wohnen',
+  'Lebenshaltung',
+  'Abonnements',
+  'Mobilität',
+  'Versicherung',
+  'Freizeit',
+  'Gesundheit',
+  'Kleidung',
+  'Reisen',
+  'Bildung',
+  'Geschenke',
+  'Haustiere',
+  'Technik',
+  'Sparen',
+  'Gehalt',
+  'Sonstiges'
+];
 
 const App: React.FC = () => {
   const [user, setUser] = useState<any>(null);
@@ -109,6 +129,12 @@ const App: React.FC = () => {
     items.filter(i => i.type === 'expense' && i.isFlexible).sort((a,b) => b.amount - a.amount), 
   [items]);
 
+  const availableCategories = useMemo(() => {
+    const usedCategories = items.map(i => i.category).filter(Boolean);
+    const all = new Set([...DEFAULT_CATEGORIES, ...usedCategories]);
+    return Array.from(all).sort();
+  }, [items]);
+
   // Handlers
   const handleSave = async (item: FinanceItem) => {
     if (editingItem) {
@@ -123,6 +149,29 @@ const App: React.FC = () => {
     // Optimistic UI update for better feel
     setItems(prev => prev.filter(i => i.id !== id));
     await deleteItem(user, id);
+  };
+
+  const handleRenameCategory = async (oldName: string, newName: string) => {
+    if (!newName || oldName === newName) return;
+    
+    // Find all items using this category
+    const itemsToUpdate = items.filter(i => i.category === oldName);
+    
+    for (const item of itemsToUpdate) {
+      await updateItem(user, { ...item, category: newName });
+    }
+  };
+
+  const handleDeleteCategory = async (categoryToDelete: string) => {
+      // Find all items using this category
+      const itemsToUpdate = items.filter(i => i.category === categoryToDelete);
+      
+      // Update them to "Sonstiges"
+      for (const item of itemsToUpdate) {
+          await updateItem(user, { ...item, category: 'Sonstiges' });
+      }
+      // Note: If the category was a custom one (not in DEFAULT_CATEGORIES), 
+      // it will disappear from availableCategories automatically because no items use it anymore.
   };
 
   const handleResetData = () => {
@@ -251,6 +300,13 @@ const App: React.FC = () => {
                         </div>
                     </div>
 
+                    {/* Category Management */}
+                    <CategoryManager 
+                      categories={availableCategories} 
+                      onRename={handleRenameCategory}
+                      onDelete={handleDeleteCategory}
+                    />
+
                     {/* Data Section */}
                     <div>
                         <h3 className="text-lg font-semibold text-[#cdd6f4] mb-3">Daten & Speicher</h3>
@@ -331,7 +387,7 @@ const App: React.FC = () => {
 
                 <div>
                     <h3 className="text-xs font-bold uppercase tracking-widest opacity-60 mb-4 text-[#a6adc8]">Cashflow Berechnung</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div className="h-full">
                             <SummaryCard
                                 label="Einkommen"
@@ -339,7 +395,7 @@ const App: React.FC = () => {
                                 type="income"
                             />
                         </div>
-                        <div className="h-full flex flex-col">
+                        <div className="h-full flex flex-col lg:col-span-2">
                             <SummaryCard 
                                 label="Gesamtausgaben" 
                                 amount={summary.totalAllExpenses} 
@@ -352,7 +408,7 @@ const App: React.FC = () => {
                             {/* Animated Accordion */}
                             <div className={`grid transition-[grid-template-rows] duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${showExpenseDetails ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
                                 <div className="overflow-hidden min-h-0">
-                                    <div className="grid grid-cols-2 gap-4 mt-4">
+                                    <div className="grid grid-cols-2 gap-6 mt-4">
                                         <SummaryCard label="Fixkosten" amount={summary.totalFixedExpenses} type="expense" size="tiny" />
                                         <SummaryCard label="Variabel" amount={summary.totalFlexibleExpenses} type="flexible" size="tiny" />
                                     </div>
@@ -362,7 +418,7 @@ const App: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                      <TransactionList
                         title="Einkommen"
                         items={incomeItems}
@@ -429,6 +485,7 @@ const App: React.FC = () => {
         initialItem={editingItem}
         defaultType={defaultModalType}
         defaultIsFlexible={defaultModalFlexible}
+        availableCategories={availableCategories}
       />
       
       <ConfigModal 
