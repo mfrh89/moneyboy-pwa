@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  moneyboy:
+    # WICHTIG: Ersetzen Sie 'IHR_DOCKER_HUB_BENUTZERNAME/moneyboy:latest' 
+    # mit dem tatsächlichen Namen Ihres Images auf Docker Hub.
+    image: mfrh/moneyboy:latest
+    container_name: moneyboy
+    ports:
+      # Mappt den Port 80 des Containers auf Port 8080 des Hosts.
+      # Sie können den Host-Port (8080) nach Belieben ändern.
+      - "8080:80"
+    restart: unless-stopped
