@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Regel für die User-Collection
+    // WICHTIG: {userId} ist eine Variable, die die ID des Dokuments repräsentiert
+    match /users/{userId} {
+      
+      // 1. Zugriff auf das User-Profil selbst (z.B. lastLogin speichern)
+      // Erlauben, wenn der eingeloggte User (request.auth.uid) genau der userId des Pfades entspricht
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      // 2. Zugriff auf die Unter-Sammlung "items" (Einnahmen/Ausgaben)
+      // Diese Regel gilt rekursiv für alle Dokumente in "items"
+      match /items/{itemId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+  }
+}
