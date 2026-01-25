@@ -7,8 +7,7 @@ export interface FinanceItem {
   amount: number;
   type: TransactionType;
   category: string;
-  isFlexible?: boolean; // True if it is a variable cost
-  isSplit?: boolean;    // New: True if cost was split (e.g. /2)
+  isFlexible?: boolean; // New: True if it is a variable cost (Credit card, groceries)
   createdAt: number;
 }
 

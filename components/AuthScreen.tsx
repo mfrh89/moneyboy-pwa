@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Lock, Mail, ArrowRight, WalletCards, AlertCircle, Fingerprint } from 'lucide-react';
+import { Lock, Mail, ArrowRight, WalletCards, AlertCircle } from 'lucide-react';
 import { isFirebaseActive } from '../services/storage';
 
 interface AuthScreenProps {
@@ -88,15 +87,12 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onRegister }) =
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-bold text-[#a6adc8] mb-1">E-Mail Adresse</label>
+              <label className="block text-sm font-bold text-[#a6adc8] mb-1">E-Mail Adresse</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-2.5 w-5 h-5 text-[#6c7086]" />
                 <input
-                  id="email"
-                  name="email"
                   type="email"
                   required
-                  autoComplete="username webauthn"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 rounded-lg bg-[#313244] border border-[#45475a] text-[#cdd6f4] placeholder-[#6c7086] focus:ring-2 focus:ring-[#cba6f7] focus:border-[#cba6f7] outline-none transition-shadow"
@@ -106,15 +102,12 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onRegister }) =
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-bold text-[#a6adc8] mb-1">Passwort</label>
+              <label className="block text-sm font-bold text-[#a6adc8] mb-1">Passwort</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-2.5 w-5 h-5 text-[#6c7086]" />
                 <input
-                  id="password"
-                  name="password"
                   type="password"
                   required
-                  autoComplete={isLogin ? "current-password webauthn" : "new-password"}
                   minLength={6}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -138,7 +131,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onRegister }) =
               ) : (
                 <>
                   <span>{isLogin ? 'Starten' : 'Kostenlos erstellen'}</span>
-                  {isLogin ? <Fingerprint className="w-5 h-5 opacity-50" /> : <ArrowRight className="w-5 h-5" />}
+                  <ArrowRight className="w-5 h-5" />
                 </>
               )}
             </button>

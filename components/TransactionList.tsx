@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { FinanceItem } from '../types';
-import { Pencil, Plus, Users } from 'lucide-react';
+import { Pencil, Plus } from 'lucide-react';
 
 interface TransactionListProps {
   title: string;
@@ -21,7 +20,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
   accentColor = 'text-[#cdd6f4]'
 }) => {
   return (
-    <div className="bg-[#181825] rounded-2xl border border-[#313244] shadow-sm overflow-hidden flex flex-col h-fit">
+    <div className="bg-[#181825] rounded-2xl border border-[#313244] shadow-sm overflow-hidden flex flex-col h-full max-h-[500px]">
       <div className="p-4 border-b border-[#313244] bg-[#1e1e2e] flex justify-between items-center shrink-0">
         <h3 className={`font-bold ${accentColor}`}>{title}</h3>
         <div className="flex items-center gap-2">
@@ -40,7 +39,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
         </div>
       </div>
       
-      <div className="p-2">
+      <div className="overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-[#45475a] scrollbar-track-transparent">
         {items.length === 0 ? (
           <div className="p-8 text-center text-[#6c7086] text-sm italic">
             {emptyMessage}
@@ -54,12 +53,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
                 className="group flex items-center justify-between p-2 rounded-xl hover:bg-[#313244] border border-transparent hover:border-[#45475a] transition-all cursor-pointer"
               >
                 <div className="flex flex-col">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-[#cdd6f4] text-sm">{item.title}</span>
-                    {item.isSplit && (
-                        <Users className="w-3 h-3 text-[#89b4fa]" strokeWidth={2.5} />
-                    )}
-                  </div>
+                  <span className="font-bold text-[#cdd6f4] text-sm">{item.title}</span>
                   <span className="text-[10px] text-[#a6adc8] font-medium">{item.category}</span>
                 </div>
                 <div className="flex items-center gap-2">
