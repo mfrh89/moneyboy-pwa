@@ -23,6 +23,7 @@ import { FinanceChart } from './components/FinanceChart';
 import { AuthScreen } from './components/AuthScreen';
 import { ConfigModal } from './components/ConfigModal';
 import { CategoryManager } from './components/CategoryManager';
+import { SankeyChart } from './components/SankeyChart';
 import { LayoutDashboard, Plus, Settings, LogOut, Database, Cloud, Wifi, WifiOff, UploadCloud, Loader2, WalletCards, PieChart } from 'lucide-react';
 
 const DEFAULT_CATEGORIES = [
@@ -369,6 +370,7 @@ const App: React.FC = () => {
         {view === ViewState.ANALYSIS && (
             <div className="max-w-2xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
                 <h2 className="text-2xl font-bold text-[#cdd6f4]">Analyse</h2>
+                <SankeyChart items={items} />
                 <FinanceChart items={items} />
                 <div className="grid grid-cols-2 gap-4">
                     <SummaryCard label="Fixkosten" amount={summary.totalFixedExpenses} type="expense" size="tiny" />
