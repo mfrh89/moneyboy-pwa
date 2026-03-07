@@ -73,7 +73,7 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({ categories, on
               className="group relative pl-3 pr-2 py-1.5 rounded-lg bg-[#313244] hover:bg-[#45475a] border border-[#45475a] hover:border-[#585b70] text-sm text-[#cdd6f4] font-medium transition-all flex items-center gap-2 cursor-pointer"
             >
               <span>{cat}</span>
-              
+
               {/* Separator Line */}
               <div className="w-px h-3 bg-[#6c7086]/30 mx-1"></div>
 
@@ -83,7 +83,7 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({ categories, on
                 className={`p-1 rounded-md hover:bg-[#f38ba8]/20 transition-colors ${cat === 'Sonstiges' ? 'opacity-30 cursor-not-allowed' : 'text-[#a6adc8] hover:text-[#f38ba8]'}`}
                 title={cat === 'Sonstiges' ? 'Kann nicht gelöscht werden' : 'Löschen'}
               >
-                  <X className="w-3.5 h-3.5" />
+                <X className="w-3.5 h-3.5" />
               </button>
             </div>
           ))}

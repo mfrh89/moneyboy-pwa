@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  subscribeToItems, 
-  addItem, 
-  updateItem, 
-  deleteItem, 
+import {
+  subscribeToItems,
+  addItem,
+  updateItem,
+  deleteItem,
   subscribeToAuth,
   loginUser,
   registerUser,
@@ -24,7 +24,8 @@ import { AuthScreen } from './components/AuthScreen';
 import { ConfigModal } from './components/ConfigModal';
 import { CategoryManager } from './components/CategoryManager';
 import { SankeyChart } from './components/SankeyChart';
-import { LayoutDashboard, Plus, Settings, LogOut, Database, Cloud, Wifi, WifiOff, UploadCloud, Loader2, WalletCards, PieChart } from 'lucide-react';
+import { WohnenView } from './components/WohnenView';
+import { LayoutDashboard, Plus, Settings, LogOut, Database, Cloud, Wifi, WifiOff, UploadCloud, Loader2, WalletCards, PieChart, Home } from 'lucide-react';
 
 const DEFAULT_CATEGORIES = [
   'Wohnen',
@@ -58,6 +59,9 @@ const App: React.FC = () => {
   const [editingItem, setEditingItem] = useState<FinanceItem | null>(null);
   const [defaultModalType, setDefaultModalType] = useState<TransactionType>('expense');
   const [defaultModalFlexible, setDefaultModalFlexible] = useState<boolean>(false);
+
+  // Wohnkosten modal context
+  const [isWohnkostenModal, setIsWohnkostenModal] = useState(false);
 
   // UI State
   const [showExpenseDetails, setShowExpenseDetails] = useState(false);
@@ -122,12 +126,35 @@ const App: React.FC = () => {
     items.filter(i => i.type === 'income').sort((a,b) => b.amount - a.amount), 
   [items]);
 
-  const fixedExpenseItems = useMemo(() => 
-    items.filter(i => i.type === 'expense' && !i.isFlexible).sort((a,b) => b.amount - a.amount), 
+  const wohnkostenItems = useMemo(() =>
+    items.filter(i => i.isWohnkosten).sort((a, b) => b.amount - a.amount),
   [items]);
 
-  const flexibleExpenseItems = useMemo(() => 
-    items.filter(i => i.type === 'expense' && i.isFlexible).sort((a,b) => b.amount - a.amount), 
+  const wohnkostenTotal = useMemo(() =>
+    wohnkostenItems.reduce((sum, i) => sum + i.amount, 0),
+  [wohnkostenItems]);
+
+  const WOHNKOSTEN_SUMMARY_ID = '__wohnkosten_summary__';
+
+  const fixedExpenseItems = useMemo(() => {
+    const base = items
+      .filter(i => i.type === 'expense' && !i.isFlexible && !i.isWohnkosten)
+      .sort((a, b) => b.amount - a.amount);
+    if (wohnkostenItems.length === 0) return base;
+    const summaryItem: FinanceItem = {
+      id: WOHNKOSTEN_SUMMARY_ID,
+      title: 'Wohnkosten',
+      amount: wohnkostenTotal,
+      type: 'expense',
+      category: `${wohnkostenItems.length} Posten`,
+      isWohnkosten: true,
+      createdAt: 0,
+    };
+    return [summaryItem, ...base];
+  }, [items, wohnkostenItems, wohnkostenTotal]);
+
+  const flexibleExpenseItems = useMemo(() =>
+    items.filter(i => i.type === 'expense' && i.isFlexible && !i.isWohnkosten).sort((a,b) => b.amount - a.amount),
   [items]);
 
   const availableCategories = useMemo(() => {
@@ -139,10 +166,10 @@ const App: React.FC = () => {
   // Handlers
   const handleSave = async (item: FinanceItem) => {
     if (editingItem) {
-      await updateItem(user, item);
+      await updateItem(user, { ...item, isWohnkosten: editingItem.isWohnkosten });
     } else {
       const { id, ...newItem } = item;
-      await addItem(user, newItem);
+      await addItem(user, { ...newItem, ...(isWohnkostenModal ? { isWohnkosten: true } : {}) });
     }
   };
 
@@ -208,17 +235,39 @@ const App: React.FC = () => {
       }
   };
 
+  const handleToggleWohnkostenCategory = (category: string) => {
+    const updated = wohnkostenCategories.includes(category)
+      ? wohnkostenCategories.filter(c => c !== category)
+      : [...wohnkostenCategories, category];
+    setWohnkostenCategories(updated);
+    saveWohnkostenCategories(updated);
+  };
+
   const openAddModal = (type: TransactionType, isFlexible: boolean = false) => {
     setEditingItem(null);
     setDefaultModalType(type);
     setDefaultModalFlexible(isFlexible);
+    setIsWohnkostenModal(false);
+    setIsModalOpen(true);
+  };
+
+  const openAddWohnkostenModal = () => {
+    setEditingItem(null);
+    setDefaultModalType('expense');
+    setDefaultModalFlexible(false);
+    setIsWohnkostenModal(true);
     setIsModalOpen(true);
   };
 
   const openEditModal = (item: FinanceItem) => {
+    if (item.id === WOHNKOSTEN_SUMMARY_ID) {
+      setView(ViewState.WOHNEN);
+      return;
+    }
     setEditingItem(item);
     setDefaultModalType(item.type);
     setDefaultModalFlexible(!!item.isFlexible);
+    setIsWohnkostenModal(false);
     setIsModalOpen(true);
   };
 
@@ -302,8 +351,8 @@ const App: React.FC = () => {
                     </div>
 
                     {/* Category Management */}
-                    <CategoryManager 
-                      categories={availableCategories} 
+                    <CategoryManager
+                      categories={availableCategories}
                       onRename={handleRenameCategory}
                       onDelete={handleDeleteCategory}
                     />
@@ -366,16 +415,21 @@ const App: React.FC = () => {
              </div>
         )}
 
+        {/* Wohnen View */}
+        {view === ViewState.WOHNEN && (
+          <WohnenView
+            items={wohnkostenItems}
+            total={wohnkostenTotal}
+            onEdit={openEditModal}
+            onAdd={openAddWohnkostenModal}
+          />
+        )}
+
         {/* Analysis View */}
         {view === ViewState.ANALYSIS && (
             <div className="max-w-2xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
                 <h2 className="text-2xl font-bold text-[#cdd6f4]">Analyse</h2>
                 <SankeyChart items={items} />
-                <FinanceChart items={items} />
-                <div className="grid grid-cols-2 gap-4">
-                    <SummaryCard label="Fixkosten" amount={summary.totalFixedExpenses} type="expense" size="tiny" />
-                    <SummaryCard label="Variabel" amount={summary.totalFlexibleExpenses} type="flexible" size="tiny" />
-                </div>
             </div>
         )}
 
@@ -420,7 +474,7 @@ const App: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                      <TransactionList
                         title="Einkommen"
                         items={incomeItems}
@@ -459,6 +513,14 @@ const App: React.FC = () => {
             >
                 <LayoutDashboard className="w-6 h-6" />
                 <span className="text-[10px] font-bold">Übersicht</span>
+            </button>
+
+            <button
+                onClick={() => setView(ViewState.WOHNEN)}
+                className={`flex flex-col items-center gap-1 w-20 transition-colors ${view === ViewState.WOHNEN ? 'text-[#cba6f7]' : 'text-[#6c7086] hover:text-[#a6adc8]'}`}
+            >
+                <Home className="w-6 h-6" />
+                <span className="text-[10px] font-bold">Wohnen</span>
             </button>
 
             <button

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { FinanceItem } from '../types';
-import { Pencil, Plus, Users } from 'lucide-react';
+import { Pencil, Plus, Users, Home } from 'lucide-react';
 
 interface TransactionListProps {
   title: string;
@@ -55,6 +55,11 @@ export const TransactionList: React.FC<TransactionListProps> = ({
               >
                 <div className="flex flex-col">
                   <div className="flex items-center gap-2">
+                    {item.isWohnkosten && (
+                      <div className="p-0.5 rounded bg-[#89b4fa]/15 text-[#89b4fa]">
+                        <Home className="w-3 h-3" strokeWidth={2.5} />
+                      </div>
+                    )}
                     <span className="font-bold text-[#cdd6f4] text-sm">{item.title}</span>
                     {item.isSplit && (
                         <Users className="w-3 h-3 text-[#89b4fa]" strokeWidth={2.5} />
@@ -63,10 +68,17 @@ export const TransactionList: React.FC<TransactionListProps> = ({
                   <span className="text-[10px] text-[#a6adc8] font-medium">{item.category}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className={`font-mono font-bold text-sm ${item.type === 'income' ? 'text-[#a6e3a1]' : accentColor}`}>
-                    {item.type === 'expense' ? '-' : '+'}
-                    {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(item.amount)}
-                  </span>
+                  <div className="flex flex-col items-end">
+                    <span className={`font-mono font-bold text-sm ${item.type === 'income' ? 'text-[#a6e3a1]' : accentColor}`}>
+                      {item.type === 'expense' ? '-' : '+'}
+                      {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(item.amount)}
+                    </span>
+                    {item.isSplit && (
+                      <span className="font-mono text-[10px] text-[#6c7086]">
+                        {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(item.amount * 2)}
+                      </span>
+                    )}
+                  </div>
                   <Pencil className="w-3 h-3 text-[#6c7086] opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
               </div>

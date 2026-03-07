@@ -9,6 +9,7 @@ export interface FinanceItem {
   category: string;
   isFlexible?: boolean; // True if it is a variable cost
   isSplit?: boolean;    // New: True if cost was split (e.g. /2)
+  isWohnkosten?: boolean; // True if part of housing costs
   createdAt: number;
 }
 
@@ -21,6 +22,7 @@ export interface FinanceSummary {
 export enum ViewState {
   DASHBOARD = 'DASHBOARD',
   ANALYSIS = 'ANALYSIS',
+  WOHNEN = 'WOHNEN',
   SETTINGS = 'SETTINGS'
 }
 

@@ -1,7 +1,6 @@
-import React, { useMemo, useRef, useState, useCallback, useEffect } from 'react';
+import React, { useMemo, useRef, useState, useEffect } from 'react';
 import { Sankey, ResponsiveContainer, Layer, Rectangle } from 'recharts';
 import { FinanceItem } from '../types';
-import { ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
 
 interface SankeyChartProps {
   items: FinanceItem[];
@@ -56,14 +55,14 @@ const CustomNode = ({ x, y, width, height, payload, isMobile }: any) => {
   else if (isBalance) fill = BALANCE_COLOR;
   else fill = getExpenseColor(payload.name, payload.expenseIndex ?? 0);
 
-  const gap = isMobile ? 6 : 10;
+  const gap = isMobile ? 7 : 10;
   const labelX = isIncome ? x - gap : x + width + gap;
   const anchor = isIncome ? 'end' : 'start';
   const nodeValue = payload.value || 0;
-  const nameFontSize = isMobile ? 10 : 12;
-  const valueFontSize = isMobile ? 9 : 11;
-  const labelSpacing = isMobile ? 6 : 9;
-  const maxChars = isMobile ? 11 : 999;
+  const nameFontSize = isMobile ? 11 : 12;
+  const valueFontSize = isMobile ? 10 : 11;
+  const labelSpacing = isMobile ? 7 : 9;
+  const maxChars = isMobile ? 13 : 999;
 
   if (isBalance) {
     return (
@@ -165,146 +164,117 @@ const CustomLink = (props: any) => {
   );
 };
 
+const CHART_W = 640;
+
 export const SankeyChart: React.FC<SankeyChartProps> = ({ items }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
+  const [containerWidth, setContainerWidth] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth : 0
+  );
+  const [scale, setScale] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const availH = window.innerHeight - 253;
+      return Math.min(1, window.innerWidth / CHART_W, availH / 520) * 1.25;
+    }
+    return 1;
+  });
   const [translate, setTranslate] = useState({ x: 0, y: 0 });
-  const [isPanning, setIsPanning] = useState(false);
-  const [containerWidth, setContainerWidth] = useState(0);
+  const isPanning = useRef(false);
   const panStart = useRef({ x: 0, y: 0 });
   const translateAtPanStart = useRef({ x: 0, y: 0 });
-  const lastDistance = useRef(0);
-
-  const resetView = useCallback(() => {
-    setScale(1);
-    setTranslate({ x: 0, y: 0 });
-  }, []);
-
-  const zoomIn = useCallback(() => setScale(s => Math.min(s * 1.3, 4)), []);
-  const zoomOut = useCallback(() => {
-    setScale(s => {
-      const next = s / 1.3;
-      if (next <= 1.05) {
-        setTranslate({ x: 0, y: 0 });
-        return 1;
-      }
-      return next;
-    });
-  }, []);
-
-  // Mouse drag panning
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (scale <= 1) return;
-    e.preventDefault();
-    setIsPanning(true);
-    panStart.current = { x: e.clientX, y: e.clientY };
-    translateAtPanStart.current = { ...translate };
-  }, [scale, translate]);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!isPanning) return;
-    e.preventDefault();
-    setTranslate({
-      x: translateAtPanStart.current.x + (e.clientX - panStart.current.x),
-      y: translateAtPanStart.current.y + (e.clientY - panStart.current.y),
-    });
-  }, [isPanning]);
-
-  const handleMouseUp = useCallback(() => {
-    setIsPanning(false);
-  }, []);
-
-  // Mouse wheel zoom
-  const handleWheel = useCallback((e: WheelEvent) => {
-    e.preventDefault();
-    const delta = e.deltaY > 0 ? 0.9 : 1.1;
-    setScale(s => {
-      const next = Math.min(Math.max(s * delta, 1), 4);
-      if (next <= 1.02) {
-        setTranslate({ x: 0, y: 0 });
-        return 1;
-      }
-      return next;
-    });
-  }, []);
-
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    el.addEventListener('wheel', handleWheel, { passive: false });
-    return () => el.removeEventListener('wheel', handleWheel);
-  }, [handleWheel]);
+  const pinchStartDistance = useRef(0);
+  const scaleAtPinchStart = useRef(1);
+  const initialized = useRef(false);
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
     const observer = new ResizeObserver(entries => {
-      setContainerWidth(entries[0].contentRect.width);
+      const w = entries[0].contentRect.width;
+      setContainerWidth(w);
+      if (!initialized.current && w > 0) {
+        initialized.current = true;
+        const availH = window.innerHeight - 253;
+        const chartH = Math.max(520, 4 * 90 + 100 + 120); // conservative estimate
+        setScale(Math.min(1, w / CHART_W, availH / chartH) * 1.25);
+      }
     });
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
 
-  // Touch: pinch zoom + pan
+  // Mouse wheel zoom
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const fitScale = containerWidth / CHART_W;
+      setScale(s => Math.min(3, Math.max(fitScale, s * (e.deltaY > 0 ? 0.9 : 1.1))));
+    };
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
+  }, [containerWidth]);
 
-    const handleTouchStart = (e: TouchEvent) => {
+  // Mouse pan
+  const onMouseDown = (e: React.MouseEvent) => {
+    isPanning.current = true;
+    panStart.current = { x: e.clientX, y: e.clientY };
+    translateAtPanStart.current = { ...translate };
+  };
+  const onMouseMove = (e: React.MouseEvent) => {
+    if (!isPanning.current) return;
+    setTranslate({
+      x: translateAtPanStart.current.x + (e.clientX - panStart.current.x),
+      y: translateAtPanStart.current.y + (e.clientY - panStart.current.y),
+    });
+  };
+  const onMouseUp = () => { isPanning.current = false; };
+
+  // Touch pan + pinch zoom
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const fitScale = containerWidth > 0 ? containerWidth / CHART_W : 1;
+
+    const onTouchStart = (e: TouchEvent) => {
       if (e.touches.length === 2) {
-        e.preventDefault();
         const dx = e.touches[0].clientX - e.touches[1].clientX;
         const dy = e.touches[0].clientY - e.touches[1].clientY;
-        lastDistance.current = Math.sqrt(dx * dx + dy * dy);
-      } else if (e.touches.length === 1 && scale > 1) {
-        setIsPanning(true);
+        pinchStartDistance.current = Math.sqrt(dx * dx + dy * dy);
+        scaleAtPinchStart.current = scale;
+      } else if (e.touches.length === 1) {
+        isPanning.current = true;
         panStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
         translateAtPanStart.current = { ...translate };
       }
     };
-
-    const handleTouchMove = (e: TouchEvent) => {
+    const onTouchMove = (e: TouchEvent) => {
+      e.preventDefault();
       if (e.touches.length === 2) {
-        e.preventDefault();
         const dx = e.touches[0].clientX - e.touches[1].clientX;
         const dy = e.touches[0].clientY - e.touches[1].clientY;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        if (lastDistance.current > 0) {
-          const delta = dist / lastDistance.current;
-          setScale(s => Math.min(Math.max(s * delta, 0.8), 4));
-        }
-        lastDistance.current = dist;
-      } else if (e.touches.length === 1 && isPanning && scale > 1) {
-        e.preventDefault();
+        const next = Math.min(3, Math.max(fitScale, scaleAtPinchStart.current * (dist / pinchStartDistance.current)));
+        setScale(next);
+      } else if (e.touches.length === 1 && isPanning.current) {
         setTranslate({
           x: translateAtPanStart.current.x + (e.touches[0].clientX - panStart.current.x),
           y: translateAtPanStart.current.y + (e.touches[0].clientY - panStart.current.y),
         });
       }
     };
+    const onTouchEnd = () => { isPanning.current = false; };
 
-    const handleTouchEnd = () => {
-      lastDistance.current = 0;
-      setIsPanning(false);
-      setScale(s => {
-        if (s < 1) {
-          setTranslate({ x: 0, y: 0 });
-          return 1;
-        }
-        return s;
-      });
-    };
-
-    el.addEventListener('touchstart', handleTouchStart, { passive: false });
-    el.addEventListener('touchmove', handleTouchMove, { passive: false });
-    el.addEventListener('touchend', handleTouchEnd);
-
+    el.addEventListener('touchstart', onTouchStart, { passive: false });
+    el.addEventListener('touchmove', onTouchMove, { passive: false });
+    el.addEventListener('touchend', onTouchEnd);
     return () => {
-      el.removeEventListener('touchstart', handleTouchStart);
-      el.removeEventListener('touchmove', handleTouchMove);
-      el.removeEventListener('touchend', handleTouchEnd);
+      el.removeEventListener('touchstart', onTouchStart);
+      el.removeEventListener('touchmove', onTouchMove);
+      el.removeEventListener('touchend', onTouchEnd);
     };
-  }, [scale, translate, isPanning]);
+  }, [containerWidth, scale, translate]);
 
   const sankeyData = useMemo(() => {
     const incomeItems = items.filter(i => i.type === 'income');
@@ -334,10 +304,10 @@ export const SankeyChart: React.FC<SankeyChartProps> = ({ items }) => {
     const budgetIndex = nodes.length;
     nodes.push({ name: 'Budget', nodeType: 'budget' });
 
-    // Expense category nodes — each gets a stable expenseIndex for color assignment
+    // Expense category nodes — wohnkosten items are grouped as one "Wohnkosten" block
     const categoryTotals = new Map<string, number>();
     expenseItems.forEach(item => {
-      const cat = item.category || 'Sonstiges';
+      const cat = item.isWohnkosten ? 'Wohnkosten' : (item.category || 'Sonstiges');
       categoryTotals.set(cat, (categoryTotals.get(cat) || 0) + item.amount);
     });
     const sortedCategories = Array.from(categoryTotals.entries()).sort((a, b) => b[1] - a[1]);
@@ -381,77 +351,53 @@ export const SankeyChart: React.FC<SankeyChartProps> = ({ items }) => {
     );
   }
 
-  const isMobile = containerWidth > 0 && containerWidth < 520;
-  const sideMargin = isMobile ? 90 : 140;
-
   const rightNodeCount = sankeyData.nodes.filter(n => n.nodeType === 'expense' || n.nodeType === 'balance').length;
   const hasBalance = sankeyData.balance > 0;
   const leftNodeCount = sankeyData.nodes.filter(n => n.nodeType === 'income').length;
   const maxSideNodes = Math.max(rightNodeCount, leftNodeCount);
-  // Extra height for balance separator spacing
-  const chartHeight = Math.max(isMobile ? 320 : 400, maxSideNodes * (isMobile ? 50 : 64) + (hasBalance ? 60 : 0) + 40);
+  const CHART_H = Math.max(520, maxSideNodes * 90 + (hasBalance ? 100 : 0) + 120);
+  const viewportH = typeof window !== 'undefined' ? window.innerHeight : 800;
+  // Reserve space for header (~73px), nav (~80px), page title (~60px), padding (~40px)
+  const availableH = viewportH - 253;
+  const fitScale = containerWidth > 0
+    ? Math.min(1, containerWidth / CHART_W, availableH / CHART_H)
+    : 1;
+  const containerHeight = Math.round(CHART_H * fitScale);
+
+  // Center the inner div: place its left edge so its center aligns with container center
+  const innerLeft = containerWidth > 0 ? (containerWidth - CHART_W) / 2 : 0;
 
   return (
-    <div className="bg-[#181825] rounded-2xl border border-[#313244] shadow-sm overflow-hidden">
-      <div className="flex items-center justify-between p-4 pb-0 px-6">
-        <h3 className="text-lg font-bold text-[#cdd6f4]">Geldfluss</h3>
-        <div className="flex items-center gap-1">
-          <button
-            onClick={zoomOut}
-            className="p-1.5 rounded-lg text-[#6c7086] hover:text-[#cdd6f4] hover:bg-[#313244] transition-colors"
-          >
-            <ZoomOut className="w-4 h-4" />
-          </button>
-          <button
-            onClick={zoomIn}
-            className="p-1.5 rounded-lg text-[#6c7086] hover:text-[#cdd6f4] hover:bg-[#313244] transition-colors"
-          >
-            <ZoomIn className="w-4 h-4" />
-          </button>
-          {scale !== 1 && (
-            <button
-              onClick={resetView}
-              className="p-1.5 rounded-lg text-[#6c7086] hover:text-[#cdd6f4] hover:bg-[#313244] transition-colors"
-            >
-              <Maximize2 className="w-4 h-4" />
-            </button>
-          )}
-        </div>
+    <div
+      ref={containerRef}
+      className="w-full touch-none select-none"
+      style={{ height: containerHeight, position: 'relative', overflow: 'visible', cursor: 'grab' }}
+      onMouseDown={onMouseDown}
+      onMouseMove={onMouseMove}
+      onMouseUp={onMouseUp}
+      onMouseLeave={onMouseUp}
+    >
+      <div style={{
+        position: 'absolute',
+        width: CHART_W,
+        height: CHART_H,
+        left: innerLeft,
+        top: 0,
+        transform: `translate(${translate.x}px, ${translate.y}px) scale(${scale})`,
+        transformOrigin: 'top center',
+      }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <Sankey
+            data={sankeyData}
+            node={<CustomNode isMobile={false} />}
+            link={<CustomLink />}
+            nodePadding={28}
+            nodeWidth={10}
+            margin={{ top: 32, right: 150, bottom: 100, left: 150 }}
+            iterations={128}
+          />
+        </ResponsiveContainer>
       </div>
-
-      <div
-        ref={containerRef}
-        className="w-full overflow-hidden touch-none select-none"
-        style={{ height: chartHeight, cursor: scale > 1 ? (isPanning ? 'grabbing' : 'grab') : 'default' }}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-      >
-        <div
-          style={{
-            transform: `scale(${scale}) translate(${translate.x / scale}px, ${translate.y / scale}px)`,
-            transformOrigin: 'center center',
-            width: '100%',
-            height: '100%',
-            transition: isPanning ? 'none' : 'transform 0.15s ease-out',
-            pointerEvents: isPanning ? 'none' : 'auto',
-          }}
-        >
-          <ResponsiveContainer width="100%" height="100%">
-            <Sankey
-              data={sankeyData}
-              node={<CustomNode isMobile={isMobile} />}
-              link={<CustomLink />}
-              nodePadding={isMobile ? 18 : 28}
-              nodeWidth={isMobile ? 6 : 8}
-              margin={{ top: 24, right: sideMargin, bottom: 32, left: sideMargin }}
-              iterations={64}
-            />
-          </ResponsiveContainer>
-        </div>
-      </div>
-
     </div>
   );
 };
