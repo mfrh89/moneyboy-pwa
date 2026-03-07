@@ -40,7 +40,10 @@ const getExpenseColor = (name: string, index: number) => {
   return color;
 };
 
-const CustomNode = ({ x, y, width, height, payload }: any) => {
+const truncate = (str: string, max: number) =>
+  str.length > max ? str.slice(0, max - 1) + '…' : str;
+
+const CustomNode = ({ x, y, width, height, payload, isMobile }: any) => {
   if (!payload || height < 1) return null;
 
   const isIncome = payload.nodeType === 'income';
@@ -53,9 +56,14 @@ const CustomNode = ({ x, y, width, height, payload }: any) => {
   else if (isBalance) fill = BALANCE_COLOR;
   else fill = getExpenseColor(payload.name, payload.expenseIndex ?? 0);
 
-  const labelX = isIncome ? x - 10 : x + width + 10;
+  const gap = isMobile ? 6 : 10;
+  const labelX = isIncome ? x - gap : x + width + gap;
   const anchor = isIncome ? 'end' : 'start';
   const nodeValue = payload.value || 0;
+  const nameFontSize = isMobile ? 10 : 12;
+  const valueFontSize = isMobile ? 9 : 11;
+  const labelSpacing = isMobile ? 6 : 9;
+  const maxChars = isMobile ? 11 : 999;
 
   if (isBalance) {
     return (
@@ -71,22 +79,22 @@ const CustomNode = ({ x, y, width, height, payload }: any) => {
         />
         <text
           x={labelX}
-          y={y + height / 2 - 7}
+          y={y + height / 2 - labelSpacing}
           textAnchor={anchor}
           dominantBaseline="central"
           fill={BALANCE_COLOR}
-          fontSize={12}
+          fontSize={nameFontSize}
           fontWeight={700}
         >
           Verfügbar
         </text>
         <text
           x={labelX}
-          y={y + height / 2 + 9}
+          y={y + height / 2 + labelSpacing}
           textAnchor={anchor}
           dominantBaseline="central"
           fill={BALANCE_COLOR}
-          fontSize={11}
+          fontSize={valueFontSize}
           fontWeight={600}
         >
           {formatCurrency(nodeValue)}
@@ -108,22 +116,22 @@ const CustomNode = ({ x, y, width, height, payload }: any) => {
       />
       <text
         x={labelX}
-        y={y + height / 2 - 7}
+        y={y + height / 2 - labelSpacing}
         textAnchor={anchor}
         dominantBaseline="central"
         fill="#cdd6f4"
-        fontSize={12}
+        fontSize={nameFontSize}
         fontWeight={700}
       >
-        {payload.name}
+        {truncate(payload.name, maxChars)}
       </text>
       <text
         x={labelX}
-        y={y + height / 2 + 9}
+        y={y + height / 2 + labelSpacing}
         textAnchor={anchor}
         dominantBaseline="central"
         fill={fill}
-        fontSize={11}
+        fontSize={valueFontSize}
         fontWeight={600}
       >
         {formatCurrency(nodeValue)}
@@ -162,6 +170,7 @@ export const SankeyChart: React.FC<SankeyChartProps> = ({ items }) => {
   const [scale, setScale] = useState(1);
   const [translate, setTranslate] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
+  const [containerWidth, setContainerWidth] = useState(0);
   const panStart = useRef({ x: 0, y: 0 });
   const translateAtPanStart = useRef({ x: 0, y: 0 });
   const lastDistance = useRef(0);
@@ -225,6 +234,16 @@ export const SankeyChart: React.FC<SankeyChartProps> = ({ items }) => {
     el.addEventListener('wheel', handleWheel, { passive: false });
     return () => el.removeEventListener('wheel', handleWheel);
   }, [handleWheel]);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(entries => {
+      setContainerWidth(entries[0].contentRect.width);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   // Touch: pinch zoom + pan
   useEffect(() => {
@@ -362,12 +381,15 @@ export const SankeyChart: React.FC<SankeyChartProps> = ({ items }) => {
     );
   }
 
+  const isMobile = containerWidth > 0 && containerWidth < 520;
+  const sideMargin = isMobile ? 90 : 140;
+
   const rightNodeCount = sankeyData.nodes.filter(n => n.nodeType === 'expense' || n.nodeType === 'balance').length;
   const hasBalance = sankeyData.balance > 0;
   const leftNodeCount = sankeyData.nodes.filter(n => n.nodeType === 'income').length;
   const maxSideNodes = Math.max(rightNodeCount, leftNodeCount);
   // Extra height for balance separator spacing
-  const chartHeight = Math.max(400, maxSideNodes * 64 + (hasBalance ? 60 : 0) + 40);
+  const chartHeight = Math.max(isMobile ? 320 : 400, maxSideNodes * (isMobile ? 50 : 64) + (hasBalance ? 60 : 0) + 40);
 
   return (
     <div className="bg-[#181825] rounded-2xl border border-[#313244] shadow-sm overflow-hidden">
@@ -419,11 +441,11 @@ export const SankeyChart: React.FC<SankeyChartProps> = ({ items }) => {
           <ResponsiveContainer width="100%" height="100%">
             <Sankey
               data={sankeyData}
-              node={<CustomNode />}
+              node={<CustomNode isMobile={isMobile} />}
               link={<CustomLink />}
-              nodePadding={28}
-              nodeWidth={8}
-              margin={{ top: 24, right: 140, bottom: 32, left: 140 }}
+              nodePadding={isMobile ? 18 : 28}
+              nodeWidth={isMobile ? 6 : 8}
+              margin={{ top: 24, right: sideMargin, bottom: 32, left: sideMargin }}
               iterations={64}
             />
           </ResponsiveContainer>
