@@ -159,9 +159,9 @@ export const EditModal: React.FC<EditModalProps> = ({
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#11111b]/60 backdrop-blur-sm">
-      <div className="bg-[#1e1e2e] rounded-2xl w-full max-w-md shadow-2xl overflow-visible animate-in fade-in zoom-in duration-200 border border-[#313244]">
-        <div className="flex justify-between items-center p-4 border-b border-[#313244] bg-[#181825] rounded-t-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#11111b]/60 backdrop-blur-sm overflow-y-auto">
+      <div className="bg-[#1e1e2e] rounded-2xl w-full max-w-md shadow-2xl animate-in fade-in zoom-in duration-200 border border-[#313244] my-8">
+        <div className="flex justify-between items-center p-4 border-b border-[#313244] bg-[#181825] rounded-t-2xl sticky top-0 z-10">
           <h2 className="text-lg font-bold text-[#cdd6f4]">
             {initialItem ? 'Eintrag bearbeiten' : 'Neuer Eintrag'}
           </h2>

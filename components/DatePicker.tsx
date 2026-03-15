@@ -18,6 +18,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [openUpwards, setOpenUpwards] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -44,6 +45,18 @@ export const DatePicker: React.FC<DatePickerProps> = ({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Check if dropdown should open upwards
+  useEffect(() => {
+    if (isOpen && buttonRef.current) {
+      const buttonRect = buttonRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - buttonRect.bottom;
+      const spaceAbove = buttonRect.top;
+      const dropdownHeight = 400; // Approximate height of calendar
+
+      setOpenUpwards(spaceBelow < dropdownHeight && spaceAbove > spaceBelow);
+    }
+  }, [isOpen]);
 
   const formatDisplayDate = (isoDate: string) => {
     if (!isoDate) return '';
@@ -149,7 +162,9 @@ export const DatePicker: React.FC<DatePickerProps> = ({
       {isOpen && (
         <div
           ref={dropdownRef}
-          className="absolute z-50 mt-2 w-full bg-[#1e1e2e] border border-[#45475a] rounded-xl shadow-2xl p-4 animate-in fade-in zoom-in duration-200"
+          className={`absolute z-50 w-full bg-[#1e1e2e] border border-[#45475a] rounded-xl shadow-2xl p-4 animate-in fade-in zoom-in duration-200 ${
+            openUpwards ? 'bottom-full mb-2' : 'top-full mt-2'
+          }`}
         >
           {/* Month Navigation */}
           <div className="flex items-center justify-between mb-4">
