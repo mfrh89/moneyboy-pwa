@@ -378,29 +378,37 @@ export const EditModal: React.FC<EditModalProps> = ({
 
           {/* Subscription Details */}
           {type === 'expense' && isSubscription && (
-            <div className="space-y-4 p-4 rounded-lg bg-[#cba6f7]/5 border border-[#cba6f7]/20 animate-in slide-in-from-top-2 duration-200">
-              <div className="flex items-center gap-2 mb-2">
-                <Repeat className="w-4 h-4 text-[#cba6f7]" />
-                <span className="text-xs font-bold text-[#cba6f7] uppercase tracking-wide">Abo-Details</span>
+            <div className="space-y-5 p-5 rounded-xl bg-[#cba6f7]/5 border-2 border-[#cba6f7]/20 animate-in slide-in-from-top-2 duration-200">
+              <div className="flex items-center gap-2.5 pb-3 border-b border-[#cba6f7]/10">
+                <div className="p-1.5 rounded-lg bg-[#cba6f7]/20">
+                  <Repeat className="w-4 h-4 text-[#cba6f7]" />
+                </div>
+                <span className="text-sm font-bold text-[#cba6f7] uppercase tracking-wide">Abo-Details</span>
               </div>
 
               {/* Billing Cycle */}
               <div>
-                <label className="block text-sm font-bold text-[#a6adc8] mb-1">Abrechnungszyklus</label>
-                <div className="grid grid-cols-3 gap-2">
+                <label className="block text-sm font-bold text-[#a6adc8] mb-2 flex items-center gap-2">
+                  <div className="p-1 rounded bg-[#89b4fa]/15">
+                    <Repeat className="w-3.5 h-3.5 text-[#89b4fa]" />
+                  </div>
+                  Abrechnungszyklus
+                </label>
+                <div className="grid grid-cols-3 gap-3">
                   {(['monthly', 'quarterly', 'yearly'] as SubscriptionCycle[]).map((cycle) => (
                     <button
                       key={cycle}
                       type="button"
                       disabled={isSubmitting}
                       onClick={() => setSubscriptionCycle(cycle)}
-                      className={`py-2 px-3 rounded-lg text-xs font-bold transition-all ${
+                      className={`py-3 px-3 rounded-xl text-sm font-bold transition-all active:scale-95 ${
                         subscriptionCycle === cycle
-                          ? 'bg-[#cba6f7] text-[#1e1e2e]'
-                          : 'bg-[#313244] text-[#a6adc8] hover:bg-[#45475a]'
+                          ? 'bg-[#cba6f7] text-[#1e1e2e] shadow-lg shadow-[#cba6f7]/20'
+                          : 'bg-[#313244] text-[#a6adc8] hover:bg-[#45475a] border border-[#45475a]'
                       }`}
+                      style={{ minHeight: '48px' }}
                     >
-                      {cycle === 'monthly' ? 'Monatlich' : cycle === 'quarterly' ? 'Quartalsweise' : 'Jährlich'}
+                      {cycle === 'monthly' ? 'Monatlich' : cycle === 'quarterly' ? 'Quartal' : 'Jährlich'}
                     </button>
                   ))}
                 </div>
@@ -408,38 +416,44 @@ export const EditModal: React.FC<EditModalProps> = ({
 
               {/* Next Billing Date */}
               <div>
-                <label className="block text-sm font-bold text-[#a6adc8] mb-1 flex items-center gap-2">
-                  <Calendar className="w-3.5 h-3.5 text-[#cba6f7]" />
+                <label className="block text-sm font-bold text-[#a6adc8] mb-2 flex items-center gap-2">
+                  <div className="p-1 rounded bg-[#cba6f7]/15">
+                    <Calendar className="w-3.5 h-3.5 text-[#cba6f7]" />
+                  </div>
                   Nächste Abbuchung
                 </label>
-                <div className="relative">
+                <div className="relative group">
                   <input
                     type="date"
                     disabled={isSubmitting}
                     value={subscriptionNextBilling}
                     onChange={(e) => setSubscriptionNextBilling(e.target.value)}
-                    className="w-full px-4 py-2 rounded-lg bg-[#313244] border border-[#45475a] text-[#cdd6f4] focus:ring-2 focus:ring-[#cba6f7] focus:border-[#cba6f7] outline-none transition-all disabled:bg-[#181825] disabled:opacity-50 hover:border-[#585b70]"
+                    className="w-full px-4 py-3.5 rounded-xl bg-[#313244] border-2 border-[#45475a] text-[#cdd6f4] text-base focus:ring-2 focus:ring-[#cba6f7]/50 focus:border-[#cba6f7] outline-none transition-all disabled:bg-[#181825] disabled:opacity-50 hover:border-[#cba6f7]/30 active:scale-[0.99]"
+                    style={{ minHeight: '48px' }}
                   />
                 </div>
               </div>
 
               {/* Cancellation Deadline */}
               <div>
-                <label className="block text-sm font-bold text-[#a6adc8] mb-1 flex items-center gap-2">
-                  <AlertTriangle className="w-3.5 h-3.5 text-[#f38ba8]" />
+                <label className="block text-sm font-bold text-[#a6adc8] mb-2 flex items-center gap-2">
+                  <div className="p-1 rounded bg-[#f38ba8]/15">
+                    <AlertTriangle className="w-3.5 h-3.5 text-[#f38ba8]" />
+                  </div>
                   Kündigungsfrist (optional)
                 </label>
-                <div className="relative">
+                <div className="relative group">
                   <input
                     type="date"
                     disabled={isSubmitting}
                     value={subscriptionCancellationDeadline}
                     onChange={(e) => setSubscriptionCancellationDeadline(e.target.value)}
-                    className="w-full px-4 py-2 rounded-lg bg-[#313244] border border-[#45475a] text-[#cdd6f4] focus:ring-2 focus:ring-[#cba6f7] focus:border-[#cba6f7] outline-none transition-all disabled:bg-[#181825] disabled:opacity-50 hover:border-[#585b70]"
+                    className="w-full px-4 py-3.5 rounded-xl bg-[#313244] border-2 border-[#45475a] text-[#cdd6f4] text-base focus:ring-2 focus:ring-[#f38ba8]/50 focus:border-[#f38ba8] outline-none transition-all disabled:bg-[#181825] disabled:opacity-50 hover:border-[#f38ba8]/30 active:scale-[0.99]"
+                    style={{ minHeight: '48px' }}
                   />
                 </div>
-                <p className="mt-1.5 text-xs text-[#6c7086] flex items-center gap-1">
-                  <span>Datum bis wann gekündigt werden muss</span>
+                <p className="mt-2 text-xs text-[#6c7086] leading-relaxed pl-1">
+                  Datum bis wann das Abo gekündigt werden muss
                 </p>
               </div>
             </div>
