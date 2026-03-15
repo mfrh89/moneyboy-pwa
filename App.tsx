@@ -26,6 +26,7 @@ import { CategoryManager } from './components/CategoryManager';
 import { SankeyChart } from './components/SankeyChart';
 import { WohnenView } from './components/WohnenView';
 import { SubscriptionAlert } from './components/SubscriptionAlert';
+import { NotificationSettings } from './components/NotificationSettings';
 import { LayoutDashboard, Plus, Settings, LogOut, Database, Cloud, Wifi, WifiOff, UploadCloud, Loader2, WalletCards, PieChart, Home } from 'lucide-react';
 
 const DEFAULT_CATEGORIES = [
@@ -380,6 +381,12 @@ const App: React.FC = () => {
                       categories={availableCategories}
                       onRename={handleRenameCategory}
                       onDelete={handleDeleteCategory}
+                    />
+
+                    {/* Notification Settings */}
+                    <NotificationSettings 
+                      userId={user?.uid || null}
+                      isFirebaseActive={isLive}
                     />
 
                     {/* Data Section */}

@@ -24,6 +24,7 @@ import {
   enableIndexedDbPersistence
 } from 'firebase/firestore';
 import { FinanceItem, FirebaseConfig } from '../types';
+import { initializeMessaging } from './notifications';
 
 // --- CONFIGURATION ---
 const LOCAL_DATA_KEY = 'finance_pwa_data_v1';
@@ -98,6 +99,14 @@ const initFirebase = () => {
       try {
         getAnalytics(firebaseApp);
       } catch (e) { /* Ignore */ }
+
+      // Attempt Messaging (Optional)
+      try {
+        initializeMessaging(firebaseApp);
+        console.log('Firebase Cloud Messaging initialized');
+      } catch (e) { 
+        console.warn('Firebase Messaging initialization failed:', e);
+      }
       
       if (auth && db) {
         const isCustom = localStorage.getItem(LOCAL_CONFIG_KEY) !== null;
