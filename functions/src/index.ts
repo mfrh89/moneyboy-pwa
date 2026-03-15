@@ -1,4 +1,4 @@
-import * as functions from 'firebase-functions';
+import {onRequest} from 'firebase-functions/v2/https';
 import * as admin from 'firebase-admin';
 
 admin.initializeApp();
@@ -9,10 +9,9 @@ admin.initializeApp();
  * 
  * Security: Add a secret token in query parameter: ?token=YOUR_SECRET_TOKEN
  */
-export const checkSubscriptionsDaily = functions
-  .region('europe-west1')
-  .https
-  .onRequest(async (request, response) => {
+export const checkSubscriptionsDaily = onRequest(
+  {region: 'europe-west1'},
+  async (request, response) => {
     // Simple security: Check for secret token
     const expectedToken = process.env.CRON_SECRET || 'change-this-secret-token';
     const providedToken = request.query.token;
