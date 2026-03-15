@@ -1,6 +1,8 @@
 
 export type TransactionType = 'income' | 'expense';
 
+export type SubscriptionCycle = 'monthly' | 'yearly' | 'quarterly';
+
 export interface FinanceItem {
   id: string;
   title: string;
@@ -11,6 +13,12 @@ export interface FinanceItem {
   isSplit?: boolean;    // New: True if cost was split (e.g. /2)
   isWohnkosten?: boolean; // True if part of housing costs
   createdAt: number;
+  
+  // Subscription properties
+  isSubscription?: boolean;
+  subscriptionNextBilling?: number; // Timestamp of next billing date
+  subscriptionCancellationDeadline?: number; // Timestamp when cancellation must happen
+  subscriptionCycle?: SubscriptionCycle;
 }
 
 export interface FinanceSummary {

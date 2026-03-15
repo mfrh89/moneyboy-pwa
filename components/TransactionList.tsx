@@ -1,7 +1,7 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { FinanceItem } from '../types';
-import { Pencil, Plus, Users, Home } from 'lucide-react';
+import { Pencil, Plus, Users, Home, Repeat, Filter } from 'lucide-react';
 
 interface TransactionListProps {
   title: string;
@@ -10,6 +10,7 @@ interface TransactionListProps {
   onAdd?: () => void; // New prop for quick add
   emptyMessage: string;
   accentColor?: string; // e.g. 'text-[#f38ba8]'
+  showSubscriptionFilter?: boolean; // Show subscription filter toggle
 }
 
 export const TransactionList: React.FC<TransactionListProps> = ({ 
@@ -18,15 +19,38 @@ export const TransactionList: React.FC<TransactionListProps> = ({
   onEdit, 
   onAdd,
   emptyMessage,
-  accentColor = 'text-[#cdd6f4]'
+  accentColor = 'text-[#cdd6f4]',
+  showSubscriptionFilter = false
 }) => {
+  const [showOnlySubscriptions, setShowOnlySubscriptions] = useState(false);
+  
+  const filteredItems = showOnlySubscriptions 
+    ? items.filter(item => item.isSubscription)
+    : items;
+  
+  const subscriptionCount = items.filter(item => item.isSubscription).length;
+  
   return (
     <div className="bg-[#181825] rounded-2xl border border-[#313244] shadow-sm overflow-hidden flex flex-col h-fit">
       <div className="p-4 border-b border-[#313244] bg-[#1e1e2e] flex justify-between items-center shrink-0">
         <h3 className={`font-bold ${accentColor}`}>{title}</h3>
         <div className="flex items-center gap-2">
+            {showSubscriptionFilter && subscriptionCount > 0 && (
+                <button
+                    onClick={() => setShowOnlySubscriptions(!showOnlySubscriptions)}
+                    className={`px-2 py-1 rounded-md h-[26px] flex items-center gap-1.5 transition-all text-xs font-bold ${
+                        showOnlySubscriptions 
+                            ? 'bg-[#cba6f7] text-[#1e1e2e]' 
+                            : 'bg-[#45475a] hover:bg-[#585b70] text-[#cdd6f4]'
+                    }`}
+                    title={showOnlySubscriptions ? 'Alle anzeigen' : 'Nur Abos'}
+                >
+                    <Repeat className="w-3 h-3" />
+                    {showOnlySubscriptions && <span>{subscriptionCount}</span>}
+                </button>
+            )}
             <span className="text-xs font-bold px-2 py-1 bg-[#45475a] text-[#cdd6f4] rounded-md min-w-[28px] h-[26px] flex items-center justify-center">
-                {items.length}
+                {filteredItems.length}
             </span>
             {onAdd && (
                 <button 
@@ -41,13 +65,13 @@ export const TransactionList: React.FC<TransactionListProps> = ({
       </div>
       
       <div className="p-2">
-        {items.length === 0 ? (
+        {filteredItems.length === 0 ? (
           <div className="p-8 text-center text-[#6c7086] text-sm italic">
-            {emptyMessage}
+            {showOnlySubscriptions ? 'Keine Abos vorhanden' : emptyMessage}
           </div>
         ) : (
           <div className="space-y-1">
-            {items.map((item) => (
+            {filteredItems.map((item) => (
               <div
                 key={item.id}
                 onClick={() => onEdit(item)}
@@ -58,6 +82,11 @@ export const TransactionList: React.FC<TransactionListProps> = ({
                     {item.isWohnkosten && (
                       <div className="p-0.5 rounded bg-[#89b4fa]/15 text-[#89b4fa]">
                         <Home className="w-3 h-3" strokeWidth={2.5} />
+                      </div>
+                    )}
+                    {item.isSubscription && (
+                      <div className="p-0.5 rounded bg-[#cba6f7]/15 text-[#cba6f7]">
+                        <Repeat className="w-3 h-3" strokeWidth={2.5} />
                       </div>
                     )}
                     <span className="font-bold text-[#cdd6f4] text-sm">{item.title}</span>

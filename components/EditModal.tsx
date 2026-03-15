@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Save, Trash2, Loader2, CreditCard, Users, ChevronDown, Check } from 'lucide-react';
-import { FinanceItem, TransactionType } from '../types';
+import { X, Save, Trash2, Loader2, CreditCard, Users, ChevronDown, Check, Repeat } from 'lucide-react';
+import { FinanceItem, TransactionType, SubscriptionCycle } from '../types';
 
 interface EditModalProps {
   isOpen: boolean;
@@ -30,6 +30,12 @@ export const EditModal: React.FC<EditModalProps> = ({
   const [isFlexible, setIsFlexible] = useState(defaultIsFlexible);
   const [isSplit, setIsSplit] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Subscription state
+  const [isSubscription, setIsSubscription] = useState(false);
+  const [subscriptionNextBilling, setSubscriptionNextBilling] = useState('');
+  const [subscriptionCancellationDeadline, setSubscriptionCancellationDeadline] = useState('');
+  const [subscriptionCycle, setSubscriptionCycle] = useState<SubscriptionCycle>('monthly');
 
   // Category AutoSuggest State
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -46,6 +52,10 @@ export const EditModal: React.FC<EditModalProps> = ({
         setType(initialItem.type);
         setIsFlexible(!!initialItem.isFlexible);
         setIsSplit(!!initialItem.isSplit);
+        setIsSubscription(!!initialItem.isSubscription);
+        setSubscriptionNextBilling(initialItem.subscriptionNextBilling ? new Date(initialItem.subscriptionNextBilling).toISOString().split('T')[0] : '');
+        setSubscriptionCancellationDeadline(initialItem.subscriptionCancellationDeadline ? new Date(initialItem.subscriptionCancellationDeadline).toISOString().split('T')[0] : '');
+        setSubscriptionCycle(initialItem.subscriptionCycle || 'monthly');
       } else {
         setTitle('');
         setInputValue('');
@@ -53,6 +63,10 @@ export const EditModal: React.FC<EditModalProps> = ({
         setType(defaultType);
         setIsFlexible(defaultIsFlexible);
         setIsSplit(false);
+        setIsSubscription(false);
+        setSubscriptionNextBilling('');
+        setSubscriptionCancellationDeadline('');
+        setSubscriptionCycle('monthly');
       }
       setIsSubmitting(false);
       setShowSuggestions(false);
@@ -102,7 +116,15 @@ export const EditModal: React.FC<EditModalProps> = ({
         category: finalCategory,
         isFlexible: type === 'expense' ? isFlexible : false,
         isSplit: type === 'expense' ? isSplit : false,
-        createdAt: initialItem?.createdAt || Date.now()
+        createdAt: initialItem?.createdAt || Date.now(),
+        isSubscription: type === 'expense' ? isSubscription : false,
+        subscriptionNextBilling: (type === 'expense' && isSubscription && subscriptionNextBilling) 
+          ? new Date(subscriptionNextBilling).getTime() 
+          : undefined,
+        subscriptionCancellationDeadline: (type === 'expense' && isSubscription && subscriptionCancellationDeadline) 
+          ? new Date(subscriptionCancellationDeadline).getTime() 
+          : undefined,
+        subscriptionCycle: (type === 'expense' && isSubscription) ? subscriptionCycle : undefined
         };
         await onSave(newItem);
         onClose();
@@ -179,7 +201,7 @@ export const EditModal: React.FC<EditModalProps> = ({
 
           {/* Options for Expenses */}
           {type === 'expense' && (
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-3">
                 {/* Flexible Toggle */}
                 <div 
                     onClick={() => !isSubmitting && setIsFlexible(!isFlexible)}
@@ -215,6 +237,25 @@ export const EditModal: React.FC<EditModalProps> = ({
                     </div>
                     <span className={`text-xs font-bold ${isSplit ? 'text-[#89b4fa]' : 'text-[#cdd6f4]'}`}>
                         Geteilt
+                    </span>
+                </div>
+
+                {/* Subscription Toggle */}
+                <div 
+                    onClick={() => !isSubmitting && setIsSubscription(!isSubscription)}
+                    className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-all ${
+                        isSubscription 
+                        ? 'bg-[#cba6f7]/10 border-[#cba6f7]/50' 
+                        : 'bg-[#313244]/50 border-transparent hover:bg-[#313244]'
+                    }`}
+                >
+                    <div className={`w-4 h-4 rounded flex items-center justify-center border transition-colors ${
+                        isSubscription ? 'bg-[#cba6f7] border-[#cba6f7]' : 'border-[#6c7086]'
+                    }`}>
+                        {isSubscription && <Repeat className="w-2.5 h-2.5 text-[#1e1e2e]" />}
+                    </div>
+                    <span className={`text-xs font-bold ${isSubscription ? 'text-[#cba6f7]' : 'text-[#cdd6f4]'}`}>
+                        Abo
                     </span>
                 </div>
             </div>
@@ -334,6 +375,62 @@ export const EditModal: React.FC<EditModalProps> = ({
                 </div>
             )}
           </div>
+
+          {/* Subscription Details */}
+          {type === 'expense' && isSubscription && (
+            <div className="space-y-4 p-4 rounded-lg bg-[#cba6f7]/5 border border-[#cba6f7]/20 animate-in slide-in-from-top-2 duration-200">
+              <div className="flex items-center gap-2 mb-2">
+                <Repeat className="w-4 h-4 text-[#cba6f7]" />
+                <span className="text-xs font-bold text-[#cba6f7] uppercase tracking-wide">Abo-Details</span>
+              </div>
+
+              {/* Billing Cycle */}
+              <div>
+                <label className="block text-sm font-bold text-[#a6adc8] mb-1">Abrechnungszyklus</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {(['monthly', 'quarterly', 'yearly'] as SubscriptionCycle[]).map((cycle) => (
+                    <button
+                      key={cycle}
+                      type="button"
+                      disabled={isSubmitting}
+                      onClick={() => setSubscriptionCycle(cycle)}
+                      className={`py-2 px-3 rounded-lg text-xs font-bold transition-all ${
+                        subscriptionCycle === cycle
+                          ? 'bg-[#cba6f7] text-[#1e1e2e]'
+                          : 'bg-[#313244] text-[#a6adc8] hover:bg-[#45475a]'
+                      }`}
+                    >
+                      {cycle === 'monthly' ? 'Monatlich' : cycle === 'quarterly' ? 'Quartalsweise' : 'Jährlich'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Next Billing Date */}
+              <div>
+                <label className="block text-sm font-bold text-[#a6adc8] mb-1">Nächste Abbuchung</label>
+                <input
+                  type="date"
+                  disabled={isSubmitting}
+                  value={subscriptionNextBilling}
+                  onChange={(e) => setSubscriptionNextBilling(e.target.value)}
+                  className="w-full px-4 py-2 rounded-lg bg-[#313244] border border-[#45475a] text-[#cdd6f4] focus:ring-2 focus:ring-[#cba6f7] focus:border-[#cba6f7] outline-none transition-shadow disabled:bg-[#181825]"
+                />
+              </div>
+
+              {/* Cancellation Deadline */}
+              <div>
+                <label className="block text-sm font-bold text-[#a6adc8] mb-1">Kündigungsfrist (optional)</label>
+                <input
+                  type="date"
+                  disabled={isSubmitting}
+                  value={subscriptionCancellationDeadline}
+                  onChange={(e) => setSubscriptionCancellationDeadline(e.target.value)}
+                  className="w-full px-4 py-2 rounded-lg bg-[#313244] border border-[#45475a] text-[#cdd6f4] focus:ring-2 focus:ring-[#cba6f7] focus:border-[#cba6f7] outline-none transition-shadow disabled:bg-[#181825]"
+                />
+              </div>
+            </div>
+          )}
 
           <div className="pt-4 flex gap-3">
             {initialItem && (

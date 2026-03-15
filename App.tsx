@@ -25,6 +25,7 @@ import { ConfigModal } from './components/ConfigModal';
 import { CategoryManager } from './components/CategoryManager';
 import { SankeyChart } from './components/SankeyChart';
 import { WohnenView } from './components/WohnenView';
+import { SubscriptionAlert } from './components/SubscriptionAlert';
 import { LayoutDashboard, Plus, Settings, LogOut, Database, Cloud, Wifi, WifiOff, UploadCloud, Loader2, WalletCards, PieChart, Home } from 'lucide-react';
 
 const DEFAULT_CATEGORIES = [
@@ -156,6 +157,30 @@ const App: React.FC = () => {
   const flexibleExpenseItems = useMemo(() =>
     items.filter(i => i.type === 'expense' && i.isFlexible && !i.isWohnkosten).sort((a,b) => b.amount - a.amount),
   [items]);
+
+  // Subscriptions expiring within 2 days
+  const upcomingSubscriptions = useMemo(() => {
+    const now = Date.now();
+    const twoDaysFromNow = now + (2 * 24 * 60 * 60 * 1000);
+    
+    return items.filter(item => {
+      if (!item.isSubscription) return false;
+      
+      // Check if next billing or cancellation deadline is within 2 days
+      const nextBilling = item.subscriptionNextBilling;
+      const cancellationDeadline = item.subscriptionCancellationDeadline;
+      
+      if (nextBilling && nextBilling >= now && nextBilling <= twoDaysFromNow) return true;
+      if (cancellationDeadline && cancellationDeadline >= now && cancellationDeadline <= twoDaysFromNow) return true;
+      
+      return false;
+    }).sort((a, b) => {
+      // Sort by earliest relevant date
+      const aDate = Math.min(a.subscriptionNextBilling || Infinity, a.subscriptionCancellationDeadline || Infinity);
+      const bDate = Math.min(b.subscriptionNextBilling || Infinity, b.subscriptionCancellationDeadline || Infinity);
+      return aDate - bDate;
+    });
+  }, [items]);
 
   const availableCategories = useMemo(() => {
     const usedCategories = items.map(i => i.category).filter(Boolean);
@@ -441,6 +466,14 @@ const App: React.FC = () => {
                     <SummaryCard label="Verfügbares Budget" amount={summary.balance} type="balance" size="lg" />
                 </section>
 
+                {/* Subscription Alert */}
+                {upcomingSubscriptions.length > 0 && (
+                    <SubscriptionAlert 
+                        subscriptions={upcomingSubscriptions} 
+                        onItemClick={openEditModal}
+                    />
+                )}
+
                 <div>
                     <h3 className="text-xs font-bold uppercase tracking-widest opacity-60 mb-4 text-[#a6adc8]">Cashflow Berechnung</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -490,6 +523,7 @@ const App: React.FC = () => {
                         onAdd={() => openAddModal('expense', false)}
                         emptyMessage="Keine Fixkosten eingetragen."
                         accentColor="text-[#f38ba8]"
+                        showSubscriptionFilter={true}
                      />
                      <TransactionList
                         title="Variable Ausgaben"
@@ -498,6 +532,7 @@ const App: React.FC = () => {
                         onAdd={() => openAddModal('expense', true)}
                         emptyMessage="Keine variablen Ausgaben."
                         accentColor="text-[#fab387]"
+                        showSubscriptionFilter={true}
                      />
                 </div>
             </div>
