@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Save, Trash2, Loader2, CreditCard, Users, ChevronDown, Check, Repeat, Calendar, AlertTriangle } from 'lucide-react';
 import { FinanceItem, TransactionType, SubscriptionCycle } from '../types';
+import { DatePicker } from './DatePicker';
 
 interface EditModalProps {
   isOpen: boolean;
@@ -407,28 +408,22 @@ export const EditModal: React.FC<EditModalProps> = ({
               </div>
 
               {/* Next Billing Date */}
-              <div>
-                <label className="block text-sm font-bold text-[#a6adc8] mb-1">Nächste Abbuchung</label>
-                <input
-                  type="date"
-                  disabled={isSubmitting}
-                  value={subscriptionNextBilling}
-                  onChange={(e) => setSubscriptionNextBilling(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg bg-[#313244] border border-[#45475a] text-[#cdd6f4] focus:ring-2 focus:ring-[#cba6f7] focus:border-[#cba6f7] outline-none transition-shadow disabled:bg-[#181825]"
-                />
-              </div>
+              <DatePicker
+                label="Nächste Abbuchung"
+                value={subscriptionNextBilling}
+                onChange={setSubscriptionNextBilling}
+                disabled={isSubmitting}
+                placeholder="Datum wählen"
+              />
 
               {/* Cancellation Deadline */}
-              <div>
-                <label className="block text-sm font-bold text-[#a6adc8] mb-1">Kündigungsfrist (optional)</label>
-                <input
-                  type="date"
-                  disabled={isSubmitting}
-                  value={subscriptionCancellationDeadline}
-                  onChange={(e) => setSubscriptionCancellationDeadline(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg bg-[#313244] border border-[#45475a] text-[#cdd6f4] focus:ring-2 focus:ring-[#cba6f7] focus:border-[#cba6f7] outline-none transition-shadow disabled:bg-[#181825]"
-                />
-              </div>
+              <DatePicker
+                label="Kündigungsfrist (optional)"
+                value={subscriptionCancellationDeadline}
+                onChange={setSubscriptionCancellationDeadline}
+                disabled={isSubmitting}
+                placeholder="Datum wählen"
+              />
             </div>
           )}
 
