@@ -2,12 +2,25 @@ version: '3.8'
 
 services:
   moneyboy:
-    # WICHTIG: Ersetzen Sie 'IHR_DOCKER_HUB_BENUTZERNAME/moneyboy:latest' 
-    # mit dem tatsächlichen Namen Ihres Images auf Docker Hub.
     image: mfrh/moneyboy:latest
     container_name: moneyboy
     ports:
-      # Mappt den Port 80 des Containers auf Port 8080 des Hosts.
-      # Sie können den Host-Port (8080) nach Belieben ändern.
-      - "8080:80"
+      - "8085:80"
     restart: unless-stopped
+
+  # Cronjob für tägliche Push-Notification Checks
+  # WICHTIG: Erstelle .env.docker Datei mit deinen Werten (siehe .env.docker.example)
+  notifications-cron:
+    image: alpine:latest
+    container_name: moneyboy-notifications
+    restart: unless-stopped
+    env_file:
+      - .env.docker
+    command: >
+      sh -c "
+      apk add --no-cache curl &&
+      echo '0 9 * * * curl -X POST \"$${FUNCTION_URL}?token=$${CRON_TOKEN}\" >> /var/log/cron.log 2>&1' > /etc/crontabs/root &&
+      echo 'Cronjob configured: Daily at 9:00 AM ($${TZ})' &&
+      echo 'Target: $${FUNCTION_URL}' &&
+      crond -f -l 2
+      "
