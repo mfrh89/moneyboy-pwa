@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Save, Trash2, Loader2, CreditCard, Users, ChevronDown, Check, Repeat } from 'lucide-react';
+import { X, Save, Trash2, Loader2, CreditCard, Users, ChevronDown, Check, Repeat, Calendar, AlertTriangle } from 'lucide-react';
 import { FinanceItem, TransactionType, SubscriptionCycle } from '../types';
 
 interface EditModalProps {
@@ -408,26 +408,39 @@ export const EditModal: React.FC<EditModalProps> = ({
 
               {/* Next Billing Date */}
               <div>
-                <label className="block text-sm font-bold text-[#a6adc8] mb-1">Nächste Abbuchung</label>
-                <input
-                  type="date"
-                  disabled={isSubmitting}
-                  value={subscriptionNextBilling}
-                  onChange={(e) => setSubscriptionNextBilling(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg bg-[#313244] border border-[#45475a] text-[#cdd6f4] focus:ring-2 focus:ring-[#cba6f7] focus:border-[#cba6f7] outline-none transition-shadow disabled:bg-[#181825]"
-                />
+                <label className="block text-sm font-bold text-[#a6adc8] mb-1 flex items-center gap-2">
+                  <Calendar className="w-3.5 h-3.5 text-[#cba6f7]" />
+                  Nächste Abbuchung
+                </label>
+                <div className="relative">
+                  <input
+                    type="date"
+                    disabled={isSubmitting}
+                    value={subscriptionNextBilling}
+                    onChange={(e) => setSubscriptionNextBilling(e.target.value)}
+                    className="w-full px-4 py-2 rounded-lg bg-[#313244] border border-[#45475a] text-[#cdd6f4] focus:ring-2 focus:ring-[#cba6f7] focus:border-[#cba6f7] outline-none transition-all disabled:bg-[#181825] disabled:opacity-50 hover:border-[#585b70]"
+                  />
+                </div>
               </div>
 
               {/* Cancellation Deadline */}
               <div>
-                <label className="block text-sm font-bold text-[#a6adc8] mb-1">Kündigungsfrist (optional)</label>
-                <input
-                  type="date"
-                  disabled={isSubmitting}
-                  value={subscriptionCancellationDeadline}
-                  onChange={(e) => setSubscriptionCancellationDeadline(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg bg-[#313244] border border-[#45475a] text-[#cdd6f4] focus:ring-2 focus:ring-[#cba6f7] focus:border-[#cba6f7] outline-none transition-shadow disabled:bg-[#181825]"
-                />
+                <label className="block text-sm font-bold text-[#a6adc8] mb-1 flex items-center gap-2">
+                  <AlertTriangle className="w-3.5 h-3.5 text-[#f38ba8]" />
+                  Kündigungsfrist (optional)
+                </label>
+                <div className="relative">
+                  <input
+                    type="date"
+                    disabled={isSubmitting}
+                    value={subscriptionCancellationDeadline}
+                    onChange={(e) => setSubscriptionCancellationDeadline(e.target.value)}
+                    className="w-full px-4 py-2 rounded-lg bg-[#313244] border border-[#45475a] text-[#cdd6f4] focus:ring-2 focus:ring-[#cba6f7] focus:border-[#cba6f7] outline-none transition-all disabled:bg-[#181825] disabled:opacity-50 hover:border-[#585b70]"
+                  />
+                </div>
+                <p className="mt-1.5 text-xs text-[#6c7086] flex items-center gap-1">
+                  <span>Datum bis wann gekündigt werden muss</span>
+                </p>
               </div>
             </div>
           )}
