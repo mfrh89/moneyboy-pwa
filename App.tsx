@@ -26,8 +26,9 @@ import { CategoryManager } from './components/CategoryManager';
 import { SankeyChart } from './components/SankeyChart';
 import { WohnenView } from './components/WohnenView';
 import { SubscriptionAlert } from './components/SubscriptionAlert';
-import { NotificationSettingsSimple } from './components/NotificationSettingsSimple';
+import { NotificationSettings } from './components/NotificationSettings';
 import { checkAndNotifySubscriptions } from './services/subscriptionChecker';
+import { setupForegroundMessageHandler } from './services/notifications';
 import { LayoutDashboard, Plus, Settings, LogOut, Database, Cloud, Wifi, WifiOff, UploadCloud, Loader2, WalletCards, PieChart, Home } from 'lucide-react';
 
 const DEFAULT_CATEGORIES = [
@@ -83,6 +84,52 @@ const App: React.FC = () => {
     });
     return () => unsubscribe();
   }, []);
+
+  // Service Worker Registration for Push Notifications
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/firebase-messaging-sw.js')
+        .then((registration) => {
+          console.log('Service Worker registered:', registration);
+          
+          // Pass Firebase config to Service Worker
+          const firebaseConfig = {
+            apiKey: "AIzaSyBh3HMQ6eR8Q9Dw7utfg_PjnhWv3Djiz0M",
+            authDomain: "moneyboy-2f088.firebaseapp.com",
+            projectId: "moneyboy-2f088",
+            storageBucket: "moneyboy-2f088.firebasestorage.app",
+            messagingSenderId: "679174588558",
+            appId: "1:679174588558:web:7615c9c0af9ea36aec21df",
+            measurementId: "G-RCXP9MTNT6"
+          };
+          
+          navigator.serviceWorker.ready.then((reg) => {
+            reg.active?.postMessage({
+              type: 'FIREBASE_CONFIG',
+              config: firebaseConfig
+            });
+          });
+        })
+        .catch((error) => {
+          console.error('Service Worker registration failed:', error);
+        });
+
+      // Setup foreground message handler
+      if (isLive) {
+        setupForegroundMessageHandler((payload) => {
+          console.log('Foreground message received:', payload);
+          // Show notification even when app is in foreground
+          if (Notification.permission === 'granted') {
+            new Notification(payload.notification?.title || 'Moneyboy', {
+              body: payload.notification?.body || 'Du hast eine neue Benachrichtigung',
+              icon: '/icon-192.png',
+              badge: '/icon-192.png'
+            });
+          }
+        });
+      }
+    }
+  }, [isLive]);
 
   // Data Subscription & Migration Check
   useEffect(() => {
@@ -392,7 +439,7 @@ const App: React.FC = () => {
                     />
 
                     {/* Notification Settings */}
-                    <NotificationSettingsSimple />
+                    <NotificationSettings userId={user?.uid || null} isFirebaseActive={isLive} />
 
                     {/* Data Section */}
                     <div>
