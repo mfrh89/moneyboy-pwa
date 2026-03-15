@@ -26,7 +26,8 @@ import { CategoryManager } from './components/CategoryManager';
 import { SankeyChart } from './components/SankeyChart';
 import { WohnenView } from './components/WohnenView';
 import { SubscriptionAlert } from './components/SubscriptionAlert';
-import { NotificationSettings } from './components/NotificationSettings';
+import { NotificationSettingsSimple } from './components/NotificationSettingsSimple';
+import { checkAndNotifySubscriptions } from './services/subscriptionChecker';
 import { LayoutDashboard, Plus, Settings, LogOut, Database, Cloud, Wifi, WifiOff, UploadCloud, Loader2, WalletCards, PieChart, Home } from 'lucide-react';
 
 const DEFAULT_CATEGORIES = [
@@ -102,11 +103,18 @@ const App: React.FC = () => {
         setShowMigrationBanner(false);
      }
      
-     return () => {
-         unsubscribe();
-         window.removeEventListener('local-data-changed', handleLocalUpdate);
-     };
-  }, [user, isLive]);
+      return () => {
+          unsubscribe();
+          window.removeEventListener('local-data-changed', handleLocalUpdate);
+      };
+   }, [user, isLive]);
+
+   // Check for upcoming subscriptions and show notifications
+   useEffect(() => {
+     if (items.length > 0) {
+       checkAndNotifySubscriptions(items);
+     }
+   }, [items]);
 
   // Derived State
   const summary = useMemo(() => {
@@ -384,10 +392,7 @@ const App: React.FC = () => {
                     />
 
                     {/* Notification Settings */}
-                    <NotificationSettings 
-                      userId={user?.uid || null}
-                      isFirebaseActive={isLive}
-                    />
+                    <NotificationSettingsSimple />
 
                     {/* Data Section */}
                     <div>
