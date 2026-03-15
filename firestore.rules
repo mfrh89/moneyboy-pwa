@@ -15,6 +15,12 @@ service cloud.firestore {
       match /items/{itemId} {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
+
+      // 3. Zugriff auf die Unter-Sammlung "fcmTokens" (Push Notification Tokens)
+      // Erlaubt dem User das Speichern und Verwalten seiner eigenen FCM Tokens
+      match /fcmTokens/{tokenId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
     }
   }
 }
