@@ -4,15 +4,23 @@ import * as admin from 'firebase-admin';
 admin.initializeApp();
 
 /**
- * Scheduled function that runs daily at 9 AM (Europe/Berlin timezone)
- * Checks all users for subscriptions expiring within 2 days and sends push notifications
+ * HTTP function that checks all users for subscriptions expiring within 2 days
+ * and sends push notifications. Can be triggered via HTTP request or cronjob.
+ * 
+ * Security: Add a secret token in query parameter: ?token=YOUR_SECRET_TOKEN
  */
 export const checkSubscriptionsDaily = functions
-  .region('europe-west1') // Adjust region as needed
-  .pubsub
-  .schedule('0 9 * * *') // Every day at 9:00 AM
-  .timeZone('Europe/Berlin')
-  .onRun(async (context) => {
+  .region('europe-west1')
+  .https
+  .onRequest(async (request, response) => {
+    // Simple security: Check for secret token
+    const expectedToken = process.env.CRON_SECRET || 'change-this-secret-token';
+    const providedToken = request.query.token;
+    
+    if (providedToken !== expectedToken) {
+      response.status(401).send('Unauthorized');
+      return;
+    }
     const db = admin.firestore();
     const messaging = admin.messaging();
     
@@ -151,9 +159,16 @@ export const checkSubscriptionsDaily = functions
       }
       
       console.log(`Subscription check completed. Sent ${totalNotificationsSent} notifications.`);
-      return null;
+      response.status(200).json({
+        success: true,
+        notificationsSent: totalNotificationsSent,
+        timestamp: new Date().toISOString()
+      });
     } catch (error) {
       console.error('Error in subscription check:', error);
-      throw error;
+      response.status(500).json({
+        success: false,
+        error: String(error)
+      });
     }
   });
