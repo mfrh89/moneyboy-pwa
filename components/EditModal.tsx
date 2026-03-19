@@ -11,6 +11,7 @@ interface EditModalProps {
   initialItem?: FinanceItem | null;
   defaultType: TransactionType;
   defaultIsFlexible?: boolean;
+  defaultIsSubscription?: boolean;
   availableCategories: string[];
 }
 
@@ -22,6 +23,7 @@ export const EditModal: React.FC<EditModalProps> = ({
   initialItem,
   defaultType,
   defaultIsFlexible = false,
+  defaultIsSubscription = false,
   availableCategories
 }) => {
   const [title, setTitle] = useState('');
@@ -64,7 +66,7 @@ export const EditModal: React.FC<EditModalProps> = ({
         setType(defaultType);
         setIsFlexible(defaultIsFlexible);
         setIsSplit(false);
-        setIsSubscription(false);
+        setIsSubscription(defaultIsSubscription);
         setSubscriptionNextBilling('');
         setSubscriptionCancellationDeadline('');
         setSubscriptionCycle('monthly');
@@ -72,7 +74,7 @@ export const EditModal: React.FC<EditModalProps> = ({
       setIsSubmitting(false);
       setShowSuggestions(false);
     }
-  }, [isOpen, initialItem, defaultType, defaultIsFlexible]);
+  }, [isOpen, initialItem, defaultType, defaultIsFlexible, defaultIsSubscription]);
 
   // Handle outside click to close suggestions
   useEffect(() => {

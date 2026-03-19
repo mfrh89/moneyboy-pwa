@@ -25,11 +25,12 @@ import { ConfigModal } from './components/ConfigModal';
 import { CategoryManager } from './components/CategoryManager';
 import { SankeyChart } from './components/SankeyChart';
 import { WohnenView } from './components/WohnenView';
+import { AboView } from './components/AboView';
 import { SubscriptionAlert } from './components/SubscriptionAlert';
 import { NotificationSettings } from './components/NotificationSettings';
 import { checkAndNotifySubscriptions } from './services/subscriptionChecker';
 import { setupForegroundMessageHandler } from './services/notifications';
-import { LayoutDashboard, Plus, Settings, LogOut, Database, Cloud, Wifi, WifiOff, UploadCloud, Loader2, WalletCards, PieChart, Home } from 'lucide-react';
+import { LayoutDashboard, Plus, Settings, LogOut, Database, Cloud, Wifi, WifiOff, UploadCloud, Loader2, WalletCards, PieChart, Home, Repeat } from 'lucide-react';
 
 const DEFAULT_CATEGORIES = [
   'Wohnen',
@@ -66,6 +67,9 @@ const App: React.FC = () => {
 
   // Wohnkosten modal context
   const [isWohnkostenModal, setIsWohnkostenModal] = useState(false);
+
+  // Abo modal context
+  const [isAboModal, setIsAboModal] = useState(false);
 
   // UI State
   const [showExpenseDetails, setShowExpenseDetails] = useState(false);
@@ -191,6 +195,14 @@ const App: React.FC = () => {
     wohnkostenItems.reduce((sum, i) => sum + i.amount, 0),
   [wohnkostenItems]);
 
+  const aboItems = useMemo(() =>
+    items.filter(i => i.isSubscription).sort((a, b) => b.amount - a.amount),
+  [items]);
+
+  const aboTotal = useMemo(() =>
+    aboItems.reduce((sum, i) => sum + i.amount, 0),
+  [aboItems]);
+
   const WOHNKOSTEN_SUMMARY_ID = '__wohnkosten_summary__';
 
   const fixedExpenseItems = useMemo(() => {
@@ -250,7 +262,11 @@ const App: React.FC = () => {
       await updateItem(user, { ...item, isWohnkosten: editingItem.isWohnkosten });
     } else {
       const { id, ...newItem } = item;
-      await addItem(user, { ...newItem, ...(isWohnkostenModal ? { isWohnkosten: true } : {}) });
+      await addItem(user, {
+        ...newItem,
+        ...(isWohnkostenModal ? { isWohnkosten: true } : {}),
+        ...(isAboModal ? { isSubscription: true } : {}),
+      });
     }
   };
 
@@ -329,6 +345,7 @@ const App: React.FC = () => {
     setDefaultModalType(type);
     setDefaultModalFlexible(isFlexible);
     setIsWohnkostenModal(false);
+    setIsAboModal(false);
     setIsModalOpen(true);
   };
 
@@ -337,6 +354,16 @@ const App: React.FC = () => {
     setDefaultModalType('expense');
     setDefaultModalFlexible(false);
     setIsWohnkostenModal(true);
+    setIsAboModal(false);
+    setIsModalOpen(true);
+  };
+
+  const openAddAboModal = () => {
+    setEditingItem(null);
+    setDefaultModalType('expense');
+    setDefaultModalFlexible(false);
+    setIsWohnkostenModal(false);
+    setIsAboModal(true);
     setIsModalOpen(true);
   };
 
@@ -349,6 +376,7 @@ const App: React.FC = () => {
     setDefaultModalType(item.type);
     setDefaultModalFlexible(!!item.isFlexible);
     setIsWohnkostenModal(false);
+    setIsAboModal(false);
     setIsModalOpen(true);
   };
 
@@ -509,6 +537,16 @@ const App: React.FC = () => {
           />
         )}
 
+        {/* Abos View */}
+        {view === ViewState.ABOS && (
+          <AboView
+            items={aboItems}
+            total={aboTotal}
+            onEdit={openEditModal}
+            onAdd={openAddAboModal}
+          />
+        )}
+
         {/* Analysis View */}
         {view === ViewState.ANALYSIS && (
             <div className="max-w-2xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
@@ -618,6 +656,14 @@ const App: React.FC = () => {
             </button>
 
             <button
+                onClick={() => setView(ViewState.ABOS)}
+                className={`flex flex-col items-center gap-1 w-20 transition-colors ${view === ViewState.ABOS ? 'text-[#cba6f7]' : 'text-[#6c7086] hover:text-[#a6adc8]'}`}
+            >
+                <Repeat className="w-6 h-6" />
+                <span className="text-[10px] font-bold">Abos</span>
+            </button>
+
+            <button
                 onClick={() => setView(ViewState.ANALYSIS)}
                 className={`flex flex-col items-center gap-1 w-20 transition-colors ${view === ViewState.ANALYSIS ? 'text-[#cba6f7]' : 'text-[#6c7086] hover:text-[#a6adc8]'}`}
             >
@@ -643,6 +689,7 @@ const App: React.FC = () => {
         initialItem={editingItem}
         defaultType={defaultModalType}
         defaultIsFlexible={defaultModalFlexible}
+        defaultIsSubscription={isAboModal}
         availableCategories={availableCategories}
       />
       

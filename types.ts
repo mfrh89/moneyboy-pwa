@@ -31,6 +31,7 @@ export enum ViewState {
   DASHBOARD = 'DASHBOARD',
   ANALYSIS = 'ANALYSIS',
   WOHNEN = 'WOHNEN',
+  ABOS = 'ABOS',
   SETTINGS = 'SETTINGS'
 }
 
