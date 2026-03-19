@@ -9,14 +9,15 @@ import {
   User,
   Auth
 } from 'firebase/auth';
-import { 
-  getFirestore, 
-  collection, 
-  addDoc, 
-  doc, 
-  onSnapshot, 
-  query, 
-  orderBy, 
+import {
+  initializeFirestore,
+  getFirestore,
+  collection,
+  addDoc,
+  doc,
+  onSnapshot,
+  query,
+  orderBy,
   Firestore,
   setDoc,
   deleteDoc,
@@ -78,7 +79,14 @@ const initFirebase = () => {
 
       // Attempt DB
       try {
-        db = getFirestore(firebaseApp);
+        try {
+          db = initializeFirestore(firebaseApp, {
+            ignoreUndefinedProperties: true
+          });
+        } catch {
+          // Firestore already initialized (e.g. HMR), get existing instance
+          db = getFirestore(firebaseApp);
+        }
         // Enable Offline Persistence for Firestore
         // This keeps data available even if user goes offline or reloads without internet
         if (db) {
