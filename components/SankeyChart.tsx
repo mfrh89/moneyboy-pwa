@@ -6,41 +6,40 @@ interface SankeyChartProps {
   items: FinanceItem[];
 }
 
-const INCOME_COLOR = '#a6e3a1';
-const BUDGET_COLOR = '#94e2d5'; // teal
-const BALANCE_COLOR = '#a6e3a1';
+const INCOME_COLOR = '#3d6652';
+const BUDGET_COLOR = '#273f49';
+const BALANCE_COLOR = '#3d6652';
 
-// Expense palette — deliberately no greens to avoid confusion with income/balance
+// Monochromatic expense palette
 const EXPENSE_PALETTE = [
-  '#f38ba8', // red
-  '#fab387', // peach
-  '#f9e2af', // yellow
-  '#89b4fa', // blue
-  '#f5c2e7', // pink
-  '#74c7ec', // sapphire
-  '#b4befe', // lavender
-  '#eba0ac', // maroon
-  '#89dceb', // sky
-  '#f2cdcd', // flamingo
-  '#cba6f7', // mauve
-  '#9399b2', // overlay
+  '#1a1a1a',
+  '#3b3b3b',
+  '#474747',
+  '#5a5a5a',
+  '#6e6e6e',
+  '#828282',
+  '#969696',
+  '#aaaaaa',
+  '#bebebe',
+  '#c4c4c4',
+  '#d2d2d2',
+  '#e2e2e2',
 ];
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value);
 
-// Stable color assignment: category name → consistent index via simple hash
+// Stable color assignment: category name -> consistent index via simple hash
 const categoryColorCache = new Map<string, string>();
 const getExpenseColor = (name: string, index: number) => {
   if (categoryColorCache.has(name)) return categoryColorCache.get(name)!;
-  // Use index from sorted order for deterministic assignment
   const color = EXPENSE_PALETTE[index % EXPENSE_PALETTE.length];
   categoryColorCache.set(name, color);
   return color;
 };
 
 const truncate = (str: string, max: number) =>
-  str.length > max ? str.slice(0, max - 1) + '…' : str;
+  str.length > max ? str.slice(0, max - 1) + '\u2026' : str;
 
 const CustomNode = ({ x, y, width, height, payload, isMobile }: any) => {
   if (!payload || height < 1) return null;
@@ -118,7 +117,7 @@ const CustomNode = ({ x, y, width, height, payload, isMobile }: any) => {
         y={y + height / 2 - labelSpacing}
         textAnchor={anchor}
         dominantBaseline="central"
-        fill="#cdd6f4"
+        fill="#1a1a1a"
         fontSize={nameFontSize}
         fontWeight={700}
       >
@@ -158,7 +157,7 @@ const CustomLink = (props: any) => {
         fill="none"
         stroke={color}
         strokeWidth={linkWidth}
-        strokeOpacity={0.3}
+        strokeOpacity={0.2}
       />
     </Layer>
   );
@@ -195,7 +194,7 @@ export const SankeyChart: React.FC<SankeyChartProps> = ({ items }) => {
       if (!initialized.current && w > 0) {
         initialized.current = true;
         const availH = window.innerHeight - 253;
-        const chartH = Math.max(520, 4 * 90 + 100 + 120); // conservative estimate
+        const chartH = Math.max(520, 4 * 90 + 100 + 120);
         setScale(Math.min(1, w / CHART_W, availH / chartH) * 1.25);
       }
     });
@@ -304,7 +303,7 @@ export const SankeyChart: React.FC<SankeyChartProps> = ({ items }) => {
     const budgetIndex = nodes.length;
     nodes.push({ name: 'Budget', nodeType: 'budget' });
 
-    // Expense category nodes — wohnkosten items are grouped as one "Wohnkosten" block
+    // Expense category nodes
     const categoryTotals = new Map<string, number>();
     expenseItems.forEach(item => {
       const cat = item.isWohnkosten ? 'Wohnkosten' : (item.category || 'Sonstiges');
@@ -318,7 +317,7 @@ export const SankeyChart: React.FC<SankeyChartProps> = ({ items }) => {
       nodes.push({ name: cat, nodeType: 'expense', expenseIndex: i });
     });
 
-    // Balance node — added last so Sankey places it at the bottom
+    // Balance node
     let balanceIndex = -1;
     if (balance > 0) {
       balanceIndex = nodes.length;
@@ -345,8 +344,8 @@ export const SankeyChart: React.FC<SankeyChartProps> = ({ items }) => {
 
   if (!sankeyData) {
     return (
-      <div className="h-64 flex items-center justify-center text-[#6c7086] bg-[#181825] rounded-2xl border border-[#313244]">
-        <p className="italic">Keine Daten für Sankey-Diagramm</p>
+      <div className="h-64 flex items-center justify-center text-outline-variant bg-surface-lowest rounded-ds-md shadow-float">
+        <p>Keine Daten für Sankey-Diagramm</p>
       </div>
     );
   }
@@ -357,14 +356,12 @@ export const SankeyChart: React.FC<SankeyChartProps> = ({ items }) => {
   const maxSideNodes = Math.max(rightNodeCount, leftNodeCount);
   const CHART_H = Math.max(520, maxSideNodes * 90 + (hasBalance ? 100 : 0) + 120);
   const viewportH = typeof window !== 'undefined' ? window.innerHeight : 800;
-  // Reserve space for header (~73px), nav (~80px), page title (~60px), padding (~40px)
   const availableH = viewportH - 253;
   const fitScale = containerWidth > 0
     ? Math.min(1, containerWidth / CHART_W, availableH / CHART_H)
     : 1;
   const containerHeight = Math.round(CHART_H * fitScale);
 
-  // Center the inner div: place its left edge so its center aligns with container center
   const innerLeft = containerWidth > 0 ? (containerWidth - CHART_W) / 2 : 0;
 
   return (

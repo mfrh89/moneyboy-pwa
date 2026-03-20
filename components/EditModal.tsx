@@ -33,7 +33,7 @@ export const EditModal: React.FC<EditModalProps> = ({
   const [isFlexible, setIsFlexible] = useState(defaultIsFlexible);
   const [isSplit, setIsSplit] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   // Subscription state
   const [isSubscription, setIsSubscription] = useState(false);
   const [subscriptionNextBilling, setSubscriptionNextBilling] = useState('');
@@ -79,7 +79,7 @@ export const EditModal: React.FC<EditModalProps> = ({
   // Handle outside click to close suggestions
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-        if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node) && 
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node) &&
             inputRef.current && !inputRef.current.contains(event.target as Node)) {
             setShowSuggestions(false);
         }
@@ -108,7 +108,6 @@ export const EditModal: React.FC<EditModalProps> = ({
         if (isNaN(val)) val = 0;
 
         const finalAmount = (type === 'expense' && isSplit) ? val / 2 : val;
-        // Default category if empty
         const finalCategory = category.trim() || 'Sonstiges';
 
         const newItem: FinanceItem = {
@@ -121,11 +120,11 @@ export const EditModal: React.FC<EditModalProps> = ({
         isSplit: type === 'expense' ? isSplit : false,
         createdAt: initialItem?.createdAt || Date.now(),
         isSubscription: type === 'expense' ? isSubscription : false,
-        subscriptionNextBilling: (type === 'expense' && isSubscription && subscriptionNextBilling) 
-          ? new Date(subscriptionNextBilling).getTime() 
+        subscriptionNextBilling: (type === 'expense' && isSubscription && subscriptionNextBilling)
+          ? new Date(subscriptionNextBilling).getTime()
           : undefined,
-        subscriptionCancellationDeadline: (type === 'expense' && isSubscription && subscriptionCancellationDeadline) 
-          ? new Date(subscriptionCancellationDeadline).getTime() 
+        subscriptionCancellationDeadline: (type === 'expense' && isSubscription && subscriptionCancellationDeadline)
+          ? new Date(subscriptionCancellationDeadline).getTime()
           : undefined,
         subscriptionCycle: (type === 'expense' && isSubscription) ? subscriptionCycle : undefined
         };
@@ -141,7 +140,7 @@ export const EditModal: React.FC<EditModalProps> = ({
 
   const handleDeleteClick = async () => {
       if (!initialItem || isSubmitting) return;
-      
+
       if (window.confirm('Möchten Sie diesen Eintrag wirklich löschen?')) {
         setIsSubmitting(true);
         try {
@@ -156,36 +155,36 @@ export const EditModal: React.FC<EditModalProps> = ({
   };
 
   // Filter suggestions
-  const filteredCategories = availableCategories.filter(c => 
+  const filteredCategories = availableCategories.filter(c =>
       c.toLowerCase().includes(category.toLowerCase())
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#11111b]/60 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-[#1e1e2e] rounded-2xl w-full max-w-md shadow-2xl animate-in fade-in zoom-in duration-200 border border-[#313244] my-8">
-        <div className="flex justify-between items-center p-4 border-b border-[#313244] bg-[#181825] rounded-t-2xl sticky top-0 z-10">
-          <h2 className="text-lg font-bold text-[#cdd6f4]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/10 backdrop-blur-sm overflow-y-auto">
+      <div className="bg-surface-lowest rounded-ds-xl w-full max-w-md shadow-float animate-in fade-in zoom-in duration-200 my-8">
+        <div className="flex justify-between items-center p-4 bg-surface-low rounded-t-[24px] sticky top-0 z-10">
+          <h2 className="text-[1.25rem] font-semibold text-on-surface pl-2">
             {initialItem ? 'Eintrag bearbeiten' : 'Neuer Eintrag'}
           </h2>
-          <button 
-            onClick={onClose} 
+          <button
+            onClick={onClose}
             disabled={isSubmitting}
-            className="p-2 hover:bg-[#313244] rounded-full transition-colors disabled:opacity-50"
+            className="p-2 hover:bg-surface-high rounded-ds-sm transition-colors disabled:opacity-50"
           >
-            <X className="w-5 h-5 text-[#a6adc8]" />
+            <X className="w-5 h-5 text-on-surface-variant" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          
+
           {/* Toggle Type */}
-          <div className="flex bg-[#11111b] p-1 rounded-lg">
+          <div className="flex bg-surface-mid p-1 rounded-ds-md">
             <button
               type="button"
               disabled={isSubmitting}
               onClick={() => { setType('income'); setIsFlexible(false); setIsSplit(false); }}
-              className={`flex-1 py-2 text-sm font-bold rounded-md transition-all ${
-                type === 'income' ? 'bg-[#a6e3a1] text-[#1e1e2e] shadow-sm' : 'text-[#6c7086] hover:text-[#a6adc8]'
+              className={`flex-1 py-2 text-sm font-bold rounded-ds-md transition-all ${
+                type === 'income' ? 'bg-primary text-on-primary' : 'text-on-surface-variant hover:text-on-surface'
               }`}
             >
               Einkommen
@@ -194,8 +193,8 @@ export const EditModal: React.FC<EditModalProps> = ({
               type="button"
               disabled={isSubmitting}
               onClick={() => setType('expense')}
-              className={`flex-1 py-2 text-sm font-bold rounded-md transition-all ${
-                type === 'expense' ? 'bg-[#f38ba8] text-[#1e1e2e] shadow-sm' : 'text-[#6c7086] hover:text-[#a6adc8]'
+              className={`flex-1 py-2 text-sm font-bold rounded-ds-md transition-all ${
+                type === 'expense' ? 'bg-primary text-on-primary' : 'text-on-surface-variant hover:text-on-surface'
               }`}
             >
               Ausgabe
@@ -206,58 +205,58 @@ export const EditModal: React.FC<EditModalProps> = ({
           {type === 'expense' && (
             <div className="grid grid-cols-3 gap-3">
                 {/* Flexible Toggle */}
-                <div 
+                <div
                     onClick={() => !isSubmitting && setIsFlexible(!isFlexible)}
-                    className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-all ${
-                        isFlexible 
-                        ? 'bg-[#fab387]/10 border-[#fab387]/50' 
-                        : 'bg-[#313244]/50 border-transparent hover:bg-[#313244]'
+                    className={`flex items-center gap-2 p-2 rounded-ds-md cursor-pointer transition-all ${
+                        isFlexible
+                        ? 'bg-surface-highest'
+                        : 'bg-surface-low hover:bg-surface-mid'
                     }`}
                 >
-                    <div className={`w-4 h-4 rounded flex items-center justify-center border transition-colors ${
-                        isFlexible ? 'bg-[#fab387] border-[#fab387]' : 'border-[#6c7086]'
+                    <div className={`w-4 h-4 rounded-ds-xs flex items-center justify-center transition-colors ${
+                        isFlexible ? 'bg-primary' : 'bg-surface-high'
                     }`}>
-                        {isFlexible && <CreditCard className="w-2.5 h-2.5 text-[#1e1e2e]" />}
+                        {isFlexible && <CreditCard className="w-2.5 h-2.5 text-on-primary" />}
                     </div>
-                    <span className={`text-xs font-bold ${isFlexible ? 'text-[#fab387]' : 'text-[#cdd6f4]'}`}>
+                    <span className={`text-xs font-bold ${isFlexible ? 'text-on-surface' : 'text-on-surface-variant'}`}>
                         Variabel
                     </span>
                 </div>
 
                 {/* Split Toggle */}
-                <div 
+                <div
                     onClick={() => !isSubmitting && setIsSplit(!isSplit)}
-                    className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-all ${
-                        isSplit 
-                        ? 'bg-[#89b4fa]/10 border-[#89b4fa]/50' 
-                        : 'bg-[#313244]/50 border-transparent hover:bg-[#313244]'
+                    className={`flex items-center gap-2 p-2 rounded-ds-md cursor-pointer transition-all ${
+                        isSplit
+                        ? 'bg-surface-highest'
+                        : 'bg-surface-low hover:bg-surface-mid'
                     }`}
                 >
-                    <div className={`w-4 h-4 rounded flex items-center justify-center border transition-colors ${
-                        isSplit ? 'bg-[#89b4fa] border-[#89b4fa]' : 'border-[#6c7086]'
+                    <div className={`w-4 h-4 rounded-ds-xs flex items-center justify-center transition-colors ${
+                        isSplit ? 'bg-status-info' : 'bg-surface-high'
                     }`}>
-                        {isSplit && <Users className="w-2.5 h-2.5 text-[#1e1e2e]" />}
+                        {isSplit && <Users className="w-2.5 h-2.5 text-on-primary" />}
                     </div>
-                    <span className={`text-xs font-bold ${isSplit ? 'text-[#89b4fa]' : 'text-[#cdd6f4]'}`}>
+                    <span className={`text-xs font-bold ${isSplit ? 'text-on-surface' : 'text-on-surface-variant'}`}>
                         Geteilt
                     </span>
                 </div>
 
                 {/* Subscription Toggle */}
-                <div 
+                <div
                     onClick={() => !isSubmitting && setIsSubscription(!isSubscription)}
-                    className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-all ${
-                        isSubscription 
-                        ? 'bg-[#cba6f7]/10 border-[#cba6f7]/50' 
-                        : 'bg-[#313244]/50 border-transparent hover:bg-[#313244]'
+                    className={`flex items-center gap-2 p-2 rounded-ds-md cursor-pointer transition-all ${
+                        isSubscription
+                        ? 'bg-surface-highest'
+                        : 'bg-surface-low hover:bg-surface-mid'
                     }`}
                 >
-                    <div className={`w-4 h-4 rounded flex items-center justify-center border transition-colors ${
-                        isSubscription ? 'bg-[#cba6f7] border-[#cba6f7]' : 'border-[#6c7086]'
+                    <div className={`w-4 h-4 rounded-ds-xs flex items-center justify-center transition-colors ${
+                        isSubscription ? 'bg-status-info' : 'bg-surface-high'
                     }`}>
-                        {isSubscription && <Repeat className="w-2.5 h-2.5 text-[#1e1e2e]" />}
+                        {isSubscription && <Repeat className="w-2.5 h-2.5 text-on-primary" />}
                     </div>
-                    <span className={`text-xs font-bold ${isSubscription ? 'text-[#cba6f7]' : 'text-[#cdd6f4]'}`}>
+                    <span className={`text-xs font-bold ${isSubscription ? 'text-on-surface' : 'text-on-surface-variant'}`}>
                         Abo
                     </span>
                 </div>
@@ -265,14 +264,14 @@ export const EditModal: React.FC<EditModalProps> = ({
           )}
 
           <div>
-            <label className="block text-sm font-bold text-[#a6adc8] mb-1">Bezeichnung</label>
+            <label className="block text-sm font-bold text-on-surface-variant mb-1">Bezeichnung</label>
             <input
               type="text"
               required
               disabled={isSubmitting}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg bg-[#313244] border border-[#45475a] text-[#cdd6f4] placeholder-[#6c7086] focus:ring-2 focus:ring-[#cba6f7] focus:border-[#cba6f7] outline-none transition-shadow disabled:bg-[#181825]"
+              className="w-full px-4 py-2 rounded-ds-md bg-surface-low text-on-surface placeholder-outline-variant focus:ring-2 focus:ring-primary focus:bg-surface-highest outline-none transition-all disabled:bg-surface-mid disabled:opacity-50"
               placeholder={type === 'income' ? 'z.B. Gehalt' : 'z.B. Miete, Netflix'}
             />
           </div>
@@ -281,7 +280,7 @@ export const EditModal: React.FC<EditModalProps> = ({
           {type === 'expense' && isSplit ? (
             <div className="space-y-4">
                <div>
-                  <label className="block text-sm font-bold text-[#a6adc8] mb-1">Gesamtbetrag (€)</label>
+                  <label className="block text-sm font-bold text-on-surface-variant mb-1">Gesamtbetrag (EUR)</label>
                   <input
                     type="number"
                     required
@@ -290,23 +289,23 @@ export const EditModal: React.FC<EditModalProps> = ({
                     disabled={isSubmitting}
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
-                    className="w-full px-4 py-2 rounded-lg bg-[#313244] border border-[#45475a] text-[#cdd6f4] placeholder-[#6c7086] focus:ring-2 focus:ring-[#89b4fa] focus:border-[#89b4fa] outline-none transition-shadow disabled:bg-[#181825]"
+                    className="w-full px-4 py-2 rounded-ds-md bg-surface-low text-on-surface placeholder-outline-variant focus:ring-2 focus:ring-secondary focus:bg-surface-highest outline-none transition-all disabled:bg-surface-mid disabled:opacity-50"
                     placeholder="Gesamtkosten"
                   />
                </div>
-               <div className="p-3 rounded-lg bg-[#89b4fa]/10 border border-[#89b4fa]/20 flex justify-between items-center animate-in slide-in-from-top-2 duration-200">
+               <div className="p-3 rounded-ds-md bg-surface-high flex justify-between items-center animate-in slide-in-from-top-2 duration-200">
                    <div className="flex items-center gap-2">
-                       <Users className="w-4 h-4 text-[#89b4fa]" />
-                       <span className="text-xs font-bold text-[#89b4fa] uppercase tracking-wide">Dein Anteil (50%)</span>
+                       <Users className="w-4 h-4 text-status-info" />
+                       <span className="text-[0.6875rem] font-medium text-status-info uppercase tracking-[0.08em]">DEIN ANTEIL (50%)</span>
                    </div>
-                   <span className="font-mono text-lg font-bold text-[#89b4fa]">
-                       {inputValue ? (parseFloat(inputValue) / 2).toLocaleString('de-DE', { style: 'currency', currency: 'EUR' }) : '0,00 €'}
+                   <span className="font-mono text-lg font-bold text-status-info">
+                       {inputValue ? (parseFloat(inputValue) / 2).toLocaleString('de-DE', { style: 'currency', currency: 'EUR' }) : '0,00 EUR'}
                    </span>
                </div>
             </div>
           ) : (
             <div>
-                <label className="block text-sm font-bold text-[#a6adc8] mb-1">Monatlicher Betrag (€)</label>
+                <label className="block text-sm font-bold text-on-surface-variant mb-1">Monatlicher Betrag (EUR)</label>
                 <input
                 type="number"
                 required
@@ -315,14 +314,14 @@ export const EditModal: React.FC<EditModalProps> = ({
                 disabled={isSubmitting}
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg bg-[#313244] border border-[#45475a] text-[#cdd6f4] placeholder-[#6c7086] focus:ring-2 focus:ring-[#cba6f7] focus:border-[#cba6f7] outline-none transition-shadow disabled:bg-[#181825]"
+                className="w-full px-4 py-2 rounded-ds-md bg-surface-low text-on-surface placeholder-outline-variant focus:ring-2 focus:ring-primary focus:bg-surface-highest outline-none transition-all disabled:bg-surface-mid disabled:opacity-50"
                 placeholder="0.00"
                 />
             </div>
           )}
 
           <div className="relative">
-            <label className="block text-sm font-bold text-[#a6adc8] mb-1">Kategorie</label>
+            <label className="block text-sm font-bold text-on-surface-variant mb-1">Kategorie</label>
             <div className="relative">
                 <input
                     ref={inputRef}
@@ -335,12 +334,12 @@ export const EditModal: React.FC<EditModalProps> = ({
                         setShowSuggestions(true);
                     }}
                     onFocus={() => setShowSuggestions(true)}
-                    className="w-full px-4 py-2 rounded-lg bg-[#313244] border border-[#45475a] text-[#cdd6f4] focus:ring-2 focus:ring-[#cba6f7] focus:border-[#cba6f7] outline-none transition-shadow disabled:bg-[#181825] placeholder-[#6c7086]"
+                    className="w-full px-4 py-2 rounded-ds-md bg-surface-low text-on-surface focus:ring-2 focus:ring-primary focus:bg-surface-highest outline-none transition-all disabled:bg-surface-mid disabled:opacity-50 placeholder-outline-variant"
                     placeholder="Wähle oder erstelle..."
                     autoComplete="off"
                 />
-                <div 
-                    className="absolute inset-y-0 right-0 flex items-center px-4 text-[#a6adc8] cursor-pointer"
+                <div
+                    className="absolute inset-y-0 right-0 flex items-center px-4 text-on-surface-variant cursor-pointer"
                     onClick={() => {
                         if (inputRef.current) inputRef.current.focus();
                         setShowSuggestions(!showSuggestions);
@@ -352,26 +351,26 @@ export const EditModal: React.FC<EditModalProps> = ({
 
             {/* Custom Dropdown */}
             {showSuggestions && (
-                <div 
+                <div
                     ref={dropdownRef}
-                    className="absolute z-50 left-0 right-0 mt-1 bg-[#1e1e2e] border border-[#45475a] rounded-lg shadow-xl max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-[#45475a]"
+                    className="absolute z-50 left-0 right-0 mt-2 glass rounded-ds-md shadow-float max-h-48 overflow-y-auto"
                 >
                     {filteredCategories.length > 0 ? (
                         filteredCategories.map((cat) => (
-                            <div 
+                            <div
                                 key={cat}
                                 onClick={() => {
                                     setCategory(cat);
                                     setShowSuggestions(false);
                                 }}
-                                className="px-4 py-2 hover:bg-[#313244] cursor-pointer text-sm text-[#cdd6f4] flex items-center justify-between group"
+                                className="px-4 py-2 hover:bg-surface-high cursor-pointer text-sm text-on-surface flex items-center justify-between group first:rounded-t-ds-md last:rounded-b-ds-md"
                             >
                                 <span>{cat}</span>
-                                {category === cat && <Check className="w-3 h-3 text-[#a6e3a1]" />}
+                                {category === cat && <Check className="w-3 h-3 text-status-info" />}
                             </div>
                         ))
                     ) : (
-                        <div className="px-4 py-3 text-sm text-[#a6adc8] italic">
+                        <div className="px-4 py-3 text-sm text-on-surface-variant">
                             "{category}" wird als neue Kategorie angelegt
                         </div>
                     )}
@@ -381,15 +380,15 @@ export const EditModal: React.FC<EditModalProps> = ({
 
           {/* Subscription Details */}
           {type === 'expense' && isSubscription && (
-            <div className="space-y-4 p-4 rounded-lg bg-[#cba6f7]/5 border border-[#cba6f7]/20 animate-in slide-in-from-top-2 duration-200">
+            <div className="space-y-4 p-4 rounded-ds-md bg-surface-low animate-in slide-in-from-top-2 duration-200">
               <div className="flex items-center gap-2 mb-2">
-                <Repeat className="w-4 h-4 text-[#cba6f7]" />
-                <span className="text-xs font-bold text-[#cba6f7] uppercase tracking-wide">Abo-Details</span>
+                <Repeat className="w-4 h-4 text-status-info" />
+                <span className="text-[0.6875rem] font-medium text-status-info uppercase tracking-[0.08em]">ABO-DETAILS</span>
               </div>
 
               {/* Billing Cycle */}
               <div>
-                <label className="block text-sm font-bold text-[#a6adc8] mb-1">Abrechnungszyklus</label>
+                <label className="block text-sm font-bold text-on-surface-variant mb-1">Abrechnungszyklus</label>
                 <div className="grid grid-cols-3 gap-2">
                   {(['monthly', 'quarterly', 'yearly'] as SubscriptionCycle[]).map((cycle) => (
                     <button
@@ -397,10 +396,10 @@ export const EditModal: React.FC<EditModalProps> = ({
                       type="button"
                       disabled={isSubmitting}
                       onClick={() => setSubscriptionCycle(cycle)}
-                      className={`py-2 px-3 rounded-lg text-xs font-bold transition-all ${
+                      className={`py-2 px-3 rounded-ds-md text-xs font-bold transition-all ${
                         subscriptionCycle === cycle
-                          ? 'bg-[#cba6f7] text-[#1e1e2e]'
-                          : 'bg-[#313244] text-[#a6adc8] hover:bg-[#45475a]'
+                          ? 'bg-primary text-on-primary'
+                          : 'bg-surface-mid text-on-surface-variant hover:bg-surface-high'
                       }`}
                     >
                       {cycle === 'monthly' ? 'Monatlich' : cycle === 'quarterly' ? 'Quartalsweise' : 'Jährlich'}
@@ -435,7 +434,7 @@ export const EditModal: React.FC<EditModalProps> = ({
                type="button"
                disabled={isSubmitting}
                onClick={handleDeleteClick}
-               className="px-4 py-2 text-[#f38ba8] bg-[#f38ba8]/10 hover:bg-[#f38ba8]/20 rounded-lg font-bold text-sm transition-colors flex items-center gap-2 disabled:opacity-50"
+               className="px-4 py-2 text-on-surface-variant bg-surface-high hover:bg-surface-highest rounded-ds-md font-bold text-sm transition-colors flex items-center gap-2 disabled:opacity-50"
              >
                {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Trash2 className="w-5 h-5" />}
                <span>Löschen</span>
@@ -444,7 +443,7 @@ export const EditModal: React.FC<EditModalProps> = ({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[#cba6f7] hover:bg-[#cba6f7]/90 text-[#1e1e2e] rounded-lg font-bold transition-colors shadow-lg shadow-[#cba6f7]/20 disabled:opacity-70 disabled:cursor-not-allowed"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-primary hover:bg-primary-container text-on-primary rounded-ds-md font-bold transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                   <>

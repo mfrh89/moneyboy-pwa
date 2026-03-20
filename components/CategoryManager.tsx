@@ -42,12 +42,12 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({ categories, on
   };
 
   const handleDeleteClick = async (e: React.MouseEvent, cat: string) => {
-    e.stopPropagation(); // Prevent opening the edit modal
+    e.stopPropagation();
     if (cat === 'Sonstiges') {
         alert('Die Kategorie "Sonstiges" kann nicht gelöscht werden.');
         return;
     }
-    
+
     if (window.confirm(`Kategorie "${cat}" wirklich löschen? Vorhandene Einträge werden in "Sonstiges" verschoben.`)) {
         await onDelete(cat);
     }
@@ -55,13 +55,13 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({ categories, on
 
   return (
     <div>
-      <h3 className="text-lg font-semibold text-[#cdd6f4] mb-3 flex items-center gap-2">
-        <Tag className="w-5 h-5 text-[#fab387]" />
+      <h3 className="text-[1.25rem] font-semibold text-on-surface mb-3 flex items-center gap-2">
+        <Tag className="w-5 h-5 text-status-warning" />
         Kategorien verwalten
       </h3>
-      
-      <div className="bg-[#181825] rounded-xl border border-[#313244] p-4">
-        <p className="text-xs text-[#a6adc8] mb-4">
+
+      <div className="bg-surface-low rounded-ds-md p-4">
+        <p className="text-xs text-on-surface-variant mb-4">
           Tippe auf eine Kategorie, um sie umzubenennen. "X" löscht die Kategorie und verschiebt Einträge nach "Sonstiges".
         </p>
 
@@ -70,17 +70,14 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({ categories, on
             <div
               key={cat}
               onClick={() => startEdit(cat)}
-              className="group relative pl-3 pr-2 py-1.5 rounded-lg bg-[#313244] hover:bg-[#45475a] border border-[#45475a] hover:border-[#585b70] text-sm text-[#cdd6f4] font-medium transition-all flex items-center gap-2 cursor-pointer"
+              className="group relative pl-3 pr-2 py-1.5 rounded-ds-md bg-surface-high hover:bg-surface-highest text-sm text-on-surface font-medium transition-all flex items-center gap-2 cursor-pointer"
             >
               <span>{cat}</span>
-
-              {/* Separator Line */}
-              <div className="w-px h-3 bg-[#6c7086]/30 mx-1"></div>
 
               {/* Delete Button */}
               <button
                 onClick={(e) => handleDeleteClick(e, cat)}
-                className={`p-1 rounded-md hover:bg-[#f38ba8]/20 transition-colors ${cat === 'Sonstiges' ? 'opacity-30 cursor-not-allowed' : 'text-[#a6adc8] hover:text-[#f38ba8]'}`}
+                className={`p-1 rounded-ds-sm hover:bg-surface-highest transition-colors ${cat === 'Sonstiges' ? 'opacity-30 cursor-not-allowed' : 'text-on-surface-variant hover:text-on-surface'}`}
                 title={cat === 'Sonstiges' ? 'Kann nicht gelöscht werden' : 'Löschen'}
               >
                 <X className="w-3.5 h-3.5" />
@@ -92,10 +89,10 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({ categories, on
 
       {/* Edit Modal / Overlay */}
       {editingCategory && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#11111b]/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-[#1e1e2e] rounded-2xl w-full max-w-sm shadow-2xl border border-[#313244] p-5">
-            <h4 className="text-base font-bold text-[#cdd6f4] mb-1">Kategorie umbenennen</h4>
-            <p className="text-xs text-[#a6adc8] mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/10 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-surface-lowest rounded-ds-lg w-full max-w-sm shadow-float p-5">
+            <h4 className="text-[1.25rem] font-semibold text-on-surface mb-1">Kategorie umbenennen</h4>
+            <p className="text-xs text-on-surface-variant mb-4">
               Ändert "{editingCategory}" zu:
             </p>
 
@@ -105,7 +102,7 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({ categories, on
                 type="text"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg bg-[#313244] border border-[#45475a] text-[#cdd6f4] focus:ring-2 focus:ring-[#cba6f7] outline-none"
+                className="w-full px-4 py-2 rounded-ds-md bg-surface-low text-on-surface focus:ring-2 focus:ring-primary focus:bg-surface-highest outline-none transition-all"
                 placeholder="Neuer Name"
               />
 
@@ -114,14 +111,14 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({ categories, on
                   type="button"
                   onClick={cancelEdit}
                   disabled={isSubmitting}
-                  className="flex-1 py-2 text-sm font-bold text-[#a6adc8] hover:text-[#cdd6f4] hover:bg-[#313244] rounded-lg transition-colors"
+                  className="flex-1 py-2 text-sm font-bold text-on-surface-variant hover:text-on-surface hover:bg-surface-mid rounded-ds-md transition-colors"
                 >
                   Abbrechen
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 py-2 bg-[#cba6f7] hover:bg-[#cba6f7]/90 text-[#1e1e2e] rounded-lg font-bold text-sm transition-colors flex items-center justify-center gap-2"
+                  className="flex-1 py-2 bg-primary hover:bg-primary-container text-on-primary rounded-ds-md font-bold text-sm transition-colors flex items-center justify-center gap-2"
                 >
                   {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                   Speichern

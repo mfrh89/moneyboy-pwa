@@ -4,67 +4,114 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <meta name="theme-color" content="#cba6f7" />
+    <meta name="theme-color" content="#f9f9f9" />
     <title>Moneyboy - Monthly Budget Management</title>
-    
+
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
-    
+
     <!-- iOS PWA Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Moneyboy" />
     <link rel="apple-touch-icon" href="/icon-192.png" />
-    
+
     <!-- Additional PWA Icons -->
     <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
     <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+
+    <!-- JetBrains Mono Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              mono: ['"JetBrains Mono"', 'monospace'],
+            },
+            borderRadius: {
+              'ds-xs': '4px',
+              'ds-sm': '8px',
+              'ds-md': '12px',
+              'ds-lg': '16px',
+              'ds-xl': '24px',
+              'ds-2xl': '32px',
+            },
+            colors: {
+              surface: {
+                DEFAULT: '#f9f9f9',
+                low: '#f3f3f3',
+                mid: '#eeeeee',
+                high: '#e8e8e8',
+                highest: '#e2e2e2',
+                lowest: '#ffffff',
+              },
+              primary: '#000000',
+              'primary-container': '#3b3b3b',
+              'on-primary': '#ffffff',
+              'on-surface': '#1a1a1a',
+              'on-surface-variant': '#474747',
+              'outline-variant': '#c4c4c4',
+              secondary: '#466270',
+              tertiary: '#273f49',
+              'status-success': '#3d6652',
+              'status-error': '#7a3535',
+              'status-warning': '#7a6030',
+              'status-info': '#2d4f6b',
+              'accent-orange': '#7a4a30',
+              'accent-magenta': '#6b3558',
+            }
+          }
+        }
+      }
+    </script>
     <style>
-      /* Catppuccin Mocha Theme Variables */
+      /* Technical Alchemist Design System */
       :root {
-        --ctp-rosewater: #f5e0dc;
-        --ctp-flamingo: #f2cdcd;
-        --ctp-pink: #f5c2e7;
-        --ctp-mauve: #cba6f7;
-        --ctp-red: #f38ba8;
-        --ctp-maroon: #eba0ac;
-        --ctp-peach: #fab387;
-        --ctp-yellow: #f9e2af;
-        --ctp-green: #a6e3a1;
-        --ctp-teal: #94e2d5;
-        --ctp-sky: #89dceb;
-        --ctp-sapphire: #74c7ec;
-        --ctp-blue: #89b4fa;
-        --ctp-lavender: #b4befe;
-        --ctp-text: #cdd6f4;
-        --ctp-subtext1: #bac2de;
-        --ctp-subtext0: #a6adc8;
-        --ctp-overlay2: #9399b2;
-        --ctp-overlay1: #7f849c;
-        --ctp-overlay0: #6c7086;
-        --ctp-surface2: #585b70;
-        --ctp-surface1: #45475a;
-        --ctp-surface0: #313244;
-        --ctp-base: #1e1e2e;
-        --ctp-mantle: #181825;
-        --ctp-crust: #11111b;
+        --surface: #f9f9f9;
+        --surface-low: #f3f3f3;
+        --surface-mid: #eeeeee;
+        --surface-high: #e8e8e8;
+        --surface-highest: #e2e2e2;
+        --surface-lowest: #ffffff;
+        --primary: #000000;
+        --primary-container: #3b3b3b;
+        --on-primary: #ffffff;
+        --on-surface: #1a1a1a;
+        --on-surface-variant: #474747;
+        --outline-variant: #c4c4c4;
+        --secondary: #466270;
+        --tertiary: #273f49;
+        --status-success: #3d6652;
+        --status-error: #7a3535;
+        --status-warning: #7a6030;
+        --status-info: #2d4f6b;
+        --accent-orange: #7a4a30;
+        --accent-magenta: #6b3558;
+      }
+
+      * {
+        font-family: 'JetBrains Mono', monospace;
       }
 
       body {
-        background-color: var(--ctp-base);
-        color: var(--ctp-text);
+        background-color: var(--surface);
+        color: var(--on-surface-variant);
         -webkit-tap-highlight-color: transparent;
       }
-      
+
       /* Hide scrollbar for Chrome, Safari and Opera */
       .no-scrollbar::-webkit-scrollbar {
         display: none;
       }
       /* Hide scrollbar for IE, Edge and Firefox */
       .no-scrollbar {
-        -ms-overflow-style: none;  /* IE and Edge */
-        scrollbar-width: none;  /* Firefox */
+        -ms-overflow-style: none;
+        scrollbar-width: none;
       }
       /* Safe area utilities for iOS */
       .pb-safe {
@@ -77,39 +124,44 @@
       /* Custom Date Input Styling */
       input[type="date"] {
         position: relative;
-        color-scheme: dark;
+        color-scheme: light;
       }
-      
+
       input[type="date"]::-webkit-calendar-picker-indicator {
         cursor: pointer;
-        filter: invert(0.8) sepia(0.2) saturate(2) hue-rotate(220deg);
-        opacity: 0.8;
+        opacity: 0.6;
         transition: opacity 0.2s;
       }
-      
+
       input[type="date"]::-webkit-calendar-picker-indicator:hover {
         opacity: 1;
-        filter: invert(0.9) sepia(0.3) saturate(2.5) hue-rotate(220deg);
       }
-      
+
       input[type="date"]::-webkit-datetime-edit-text,
       input[type="date"]::-webkit-datetime-edit-month-field,
       input[type="date"]::-webkit-datetime-edit-day-field,
       input[type="date"]::-webkit-datetime-edit-year-field {
-        color: var(--ctp-text);
+        color: var(--on-surface);
         padding: 0 2px;
       }
-      
+
       input[type="date"]:focus::-webkit-datetime-edit-text,
       input[type="date"]:focus::-webkit-datetime-edit-month-field,
       input[type="date"]:focus::-webkit-datetime-edit-day-field,
       input[type="date"]:focus::-webkit-datetime-edit-year-field {
-        color: var(--ctp-mauve);
+        color: var(--primary);
       }
-      
-      /* Firefox date input */
-      input[type="date"]::-moz-calendar-picker-indicator {
-        filter: invert(0.8) sepia(0.2) saturate(2) hue-rotate(220deg);
+
+      /* Glassmorphism utility */
+      .glass {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+      }
+
+      /* Float shadow */
+      .shadow-float {
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.04);
       }
     </style>
   <script type="importmap">
