@@ -21,19 +21,19 @@ export const AboView: React.FC<AboViewProps> = ({ items, total, onEdit, onAdd })
   const formattedCombined = format(combinedTotal);
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
-      <h2 className="text-2xl font-bold text-[#cdd6f4]">Abonnements</h2>
+    <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      <h2 className="text-[2.5rem] font-bold text-on-surface tracking-[-0.02em] leading-[1.15]">Abonnements</h2>
 
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#181825] to-[#11111b] shadow-2xl p-8 flex flex-col items-center gap-3">
-        <p className="text-xs font-bold uppercase tracking-widest text-[#a6adc8]">Monatliche Abo-Kosten</p>
-        <p className={`text-5xl font-extrabold tracking-tight ${items.length === 0 ? 'text-[#45475a]' : 'text-[#cdd6f4]'}`}>
-          {items.length === 0 ? '—' : formattedTotal}
+      <section className="relative overflow-hidden rounded-ds-xl bg-surface-lowest shadow-float p-8 flex flex-col items-center gap-3">
+        <p className="text-[0.75rem] font-medium uppercase tracking-[0.05em] text-on-surface-variant">MONATLICHE ABO-KOSTEN</p>
+        <p className={`text-5xl font-extrabold tracking-tight ${items.length === 0 ? 'text-outline-variant' : 'text-on-surface'}`}>
+          {items.length === 0 ? '\u2014' : formattedTotal}
         </p>
         {items.length === 0 && (
-          <p className="text-xs text-[#6c7086]">Markiere Ausgaben als Abo um sie hier zu sehen</p>
+          <p className="text-xs text-outline-variant">Markiere Ausgaben als Abo um sie hier zu sehen</p>
         )}
         {hasSplitItems && (
-          <p className="text-xs text-[#6c7086]">Gesamt: {formattedCombined}</p>
+          <p className="text-xs text-outline-variant">Gesamt: {formattedCombined}</p>
         )}
       </section>
 
@@ -43,7 +43,7 @@ export const AboView: React.FC<AboViewProps> = ({ items, total, onEdit, onAdd })
         onEdit={onEdit}
         onAdd={onAdd}
         emptyMessage="Noch keine Abonnements erfasst."
-        accentColor="text-[#cba6f7]"
+        accentColor="text-status-info"
       />
     </div>
   );

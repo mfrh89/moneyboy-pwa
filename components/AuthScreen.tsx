@@ -21,7 +21,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onRegister }) =
     e.preventDefault();
     setError(null);
     setLoading(true);
-    
+
     try {
       if (isLogin) {
         await onLogin(email, password);
@@ -44,17 +44,14 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onRegister }) =
   };
 
   return (
-    <div className="min-h-screen bg-[#1e1e2e] flex items-center justify-center p-4">
-      <div className="bg-[#181825] w-full max-w-md rounded-2xl shadow-xl overflow-hidden border border-[#313244] animate-in fade-in zoom-in duration-300">
-        <div className={`${isLive ? 'bg-[#cba6f7]' : 'bg-[#89b4fa]'} p-8 text-center transition-colors relative overflow-hidden`}>
-           {/* Decorative background element */}
-           <div className="absolute top-0 left-0 w-full h-full bg-white/10 rotate-12 scale-150 transform origin-bottom-right pointer-events-none"></div>
-           
-          <div className="relative z-10 inline-flex p-4 bg-[#1e1e2e]/20 rounded-2xl mb-4 backdrop-blur-sm shadow-inner">
-             <WalletCards className="w-10 h-10 text-[#1e1e2e]" />
+    <div className="min-h-screen bg-surface flex items-center justify-center p-4">
+      <div className="bg-surface-lowest w-full max-w-md rounded-ds-lg shadow-float overflow-hidden animate-in fade-in zoom-in duration-300">
+        <div className="bg-primary p-8 text-center transition-colors relative overflow-hidden">
+          <div className="relative z-10 inline-flex p-4 bg-on-primary/10 rounded-ds-md mb-4 backdrop-blur-sm">
+             <WalletCards className="w-10 h-10 text-on-primary" />
           </div>
-          <h1 className="relative z-10 text-3xl font-bold text-[#1e1e2e] mb-2 tracking-tight">Moneyboy</h1>
-          <p className="relative z-10 text-[#1e1e2e]/80 font-bold text-sm">
+          <h1 className="relative z-10 text-3xl font-bold text-on-primary mb-2 tracking-tight">Moneyboy</h1>
+          <p className="relative z-10 text-on-primary/70 font-medium text-sm">
             {isLive ? 'Deine Finanzen in der Cloud.' : 'Lokaler Demo Modus'}
           </p>
         </div>
@@ -64,7 +61,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onRegister }) =
             <button
               onClick={() => { setIsLogin(true); setError(null); }}
               className={`flex-1 pb-2 text-sm font-bold border-b-2 transition-colors ${
-                isLogin ? (isLive ? 'border-[#cba6f7] text-[#cba6f7]' : 'border-[#89b4fa] text-[#89b4fa]') : 'border-transparent text-[#6c7086] hover:text-[#a6adc8]'
+                isLogin ? 'border-primary text-primary' : 'border-transparent text-outline-variant hover:text-on-surface-variant'
               }`}
             >
               Anmelden
@@ -72,7 +69,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onRegister }) =
             <button
               onClick={() => { setIsLogin(false); setError(null); }}
               className={`flex-1 pb-2 text-sm font-bold border-b-2 transition-colors ${
-                !isLogin ? (isLive ? 'border-[#cba6f7] text-[#cba6f7]' : 'border-[#89b4fa] text-[#89b4fa]') : 'border-transparent text-[#6c7086] hover:text-[#a6adc8]'
+                !isLogin ? 'border-primary text-primary' : 'border-transparent text-outline-variant hover:text-on-surface-variant'
               }`}
             >
               Registrieren
@@ -80,7 +77,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onRegister }) =
           </div>
 
           {error && (
-            <div className="mb-4 p-3 bg-[#f38ba8]/10 text-[#f38ba8] text-sm rounded-lg flex items-center gap-2 font-medium">
+            <div className="mb-4 p-3 bg-surface-high text-on-surface text-sm rounded-ds-md flex items-center gap-2 font-medium">
               <AlertCircle className="w-4 h-4 shrink-0" />
               {error}
             </div>
@@ -88,9 +85,9 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onRegister }) =
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-bold text-[#a6adc8] mb-1">E-Mail Adresse</label>
+              <label htmlFor="email" className="block text-sm font-bold text-on-surface-variant mb-1">E-Mail Adresse</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-2.5 w-5 h-5 text-[#6c7086]" />
+                <Mail className="absolute left-3 top-2.5 w-5 h-5 text-outline-variant" />
                 <input
                   id="email"
                   name="email"
@@ -99,16 +96,16 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onRegister }) =
                   autoComplete="username webauthn"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 rounded-lg bg-[#313244] border border-[#45475a] text-[#cdd6f4] placeholder-[#6c7086] focus:ring-2 focus:ring-[#cba6f7] focus:border-[#cba6f7] outline-none transition-shadow"
+                  className="w-full pl-10 pr-4 py-2 rounded-ds-md bg-surface-low text-on-surface placeholder-outline-variant focus:ring-2 focus:ring-primary focus:bg-surface-highest outline-none transition-all"
                   placeholder="name@beispiel.de"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-bold text-[#a6adc8] mb-1">Passwort</label>
+              <label htmlFor="password" className="block text-sm font-bold text-on-surface-variant mb-1">Passwort</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-2.5 w-5 h-5 text-[#6c7086]" />
+                <Lock className="absolute left-3 top-2.5 w-5 h-5 text-outline-variant" />
                 <input
                   id="password"
                   name="password"
@@ -118,7 +115,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onRegister }) =
                   minLength={6}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 rounded-lg bg-[#313244] border border-[#45475a] text-[#cdd6f4] placeholder-[#6c7086] focus:ring-2 focus:ring-[#cba6f7] focus:border-[#cba6f7] outline-none transition-shadow"
+                  className="w-full pl-10 pr-4 py-2 rounded-ds-md bg-surface-low text-on-surface placeholder-outline-variant focus:ring-2 focus:ring-primary focus:bg-surface-highest outline-none transition-all"
                   placeholder="••••••••"
                 />
               </div>
@@ -127,11 +124,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onRegister }) =
             <button
               type="submit"
               disabled={loading}
-              className={`w-full flex items-center justify-center gap-2 text-[#1e1e2e] py-3 rounded-xl font-bold transition-all shadow-lg disabled:opacity-70 disabled:cursor-not-allowed ${
-                isLive 
-                  ? 'bg-[#cba6f7] hover:bg-[#cba6f7]/90 shadow-[#cba6f7]/20' 
-                  : 'bg-[#89b4fa] hover:bg-[#89b4fa]/90 shadow-[#89b4fa]/20'
-              }`}
+              className="w-full flex items-center justify-center gap-2 text-on-primary py-3 rounded-ds-md font-bold transition-all disabled:opacity-70 disabled:cursor-not-allowed bg-primary hover:bg-primary-container"
             >
               {loading ? (
                 <span>Wird geladen...</span>
@@ -143,9 +136,9 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onRegister }) =
               )}
             </button>
           </form>
-          
+
           {!isLive && (
-             <p className="mt-6 text-center text-xs text-[#6c7086]">
+             <p className="mt-6 text-center text-xs text-outline-variant">
                Hinweis: Ohne Firebase werden Daten nur in diesem Browser gespeichert.
              </p>
           )}

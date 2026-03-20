@@ -21,19 +21,19 @@ export const WohnenView: React.FC<WohnenViewProps> = ({ items, total, onEdit, on
   const formattedCombined = format(combinedTotal);
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
-      <h2 className="text-2xl font-bold text-[#cdd6f4]">Wohnen</h2>
+    <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      <h2 className="text-[2.5rem] font-bold text-on-surface tracking-[-0.02em] leading-[1.15]">Wohnen</h2>
 
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#181825] to-[#11111b] shadow-2xl p-8 flex flex-col items-center gap-3">
-        <p className="text-xs font-bold uppercase tracking-widest text-[#a6adc8]">Monatliche Wohnkosten</p>
-        <p className={`text-5xl font-extrabold tracking-tight ${items.length === 0 ? 'text-[#45475a]' : 'text-[#cdd6f4]'}`}>
-          {items.length === 0 ? '—' : formattedTotal}
+      <section className="relative overflow-hidden rounded-ds-xl bg-surface-lowest shadow-float p-8 flex flex-col items-center gap-3">
+        <p className="text-[0.75rem] font-medium uppercase tracking-[0.05em] text-on-surface-variant">MONATLICHE WOHNKOSTEN</p>
+        <p className={`text-5xl font-extrabold tracking-tight ${items.length === 0 ? 'text-outline-variant' : 'text-on-surface'}`}>
+          {items.length === 0 ? '\u2014' : formattedTotal}
         </p>
         {items.length === 0 && (
-          <p className="text-xs text-[#6c7086]">Füge unten Kosten hinzu</p>
+          <p className="text-xs text-outline-variant">Füge unten Kosten hinzu</p>
         )}
         {hasSplitItems && (
-          <p className="text-xs text-[#6c7086]">Gesamt: {formattedCombined}</p>
+          <p className="text-xs text-outline-variant">Gesamt: {formattedCombined}</p>
         )}
       </section>
 
@@ -43,7 +43,7 @@ export const WohnenView: React.FC<WohnenViewProps> = ({ items, total, onEdit, on
         onEdit={onEdit}
         onAdd={onAdd}
         emptyMessage="Noch keine Wohnkosten erfasst."
-        accentColor="text-[#89b4fa]"
+        accentColor="text-status-info"
       />
     </div>
   );

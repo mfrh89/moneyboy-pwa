@@ -54,13 +54,13 @@ const DEFAULT_CATEGORIES = [
 const App: React.FC = () => {
   const [user, setUser] = useState<any>(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
-  
+
   const [items, setItems] = useState<FinanceItem[]>([]);
   const [view, setView] = useState<ViewState>(ViewState.DASHBOARD);
-  
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
-  
+
   const [editingItem, setEditingItem] = useState<FinanceItem | null>(null);
   const [defaultModalType, setDefaultModalType] = useState<TransactionType>('expense');
   const [defaultModalFlexible, setDefaultModalFlexible] = useState<boolean>(false);
@@ -95,7 +95,7 @@ const App: React.FC = () => {
       navigator.serviceWorker.register('/firebase-messaging-sw.js')
         .then((registration) => {
           console.log('Service Worker registered:', registration);
-          
+
           // Pass Firebase config to Service Worker
           const firebaseConfig = {
             apiKey: "AIzaSyBh3HMQ6eR8Q9Dw7utfg_PjnhWv3Djiz0M",
@@ -106,7 +106,7 @@ const App: React.FC = () => {
             appId: "1:679174588558:web:7615c9c0af9ea36aec21df",
             measurementId: "G-RCXP9MTNT6"
           };
-          
+
           navigator.serviceWorker.ready.then((reg) => {
             reg.active?.postMessage({
               type: 'FIREBASE_CONFIG',
@@ -153,7 +153,7 @@ const App: React.FC = () => {
      } else {
         setShowMigrationBanner(false);
      }
-     
+
       return () => {
           unsubscribe();
           window.removeEventListener('local-data-changed', handleLocalUpdate);
@@ -173,7 +173,7 @@ const App: React.FC = () => {
     const fixedExpenses = items.filter(i => i.type === 'expense' && !i.isFlexible).reduce((sum, i) => sum + i.amount, 0);
     const flexibleExpenses = items.filter(i => i.type === 'expense' && i.isFlexible).reduce((sum, i) => sum + i.amount, 0);
     const totalExpenses = fixedExpenses + flexibleExpenses;
-    
+
     return {
       totalIncome: income,
       totalFixedExpenses: fixedExpenses,
@@ -183,8 +183,8 @@ const App: React.FC = () => {
     };
   }, [items]);
 
-  const incomeItems = useMemo(() => 
-    items.filter(i => i.type === 'income').sort((a,b) => b.amount - a.amount), 
+  const incomeItems = useMemo(() =>
+    items.filter(i => i.type === 'income').sort((a,b) => b.amount - a.amount),
   [items]);
 
   const wohnkostenItems = useMemo(() =>
@@ -230,17 +230,17 @@ const App: React.FC = () => {
   const upcomingSubscriptions = useMemo(() => {
     const now = Date.now();
     const twoDaysFromNow = now + (2 * 24 * 60 * 60 * 1000);
-    
+
     return items.filter(item => {
       if (!item.isSubscription) return false;
-      
+
       // Check if next billing or cancellation deadline is within 2 days
       const nextBilling = item.subscriptionNextBilling;
       const cancellationDeadline = item.subscriptionCancellationDeadline;
-      
+
       if (nextBilling && nextBilling >= now && nextBilling <= twoDaysFromNow) return true;
       if (cancellationDeadline && cancellationDeadline >= now && cancellationDeadline <= twoDaysFromNow) return true;
-      
+
       return false;
     }).sort((a, b) => {
       // Sort by earliest relevant date
@@ -278,10 +278,10 @@ const App: React.FC = () => {
 
   const handleRenameCategory = async (oldName: string, newName: string) => {
     if (!newName || oldName === newName) return;
-    
+
     // Find all items using this category
     const itemsToUpdate = items.filter(i => i.category === oldName);
-    
+
     for (const item of itemsToUpdate) {
       await updateItem(user, { ...item, category: newName });
     }
@@ -290,13 +290,11 @@ const App: React.FC = () => {
   const handleDeleteCategory = async (categoryToDelete: string) => {
       // Find all items using this category
       const itemsToUpdate = items.filter(i => i.category === categoryToDelete);
-      
+
       // Update them to "Sonstiges"
       for (const item of itemsToUpdate) {
           await updateItem(user, { ...item, category: 'Sonstiges' });
       }
-      // Note: If the category was a custom one (not in DEFAULT_CATEGORIES), 
-      // it will disappear from availableCategories automatically because no items use it anymore.
   };
 
   const handleResetData = () => {
@@ -307,7 +305,7 @@ const App: React.FC = () => {
        setView(ViewState.DASHBOARD);
     }
   }
-  
+
   const handleFirebaseConfig = (config: FirebaseConfig) => {
       saveFirebaseConfig(config);
   };
@@ -381,7 +379,7 @@ const App: React.FC = () => {
   };
 
   if (loadingAuth) {
-    return <div className="min-h-screen flex items-center justify-center bg-[#1e1e2e] text-[#cba6f7]">Lade Moneyboy...</div>;
+    return <div className="min-h-screen flex items-center justify-center bg-surface text-on-surface">Lade Moneyboy...</div>;
   }
 
   if (!user) {
@@ -389,19 +387,19 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#1e1e2e] text-[#cdd6f4] font-sans pb-24 md:pb-28">
+    <div className="min-h-screen bg-surface text-on-surface-variant font-mono pb-24 md:pb-28">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-[#1e1e2e]/80 backdrop-blur-md border-b border-[#313244] px-4 py-4 md:px-8 flex flex-col">
+      <header className="sticky top-0 z-30 glass px-4 py-4 md:px-8 flex flex-col">
         <div className="flex justify-between items-center w-full max-w-7xl mx-auto">
             <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-xl transition-colors shadow-sm ${isLive ? 'bg-[#cba6f7] text-[#1e1e2e]' : 'bg-[#89b4fa] text-[#1e1e2e]'}`}>
+            <div className="p-2 rounded-ds-sm bg-primary text-on-primary transition-colors">
                 <WalletCards className="w-6 h-6" />
             </div>
             <div>
-                <h1 className="text-xl font-bold text-[#cdd6f4] tracking-tight">
+                <h1 className="text-xl font-bold text-on-surface tracking-tight">
                     Moneyboy
                 </h1>
-                <p className="text-[10px] uppercase tracking-wider font-semibold text-[#a6adc8]">
+                <p className="text-[10px] uppercase tracking-[0.08em] font-medium text-on-surface-variant">
                     Monthly Manager
                 </p>
             </div>
@@ -411,15 +409,15 @@ const App: React.FC = () => {
 
       {/* Migration Banner */}
       {showMigrationBanner && (
-          <div className="bg-[#cba6f7] text-[#1e1e2e] p-3 px-4 md:px-8 flex items-center justify-between animate-in slide-in-from-top duration-300 shadow-md">
+          <div className="bg-primary text-on-primary p-3 px-4 md:px-8 flex items-center justify-between animate-in slide-in-from-top duration-300">
               <div className="flex items-center gap-2 text-sm md:text-base font-medium">
                   <Database className="w-4 h-4" />
                   <span>Lokale Daten gefunden. In die Cloud verschieben?</span>
               </div>
-              <button 
+              <button
                   onClick={handleMigration}
                   disabled={isMigrating}
-                  className="flex items-center gap-2 bg-[#1e1e2e] text-[#cba6f7] px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold hover:bg-[#313244] disabled:opacity-70 transition-colors"
+                  className="flex items-center gap-2 bg-on-primary text-primary px-3 py-1.5 rounded-ds-md text-xs md:text-sm font-bold hover:bg-surface-highest disabled:opacity-70 transition-colors"
               >
                   {isMigrating ? <Loader2 className="w-3 h-3 animate-spin" /> : <UploadCloud className="w-3 h-3" />}
                   Importieren
@@ -427,33 +425,33 @@ const App: React.FC = () => {
           </div>
       )}
 
-      <main className="max-w-7xl mx-auto p-4 md:p-8 space-y-6">
-        
+      <main className="max-w-7xl mx-auto p-4 md:p-10 space-y-12">
+
         {/* Settings View */}
         {view === ViewState.SETTINGS && (
-             <div className="max-w-2xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+             <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
                 <div className="mb-4">
-                  <h2 className="text-2xl font-bold text-[#cdd6f4]">Einstellungen</h2>
+                  <h2 className="text-[2.5rem] font-bold text-on-surface tracking-[-0.02em] leading-[1.15]">Einstellungen</h2>
                 </div>
-                
-                <div className="bg-[#181825] rounded-2xl border border-[#313244] shadow-sm p-6 space-y-6">
+
+                <div className="bg-surface-lowest rounded-ds-lg shadow-float p-6 space-y-8">
                     {/* User Section */}
                     <div>
-                        <h3 className="text-lg font-semibold text-[#cdd6f4] mb-3">Benutzerkonto</h3>
-                        <div className="p-4 bg-[#11111b] rounded-xl flex items-center justify-between border border-[#313244]">
+                        <h3 className="text-[1.25rem] font-semibold text-on-surface mb-3">Benutzerkonto</h3>
+                        <div className="p-4 bg-surface-low rounded-ds-md flex items-center justify-between">
                              <div className="flex items-center gap-3">
-                                 <div className="w-10 h-10 rounded-full bg-[#313244] flex items-center justify-center text-[#cdd6f4]">
+                                 <div className="w-10 h-10 rounded-full bg-surface-high flex items-center justify-center text-on-surface font-bold">
                                      {user.email ? user.email[0].toUpperCase() : '?'}
                                  </div>
                                  <div className="flex flex-col">
-                                     <span className="text-sm font-bold">{user.email || 'Offline User'}</span>
-                                     <span className="text-xs text-[#6c7086] flex items-center gap-1">
-                                        {isLive ? <Wifi className="w-3 h-3 text-[#a6e3a1]" /> : <WifiOff className="w-3 h-3 text-[#f38ba8]" />}
+                                     <span className="text-sm font-bold text-on-surface">{user.email || 'Offline User'}</span>
+                                     <span className="text-xs text-on-surface-variant flex items-center gap-1">
+                                        {isLive ? <Wifi className="w-3 h-3 text-status-success" /> : <WifiOff className="w-3 h-3 text-on-surface-variant" />}
                                         {isLive ? 'Online Mode' : 'Offline Mode'}
                                      </span>
                                  </div>
                              </div>
-                             <button onClick={logoutUser} className="p-2 hover:bg-[#313244] rounded-full text-[#f38ba8] transition-colors">
+                             <button onClick={logoutUser} className="p-2 hover:bg-surface-high rounded-ds-sm text-on-surface-variant transition-colors">
                                  <LogOut className="w-5 h-5" />
                              </button>
                         </div>
@@ -471,58 +469,58 @@ const App: React.FC = () => {
 
                     {/* Data Section */}
                     <div>
-                        <h3 className="text-lg font-semibold text-[#cdd6f4] mb-3">Daten & Speicher</h3>
+                        <h3 className="text-[1.25rem] font-semibold text-on-surface mb-3">Daten & Speicher</h3>
                         <div className="space-y-3">
                             {!isLive && (
-                                <button 
+                                <button
                                 onClick={() => setIsConfigOpen(true)}
-                                className="w-full flex items-center justify-between p-4 bg-[#313244]/50 hover:bg-[#313244] rounded-xl transition-colors border border-[#313244] group"
+                                className="w-full flex items-center justify-between p-4 bg-surface-low hover:bg-surface-mid rounded-ds-md transition-colors group"
                                 >
                                 <div className="flex items-center gap-3">
-                                    <Cloud className="w-5 h-5 text-[#89b4fa]" />
+                                    <Cloud className="w-5 h-5 text-status-info" />
                                     <div className="text-left">
-                                        <span className="block text-sm font-bold text-[#cdd6f4]">Firebase verbinden</span>
-                                        <span className="text-xs text-[#a6adc8]">Synchronisiere deine Daten in der Cloud</span>
+                                        <span className="block text-sm font-bold text-on-surface">Firebase verbinden</span>
+                                        <span className="text-xs text-on-surface-variant">Synchronisiere deine Daten in der Cloud</span>
                                     </div>
                                 </div>
-                                <Settings className="w-4 h-4 text-[#6c7086] group-hover:text-[#cdd6f4]" />
-                                </button>
-                            )}
-                            
-                            {isLive && (
-                                <button 
-                                onClick={handleDisconnect}
-                                className="w-full flex items-center justify-between p-4 bg-[#313244]/50 hover:bg-[#313244] rounded-xl transition-colors border border-[#313244] group"
-                                >
-                                <div className="flex items-center gap-3">
-                                    <Cloud className="w-5 h-5 text-[#a6e3a1]" />
-                                    <div className="text-left">
-                                        <span className="block text-sm font-bold text-[#cdd6f4]">Verbunden (Custom)</span>
-                                        <span className="text-xs text-[#a6adc8]">Tippen zum Trennen</span>
-                                    </div>
-                                </div>
-                                <LogOut className="w-4 h-4 text-[#6c7086] group-hover:text-[#f38ba8]" />
+                                <Settings className="w-4 h-4 text-outline-variant group-hover:text-on-surface" />
                                 </button>
                             )}
 
-                            <button 
+                            {isLive && (
+                                <button
+                                onClick={handleDisconnect}
+                                className="w-full flex items-center justify-between p-4 bg-surface-low hover:bg-surface-mid rounded-ds-md transition-colors group"
+                                >
+                                <div className="flex items-center gap-3">
+                                    <Cloud className="w-5 h-5 text-status-info" />
+                                    <div className="text-left">
+                                        <span className="block text-sm font-bold text-on-surface">Verbunden (Custom)</span>
+                                        <span className="text-xs text-on-surface-variant">Tippen zum Trennen</span>
+                                    </div>
+                                </div>
+                                <LogOut className="w-4 h-4 text-outline-variant group-hover:text-on-surface" />
+                                </button>
+                            )}
+
+                            <button
                                 onClick={handleResetData}
-                                className="w-full flex items-center justify-between p-4 bg-[#f38ba8]/5 hover:bg-[#f38ba8]/10 rounded-xl transition-colors border border-[#f38ba8]/20 group"
+                                className="w-full flex items-center justify-between p-4 bg-surface-high/50 hover:bg-surface-high rounded-ds-md transition-colors group"
                             >
                                 <div className="flex items-center gap-3">
-                                    <Database className="w-5 h-5 text-[#f38ba8]" />
+                                    <Database className="w-5 h-5 text-on-surface-variant" />
                                     <div className="text-left">
-                                        <span className="block text-sm font-bold text-[#f38ba8]">Daten zurücksetzen</span>
-                                        <span className="text-xs text-[#f38ba8]/70">Löscht alle lokalen Einträge</span>
+                                        <span className="block text-sm font-bold text-on-surface">Daten zurücksetzen</span>
+                                        <span className="text-xs text-on-surface-variant">Löscht alle lokalen Einträge</span>
                                     </div>
                                 </div>
                             </button>
                         </div>
                     </div>
                 </div>
-                
-                <div className="text-center text-xs text-[#6c7086] mt-8">
-                    Moneyboy v1.0 • Made with ❤️
+
+                <div className="text-center text-xs text-outline-variant mt-8">
+                    Moneyboy v1.0
                 </div>
              </div>
         )}
@@ -549,30 +547,30 @@ const App: React.FC = () => {
 
         {/* Analysis View */}
         {view === ViewState.ANALYSIS && (
-            <div className="max-w-2xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
-                <h2 className="text-2xl font-bold text-[#cdd6f4]">Analyse</h2>
+            <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                <h2 className="text-[2.5rem] font-bold text-on-surface tracking-[-0.02em] leading-[1.15]">Analyse</h2>
                 <SankeyChart items={items} />
             </div>
         )}
 
         {/* Dashboard View */}
         {view === ViewState.DASHBOARD && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 {/* Hero / Balance */}
-                <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#181825] to-[#11111b] shadow-2xl p-6 md:p-8 text-center">
+                <section className="relative overflow-hidden rounded-ds-xl bg-surface-lowest shadow-float p-6 md:p-8 text-center">
                     <SummaryCard label="Verfügbares Budget" amount={summary.balance} type="balance" size="lg" />
                 </section>
 
                 {/* Subscription Alert */}
                 {upcomingSubscriptions.length > 0 && (
-                    <SubscriptionAlert 
-                        subscriptions={upcomingSubscriptions} 
+                    <SubscriptionAlert
+                        subscriptions={upcomingSubscriptions}
                         onItemClick={openEditModal}
                     />
                 )}
 
                 <div>
-                    <h3 className="text-xs font-bold uppercase tracking-widest opacity-60 mb-4 text-[#a6adc8]">Cashflow Berechnung</h3>
+                    <h3 className="text-[0.75rem] font-medium uppercase tracking-[0.05em] text-on-surface-variant mb-6">CASHFLOW BERECHNUNG</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div className="h-full">
                             <SummaryCard
@@ -582,15 +580,15 @@ const App: React.FC = () => {
                             />
                         </div>
                         <div className="h-full flex flex-col lg:col-span-2">
-                            <SummaryCard 
-                                label="Gesamtausgaben" 
-                                amount={summary.totalAllExpenses} 
-                                type="total" 
-                                size="md" 
+                            <SummaryCard
+                                label="Gesamtausgaben"
+                                amount={summary.totalAllExpenses}
+                                type="total"
+                                size="md"
                                 onClick={() => setShowExpenseDetails(!showExpenseDetails)}
                                 isOpen={showExpenseDetails}
                             />
-                            
+
                             {/* Animated Accordion */}
                             <div className={`grid transition-[grid-template-rows] duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${showExpenseDetails ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
                                 <div className="overflow-hidden min-h-0">
@@ -604,14 +602,14 @@ const App: React.FC = () => {
                     </div>
                 </div>
 
-<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                      <TransactionList
                         title="Einkommen"
                         items={incomeItems}
                         onEdit={openEditModal}
                         onAdd={() => openAddModal('income')}
                         emptyMessage="Keine Einkünfte eingetragen."
-                        accentColor="text-[#a6e3a1]"
+                        accentColor="text-status-success"
                      />
                      <TransactionList
                         title="Fixkosten"
@@ -619,7 +617,7 @@ const App: React.FC = () => {
                         onEdit={openEditModal}
                         onAdd={() => openAddModal('expense', false)}
                         emptyMessage="Keine Fixkosten eingetragen."
-                        accentColor="text-[#f38ba8]"
+                        accentColor="text-status-error"
                         showSubscriptionFilter={true}
                      />
                      <TransactionList
@@ -628,7 +626,7 @@ const App: React.FC = () => {
                         onEdit={openEditModal}
                         onAdd={() => openAddModal('expense', true)}
                         emptyMessage="Keine variablen Ausgaben."
-                        accentColor="text-[#fab387]"
+                        accentColor="text-status-warning"
                         showSubscriptionFilter={true}
                      />
                 </div>
@@ -637,11 +635,11 @@ const App: React.FC = () => {
       </main>
 
       {/* Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-[#1e1e2e]/90 backdrop-blur-xl border-t border-[#313244] pb-safe pt-2 px-6 z-40">
+      <nav className="fixed bottom-0 left-0 right-0 glass pb-safe pt-2 px-6 z-40">
         <div className="flex justify-around items-center max-w-lg mx-auto h-16 relative">
             <button
                 onClick={() => setView(ViewState.DASHBOARD)}
-                className={`flex flex-col items-center gap-1 w-20 transition-colors ${view === ViewState.DASHBOARD ? 'text-[#cba6f7]' : 'text-[#6c7086] hover:text-[#a6adc8]'}`}
+                className={`flex flex-col items-center gap-1 w-20 transition-colors ${view === ViewState.DASHBOARD ? 'text-primary' : 'text-outline-variant hover:text-on-surface-variant'}`}
             >
                 <LayoutDashboard className="w-6 h-6" />
                 <span className="text-[10px] font-bold">Übersicht</span>
@@ -649,7 +647,7 @@ const App: React.FC = () => {
 
             <button
                 onClick={() => setView(ViewState.WOHNEN)}
-                className={`flex flex-col items-center gap-1 w-20 transition-colors ${view === ViewState.WOHNEN ? 'text-[#cba6f7]' : 'text-[#6c7086] hover:text-[#a6adc8]'}`}
+                className={`flex flex-col items-center gap-1 w-20 transition-colors ${view === ViewState.WOHNEN ? 'text-primary' : 'text-outline-variant hover:text-on-surface-variant'}`}
             >
                 <Home className="w-6 h-6" />
                 <span className="text-[10px] font-bold">Wohnen</span>
@@ -657,7 +655,7 @@ const App: React.FC = () => {
 
             <button
                 onClick={() => setView(ViewState.ABOS)}
-                className={`flex flex-col items-center gap-1 w-20 transition-colors ${view === ViewState.ABOS ? 'text-[#cba6f7]' : 'text-[#6c7086] hover:text-[#a6adc8]'}`}
+                className={`flex flex-col items-center gap-1 w-20 transition-colors ${view === ViewState.ABOS ? 'text-primary' : 'text-outline-variant hover:text-on-surface-variant'}`}
             >
                 <Repeat className="w-6 h-6" />
                 <span className="text-[10px] font-bold">Abos</span>
@@ -665,7 +663,7 @@ const App: React.FC = () => {
 
             <button
                 onClick={() => setView(ViewState.ANALYSIS)}
-                className={`flex flex-col items-center gap-1 w-20 transition-colors ${view === ViewState.ANALYSIS ? 'text-[#cba6f7]' : 'text-[#6c7086] hover:text-[#a6adc8]'}`}
+                className={`flex flex-col items-center gap-1 w-20 transition-colors ${view === ViewState.ANALYSIS ? 'text-primary' : 'text-outline-variant hover:text-on-surface-variant'}`}
             >
                 <PieChart className="w-6 h-6" />
                 <span className="text-[10px] font-bold">Analyse</span>
@@ -673,7 +671,7 @@ const App: React.FC = () => {
 
             <button
                 onClick={() => setView(ViewState.SETTINGS)}
-                className={`flex flex-col items-center gap-1 w-20 transition-colors ${view === ViewState.SETTINGS ? 'text-[#cba6f7]' : 'text-[#6c7086] hover:text-[#a6adc8]'}`}
+                className={`flex flex-col items-center gap-1 w-20 transition-colors ${view === ViewState.SETTINGS ? 'text-primary' : 'text-outline-variant hover:text-on-surface-variant'}`}
             >
                 <Settings className="w-6 h-6" />
                 <span className="text-[10px] font-bold">Settings</span>
@@ -692,8 +690,8 @@ const App: React.FC = () => {
         defaultIsSubscription={isAboModal}
         availableCategories={availableCategories}
       />
-      
-      <ConfigModal 
+
+      <ConfigModal
         isOpen={isConfigOpen}
         onClose={() => setIsConfigOpen(false)}
         onSave={handleFirebaseConfig}

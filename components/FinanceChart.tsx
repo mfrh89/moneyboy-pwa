@@ -13,8 +13,8 @@ interface FinanceChartProps {
   items: FinanceItem[];
 }
 
-// Catppuccin Mocha Colors: Red, Peach, Yellow, Green, Teal, Blue, Mauve, Pink
-const COLORS = ['#f38ba8', '#fab387', '#f9e2af', '#a6e3a1', '#94e2d5', '#89b4fa', '#cba6f7', '#f5c2e7'];
+// Monochromatic palette with secondary/tertiary accents
+const COLORS = ['#1a1a1a', '#3b3b3b', '#7a3535', '#3d6652', '#7a6030', '#2d4f6b', '#7a4a30', '#6b3558'];
 
 export const FinanceChart: React.FC<FinanceChartProps> = ({ items }) => {
   const expenses = items.filter(i => i.type === 'expense');
@@ -39,8 +39,8 @@ export const FinanceChart: React.FC<FinanceChartProps> = ({ items }) => {
 
   if (data.length === 0) {
     return (
-      <div className="h-64 flex items-center justify-center text-[#6c7086] bg-[#181825] rounded-2xl border border-[#313244]">
-        <p className="italic">Keine Ausgaben vorhanden</p>
+      <div className="h-64 flex items-center justify-center text-outline-variant bg-surface-lowest rounded-ds-md shadow-float">
+        <p>Keine Ausgaben vorhanden</p>
       </div>
     );
   }
@@ -48,9 +48,9 @@ export const FinanceChart: React.FC<FinanceChartProps> = ({ items }) => {
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-[#181825] p-3 border border-[#313244] shadow-lg rounded-lg text-sm">
-          <p className="font-bold text-[#cdd6f4]">{payload[0].name}</p>
-          <p className="text-[#a6adc8]">
+        <div className="glass p-3 shadow-float rounded-ds-md text-sm">
+          <p className="font-bold text-on-surface">{payload[0].name}</p>
+          <p className="text-on-surface-variant">
             {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(payload[0].value)}
           </p>
         </div>
@@ -60,8 +60,8 @@ export const FinanceChart: React.FC<FinanceChartProps> = ({ items }) => {
   };
 
   return (
-    <div className="bg-[#181825] p-6 rounded-2xl border border-[#313244] shadow-sm">
-      <h3 className="text-lg font-bold text-[#cdd6f4] mb-4">Ausgaben nach Kategorie</h3>
+    <div className="bg-surface-lowest p-6 rounded-ds-md shadow-float">
+      <h3 className="text-[1.25rem] font-semibold text-on-surface mb-4">Ausgaben nach Kategorie</h3>
       <div className="h-64 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
@@ -74,7 +74,7 @@ export const FinanceChart: React.FC<FinanceChartProps> = ({ items }) => {
               paddingAngle={data.length > 1 ? 5 : 0}
               dataKey="value"
               nameKey="name"
-              stroke="#181825"
+              stroke="#ffffff"
               strokeWidth={2}
             >
               {data.map((entry, index) => (
@@ -82,7 +82,7 @@ export const FinanceChart: React.FC<FinanceChartProps> = ({ items }) => {
               ))}
             </Pie>
             <Tooltip content={<CustomTooltip />} />
-            <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ paddingTop: '20px', fontSize: '12px', color: '#a6adc8' }} />
+            <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ paddingTop: '20px', fontSize: '12px', color: '#474747' }} />
           </PieChart>
         </ResponsiveContainer>
       </div>
