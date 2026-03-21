@@ -389,7 +389,7 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-surface text-on-surface-variant font-mono pb-24 md:pb-28">
       {/* Header */}
-      <header className="sticky top-0 z-30 glass px-4 py-4 md:px-8 flex flex-col">
+      <header className="sticky top-0 z-30 glass px-4 pt-safe pb-4 md:px-8 flex flex-col">
         <div className="flex justify-between items-center w-full max-w-7xl mx-auto">
             <div className="flex items-center gap-3">
             <div className="p-2 rounded-ds-sm bg-primary text-on-primary transition-colors">
@@ -431,7 +431,7 @@ const App: React.FC = () => {
         {view === ViewState.SETTINGS && (
              <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
                 <div className="mb-4">
-                  <h2 className="text-[2.5rem] font-bold text-on-surface tracking-[-0.02em] leading-[1.15]">Einstellungen</h2>
+                  <h2 className="text-[2rem] md:text-[2.5rem] font-bold text-on-surface tracking-[-0.02em] leading-[1.15]">Einstellungen</h2>
                 </div>
 
                 <div className="bg-surface-lowest rounded-ds-lg shadow-float p-6 space-y-8">
@@ -548,7 +548,7 @@ const App: React.FC = () => {
         {/* Analysis View */}
         {view === ViewState.ANALYSIS && (
             <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
-                <h2 className="text-[2.5rem] font-bold text-on-surface tracking-[-0.02em] leading-[1.15]">Analyse</h2>
+                <h2 className="text-[2rem] md:text-[2.5rem] font-bold text-on-surface tracking-[-0.02em] leading-[1.15]">Analyse</h2>
                 <SankeyChart items={items} />
             </div>
         )}
