@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   subscribeToItems,
   addItem,
@@ -80,6 +80,7 @@ const App: React.FC = () => {
 
   // PWA Update State
   const [waitingWorker, setWaitingWorker] = useState<ServiceWorker | null>(null);
+  const cleanupRef = useRef<(() => void) | null>(null);
 
   const isLive = isFirebaseActive();
 
@@ -130,7 +131,7 @@ const App: React.FC = () => {
             });
           });
 
-          // Check for updates immediately on start + on every foreground
+          // Check for updates immediately on start + on every foreground + hourly
           registration.update().catch(() => {});
           const handleVisibilityChange = () => {
             if (document.visibilityState === 'visible') {
@@ -138,15 +139,19 @@ const App: React.FC = () => {
             }
           };
           document.addEventListener('visibilitychange', handleVisibilityChange);
+          const updateInterval = setInterval(() => registration.update().catch(() => {}), 60 * 60 * 1000);
+
+          cleanupRef.current = () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            clearInterval(updateInterval);
+          };
         })
         .catch((error) => {
           console.error('Service Worker registration failed:', error);
         });
 
-      // Reload after new SW takes control
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        window.location.reload();
-      });
+      const handleControllerChange = () => window.location.reload();
+      navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange);
 
       // Setup foreground message handler
       if (isLive) {
@@ -162,6 +167,12 @@ const App: React.FC = () => {
           }
         });
       }
+
+      return () => {
+        navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange);
+        cleanupRef.current?.();
+        cleanupRef.current = null;
+      };
     }
   }, [isLive]);
 
