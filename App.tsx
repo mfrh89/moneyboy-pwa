@@ -129,6 +129,15 @@ const App: React.FC = () => {
               }
             });
           });
+
+          // Check for updates immediately on start + on every foreground
+          registration.update().catch(() => {});
+          const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible') {
+              registration.update().catch(() => {});
+            }
+          };
+          document.addEventListener('visibilitychange', handleVisibilityChange);
         })
         .catch((error) => {
           console.error('Service Worker registration failed:', error);
