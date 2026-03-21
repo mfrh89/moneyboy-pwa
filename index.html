@@ -4,7 +4,8 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <meta name="theme-color" content="#f9f9f9" />
+    <meta name="theme-color" content="#f9f9f9" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#111111" media="(prefers-color-scheme: dark)" />
     <title>Moneyboy - Monthly Budget Management</title>
 
     <!-- PWA Manifest -->
@@ -48,27 +49,27 @@
             },
             colors: {
               surface: {
-                DEFAULT: '#f9f9f9',
-                low: '#f3f3f3',
-                mid: '#eeeeee',
-                high: '#e8e8e8',
-                highest: '#e2e2e2',
-                lowest: '#ffffff',
+                DEFAULT: 'var(--surface)',
+                low: 'var(--surface-low)',
+                mid: 'var(--surface-mid)',
+                high: 'rgb(var(--surface-high-rgb) / <alpha-value>)',
+                highest: 'var(--surface-highest)',
+                lowest: 'var(--surface-lowest)',
               },
-              primary: '#141414',
-              'primary-container': '#3b3b3b',
-              'on-primary': '#ffffff',
-              'on-surface': '#1a1a1a',
-              'on-surface-variant': '#474747',
-              'outline-variant': '#c4c4c4',
-              secondary: '#466270',
-              tertiary: '#273f49',
-              'status-success': '#3d6652',
-              'status-error': '#7a3535',
-              'status-warning': '#7a6030',
-              'status-info': '#2d4f6b',
-              'accent-orange': '#7a4a30',
-              'accent-magenta': '#6b3558',
+              primary: 'rgb(var(--primary-rgb) / <alpha-value>)',
+              'primary-container': 'var(--primary-container)',
+              'on-primary': 'rgb(var(--on-primary-rgb) / <alpha-value>)',
+              'on-surface': 'rgb(var(--on-surface-rgb) / <alpha-value>)',
+              'on-surface-variant': 'rgb(var(--on-surface-variant-rgb) / <alpha-value>)',
+              'outline-variant': 'rgb(var(--outline-variant-rgb) / <alpha-value>)',
+              secondary: 'var(--secondary)',
+              tertiary: 'var(--tertiary)',
+              'status-success': 'var(--status-success)',
+              'status-error': 'var(--status-error)',
+              'status-warning': 'var(--status-warning)',
+              'status-info': 'var(--status-info)',
+              'accent-orange': 'var(--accent-orange)',
+              'accent-magenta': 'var(--accent-magenta)',
             }
           }
         }
@@ -77,26 +78,87 @@
     <style>
       /* Technical Alchemist Design System */
       :root {
+        color-scheme: light dark;
+
+        /* Surface tokens */
         --surface: #f9f9f9;
         --surface-low: #f3f3f3;
         --surface-mid: #eeeeee;
         --surface-high: #e8e8e8;
+        --surface-high-rgb: 232 232 232;
         --surface-highest: #e2e2e2;
         --surface-lowest: #ffffff;
+
+        /* Primary tokens */
         --primary: #141414;
+        --primary-rgb: 20 20 20;
         --primary-container: #3b3b3b;
         --on-primary: #ffffff;
+        --on-primary-rgb: 255 255 255;
+
+        /* Text tokens */
         --on-surface: #1a1a1a;
+        --on-surface-rgb: 26 26 26;
         --on-surface-variant: #474747;
+        --on-surface-variant-rgb: 71 71 71;
+
+        /* Border tokens */
         --outline-variant: #c4c4c4;
+        --outline-variant-rgb: 196 196 196;
+
+        /* Brand tokens */
         --secondary: #466270;
         --tertiary: #273f49;
+
+        /* Status & accent tokens */
         --status-success: #3d6652;
         --status-error: #7a3535;
         --status-warning: #7a6030;
         --status-info: #2d4f6b;
         --accent-orange: #7a4a30;
         --accent-magenta: #6b3558;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          /* Surface tokens */
+          --surface: #111111;
+          --surface-low: #1a1a1a;
+          --surface-mid: #222222;
+          --surface-high: #2a2a2a;
+          --surface-high-rgb: 42 42 42;
+          --surface-highest: #323232;
+          --surface-lowest: #1c1c1c;
+
+          /* Primary tokens */
+          --primary: #f0f0f0;
+          --primary-rgb: 240 240 240;
+          --primary-container: #cccccc;
+          --on-primary: #141414;
+          --on-primary-rgb: 20 20 20;
+
+          /* Text tokens */
+          --on-surface: #efefef;
+          --on-surface-rgb: 239 239 239;
+          --on-surface-variant: #8a8a8a;
+          --on-surface-variant-rgb: 138 138 138;
+
+          /* Border tokens */
+          --outline-variant: #3a3a3a;
+          --outline-variant-rgb: 58 58 58;
+
+          /* Brand tokens */
+          --secondary: #6a8a9a;
+          --tertiary: #3d6070;
+
+          /* Status & accent tokens */
+          --status-success: #4d8068;
+          --status-error: #a04545;
+          --status-warning: #9a7a40;
+          --status-info: #3d6585;
+          --accent-orange: #9a6040;
+          --accent-magenta: #8a4570;
+        }
       }
 
       * {
@@ -129,7 +191,7 @@
       /* Custom Date Input Styling */
       input[type="date"] {
         position: relative;
-        color-scheme: light;
+        color-scheme: light dark;
       }
 
       input[type="date"]::-webkit-calendar-picker-indicator {
@@ -164,9 +226,21 @@
         -webkit-backdrop-filter: blur(24px);
       }
 
+      @media (prefers-color-scheme: dark) {
+        .glass {
+          background: rgba(20, 20, 20, 0.85);
+        }
+      }
+
       /* Float shadow */
       .shadow-float {
         box-shadow: 0 20px 50px rgba(0, 0, 0, 0.04);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .shadow-float {
+          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
       }
 
       /* Header safe-area padding for iOS (inset + 12px base padding) */
