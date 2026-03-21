@@ -6,19 +6,19 @@ interface SankeyChartProps {
   items: FinanceItem[];
 }
 
-// Color constants per color scheme
+// Color constants per color scheme — polychromatic from design system
 const CHART_COLORS = {
   light: {
     income:  '#3d6652',
     budget:  '#273f49',
     balance: '#3d6652',
-    expense: ['#1a1a1a','#3b3b3b','#474747','#5a5a5a','#6e6e6e','#828282','#969696','#aaaaaa','#bebebe','#c4c4c4','#d2d2d2','#e2e2e2'],
+    expense: ['#7a3535','#7a6030','#7a4a30','#3d6652','#2d4f6b','#466270','#273f49','#6b3558','#8a4a4a','#5a7a60','#4a6a50','#5a4060'],
   },
   dark: {
     income:  '#4d8068',
     budget:  '#3d6070',
     balance: '#4d8068',
-    expense: ['#f0f0f0','#d4d4d4','#b8b8b8','#9c9c9c','#828282','#6a6a6a','#565656','#464646','#3a3a3a','#323232','#2c2c2c','#282828'],
+    expense: ['#a04545','#9a7a40','#9a6a45','#4d8068','#3d6585','#6a8a9a','#3d6070','#8a5078','#b06060','#70a080','#5a8a68','#7a5880'],
   },
 };
 
