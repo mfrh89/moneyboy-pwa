@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Lock, Mail, ArrowRight, WalletCards, AlertCircle, Fingerprint } from 'lucide-react';
+import { Lock, Mail, ArrowRight, AlertCircle, Fingerprint } from 'lucide-react';
 import { isFirebaseActive } from '../services/storage';
 
 interface AuthScreenProps {
@@ -47,8 +47,8 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, onRegister }) =
     <div className="min-h-screen bg-surface flex items-center justify-center p-4">
       <div className="bg-surface-lowest w-full max-w-md rounded-ds-lg shadow-float overflow-hidden animate-in fade-in zoom-in duration-300">
         <div className="bg-primary p-8 text-center transition-colors relative overflow-hidden">
-          <div className="relative z-10 inline-flex p-4 bg-on-primary/10 rounded-ds-md mb-4 backdrop-blur-sm">
-             <WalletCards className="w-10 h-10 text-on-primary" />
+          <div className="relative z-10 mb-4">
+            <img src="/icon-192.png" alt="Moneyboy" className="w-16 h-16 rounded-ds-md mx-auto" />
           </div>
           <h1 className="relative z-10 text-3xl font-bold text-on-primary mb-2 tracking-tight">Moneyboy</h1>
           <p className="relative z-10 text-on-primary/70 font-medium text-sm">
