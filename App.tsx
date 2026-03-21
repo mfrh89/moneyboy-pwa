@@ -101,7 +101,7 @@ const App: React.FC = () => {
 
           // Pass Firebase config to Service Worker
           const firebaseConfig = {
-            apiKey: "AIzaSyBh3HMQ6eR8Q9Dw7utfg_PjnhWv3Djiz0M",
+            apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
             authDomain: "moneyboy-2f088.firebaseapp.com",
             projectId: "moneyboy-2f088",
             storageBucket: "moneyboy-2f088.firebasestorage.app",

@@ -24,3 +24,5 @@ jobs:
           tags: mfrh/moneyboy:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          build-args: |
+            VITE_FIREBASE_API_KEY=${{ secrets.VITE_FIREBASE_API_KEY }}

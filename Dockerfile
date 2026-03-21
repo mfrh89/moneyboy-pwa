@@ -12,6 +12,10 @@ RUN npm install
 # Den gesamten restlichen Code kopieren
 COPY . .
 
+# Firebase API Key als Build-Argument (wird von Vite zur Build-Zeit eingebettet)
+ARG VITE_FIREBASE_API_KEY
+ENV VITE_FIREBASE_API_KEY=$VITE_FIREBASE_API_KEY
+
 # Die Anwendung für die Produktion bauen
 RUN npm run build
 
