@@ -28,6 +28,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
+        plugins: [
+          function({ addVariant }) {
+            addVariant('can-hover', '@media (hover: hover)');
+          }
+        ],
         theme: {
           extend: {
             fontFamily: {

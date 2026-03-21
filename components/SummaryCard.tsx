@@ -93,7 +93,17 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
 
     const containerClasses = isFilledStyle
       ? `${getColors()} bg-surface-lowest shadow-float`
-      : `border ${getBorderColor()} bg-transparent border-dashed`;
+      : `bg-surface-lowest border ${getBorderColor()} border-dashed`;
+
+    const getDotColor = () => {
+      switch (type) {
+        case 'expense': return 'bg-status-error';
+        case 'flexible': return 'bg-status-warning';
+        case 'income': return 'bg-status-success';
+        default: return null;
+      }
+    };
+    const dotColor = getDotColor();
 
     return (
       <div className={`rounded-ds-lg py-4 px-4 flex items-center justify-between transition-transform active:scale-95 ${containerClasses}`}>
@@ -102,7 +112,10 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
                 {getIcon()}
             </div>
             <div className="flex flex-col gap-0.5">
-                <span className="text-[0.6875rem] font-medium uppercase tracking-[0.08em] opacity-80 leading-tight">{label}</span>
+                <div className="flex items-center gap-1.5">
+                    {dotColor && !isFilledStyle && <div className={`w-1.5 h-1.5 rounded-full ${dotColor} shrink-0`} />}
+                    <span className="text-[0.6875rem] font-medium uppercase tracking-[0.08em] opacity-80 leading-tight">{label}</span>
+                </div>
                 <span className={`font-bold text-lg leading-tight ${isFilledStyle ? 'text-on-surface' : ''}`}>
                     {formattedAmount}
                 </span>
@@ -116,7 +129,7 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
   return (
     <div
       onClick={onClick}
-      className={`relative overflow-hidden rounded-ds-lg p-4 shadow-float transition-transform active:scale-95 flex items-center gap-4 ${getColors()} bg-surface-lowest ${onClick ? 'cursor-pointer hover:bg-surface-low' : ''}`}
+      className={`relative overflow-hidden rounded-ds-lg p-4 shadow-float transition-transform active:scale-95 flex items-center gap-4 ${getColors()} bg-surface-lowest ${onClick ? 'cursor-pointer can-hover:hover:bg-surface-low' : ''}`}
     >
       {/* Icon Left */}
       <div className="p-2.5 rounded-ds-md bg-surface-high shrink-0">
@@ -135,7 +148,7 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
             {onAdd && (
             <button
                 onClick={(e) => { e.stopPropagation(); onAdd(); }}
-                className="p-1.5 rounded-ds-sm hover:bg-surface-high transition-colors"
+                className="p-1.5 rounded-ds-sm can-hover:hover:bg-surface-high transition-colors"
             >
                 <Plus className="w-5 h-5" />
             </button>

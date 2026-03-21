@@ -78,6 +78,9 @@ const App: React.FC = () => {
   const [showMigrationBanner, setShowMigrationBanner] = useState(false);
   const [isMigrating, setIsMigrating] = useState(false);
 
+  // PWA Update State
+  const [waitingWorker, setWaitingWorker] = useState<ServiceWorker | null>(null);
+
   const isLive = isFirebaseActive();
 
   // Auth Subscription
@@ -113,10 +116,28 @@ const App: React.FC = () => {
               config: firebaseConfig
             });
           });
+
+          // PWA update detection
+          if (registration.waiting && navigator.serviceWorker.controller) {
+            setWaitingWorker(registration.waiting);
+          }
+          registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing;
+            newWorker?.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                setWaitingWorker(newWorker);
+              }
+            });
+          });
         })
         .catch((error) => {
           console.error('Service Worker registration failed:', error);
         });
+
+      // Reload after new SW takes control
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        window.location.reload();
+      });
 
       // Setup foreground message handler
       if (isLive) {
@@ -407,6 +428,21 @@ const App: React.FC = () => {
         </div>
       </header>
 
+      {/* PWA Update Banner */}
+      {waitingWorker && (
+        <div className="bg-primary text-on-primary p-3 px-4 md:px-8 flex items-center justify-between animate-in slide-in-from-top duration-300">
+          <div className="flex items-center gap-2 text-sm font-medium">
+            <span>Update verfügbar</span>
+          </div>
+          <button
+            onClick={() => waitingWorker.postMessage({ type: 'SKIP_WAITING' })}
+            className="bg-on-primary text-primary px-3 py-1.5 rounded-ds-md text-xs font-bold hover:bg-surface-highest transition-colors"
+          >
+            Jetzt aktualisieren
+          </button>
+        </div>
+      )}
+
       {/* Migration Banner */}
       {showMigrationBanner && (
           <div className="bg-primary text-on-primary p-3 px-4 md:px-8 flex items-center justify-between animate-in slide-in-from-top duration-300">
@@ -571,7 +607,7 @@ const App: React.FC = () => {
 
                 <div>
                     <h3 className="text-[0.75rem] font-medium uppercase tracking-[0.05em] text-on-surface-variant mb-6">CASHFLOW BERECHNUNG</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                         <div className="h-full">
                             <SummaryCard
                                 label="Einkommen"
@@ -635,11 +671,11 @@ const App: React.FC = () => {
       </main>
 
       {/* Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 glass pb-safe pt-2 px-6 z-40">
+      <nav className="fixed bottom-0 left-0 right-0 glass border-t border-outline-variant/20 pb-safe pt-2 px-6 z-40">
         <div className="flex justify-around items-center max-w-lg mx-auto h-16 relative">
             <button
                 onClick={() => setView(ViewState.DASHBOARD)}
-                className={`flex flex-col items-center gap-1 w-20 transition-colors ${view === ViewState.DASHBOARD ? 'text-primary' : 'text-outline-variant hover:text-on-surface-variant'}`}
+                className={`flex flex-col items-center gap-1 w-20 transition-colors ${view === ViewState.DASHBOARD ? 'text-primary' : 'text-outline-variant can-hover:hover:text-on-surface-variant'}`}
             >
                 <LayoutDashboard className="w-6 h-6" />
                 <span className="text-[10px] font-bold">Übersicht</span>
@@ -647,7 +683,7 @@ const App: React.FC = () => {
 
             <button
                 onClick={() => setView(ViewState.WOHNEN)}
-                className={`flex flex-col items-center gap-1 w-20 transition-colors ${view === ViewState.WOHNEN ? 'text-primary' : 'text-outline-variant hover:text-on-surface-variant'}`}
+                className={`flex flex-col items-center gap-1 w-20 transition-colors ${view === ViewState.WOHNEN ? 'text-primary' : 'text-outline-variant can-hover:hover:text-on-surface-variant'}`}
             >
                 <Home className="w-6 h-6" />
                 <span className="text-[10px] font-bold">Wohnen</span>
@@ -655,7 +691,7 @@ const App: React.FC = () => {
 
             <button
                 onClick={() => setView(ViewState.ABOS)}
-                className={`flex flex-col items-center gap-1 w-20 transition-colors ${view === ViewState.ABOS ? 'text-primary' : 'text-outline-variant hover:text-on-surface-variant'}`}
+                className={`flex flex-col items-center gap-1 w-20 transition-colors ${view === ViewState.ABOS ? 'text-primary' : 'text-outline-variant can-hover:hover:text-on-surface-variant'}`}
             >
                 <Repeat className="w-6 h-6" />
                 <span className="text-[10px] font-bold">Abos</span>
@@ -663,7 +699,7 @@ const App: React.FC = () => {
 
             <button
                 onClick={() => setView(ViewState.ANALYSIS)}
-                className={`flex flex-col items-center gap-1 w-20 transition-colors ${view === ViewState.ANALYSIS ? 'text-primary' : 'text-outline-variant hover:text-on-surface-variant'}`}
+                className={`flex flex-col items-center gap-1 w-20 transition-colors ${view === ViewState.ANALYSIS ? 'text-primary' : 'text-outline-variant can-hover:hover:text-on-surface-variant'}`}
             >
                 <PieChart className="w-6 h-6" />
                 <span className="text-[10px] font-bold">Analyse</span>
@@ -671,7 +707,7 @@ const App: React.FC = () => {
 
             <button
                 onClick={() => setView(ViewState.SETTINGS)}
-                className={`flex flex-col items-center gap-1 w-20 transition-colors ${view === ViewState.SETTINGS ? 'text-primary' : 'text-outline-variant hover:text-on-surface-variant'}`}
+                className={`flex flex-col items-center gap-1 w-20 transition-colors ${view === ViewState.SETTINGS ? 'text-primary' : 'text-outline-variant can-hover:hover:text-on-surface-variant'}`}
             >
                 <Settings className="w-6 h-6" />
                 <span className="text-[10px] font-bold">Settings</span>
