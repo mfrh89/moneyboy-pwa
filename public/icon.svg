@@ -1,4 +1,18 @@
-<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
-  <rect width="512" height="512" fill="#cba6f7" rx="80"/>
-  <text x="256" y="340" font-family="Arial, sans-serif" font-size="280" font-weight="bold" fill="#1e1e2e" text-anchor="middle">MB</text>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&display=swap');
+    </style>
+  </defs>
+  <rect width="512" height="512" fill="#000000" rx="92"/>
+  <text
+    x="256"
+    y="256"
+    font-family="'JetBrains Mono', monospace"
+    font-weight="700"
+    font-size="210"
+    fill="#ffffff"
+    text-anchor="middle"
+    dominant-baseline="central"
+  >M$B</text>
 </svg>
