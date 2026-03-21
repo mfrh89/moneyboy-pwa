@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   PieChart,
   Pie,
@@ -13,10 +13,23 @@ interface FinanceChartProps {
   items: FinanceItem[];
 }
 
-// Monochromatic palette with secondary/tertiary accents
-const COLORS = ['#1a1a1a', '#3b3b3b', '#7a3535', '#3d6652', '#7a6030', '#2d4f6b', '#7a4a30', '#6b3558'];
+// Monochromatic palette — light mode: dark-to-accent, dark mode: lightened equivalents
+const COLORS_LIGHT = ['#1a1a1a', '#3b3b3b', '#7a3535', '#3d6652', '#7a6030', '#2d4f6b', '#7a4a30', '#6b3558'];
+const COLORS_DARK  = ['#efefef', '#cccccc', '#a04545', '#4d8068', '#9a7a40', '#3d6585', '#9a6040', '#8a4570'];
 
 export const FinanceChart: React.FC<FinanceChartProps> = ({ items }) => {
+  const [isDark, setIsDark] = useState(() =>
+    typeof window !== 'undefined' ? window.matchMedia('(prefers-color-scheme: dark)').matches : false
+  );
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const handler = (e: MediaQueryListEvent) => setIsDark(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
+  const COLORS = isDark ? COLORS_DARK : COLORS_LIGHT;
+
   const expenses = items.filter(i => i.type === 'expense');
 
   // Group by category
@@ -74,7 +87,7 @@ export const FinanceChart: React.FC<FinanceChartProps> = ({ items }) => {
               paddingAngle={data.length > 1 ? 5 : 0}
               dataKey="value"
               nameKey="name"
-              stroke="#ffffff"
+              stroke={isDark ? '#1c1c1c' : '#ffffff'}
               strokeWidth={2}
             >
               {data.map((entry, index) => (
@@ -82,7 +95,12 @@ export const FinanceChart: React.FC<FinanceChartProps> = ({ items }) => {
               ))}
             </Pie>
             <Tooltip content={<CustomTooltip />} />
-            <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ paddingTop: '20px', fontSize: '12px', color: '#474747' }} />
+            <Legend
+              verticalAlign="bottom"
+              height={36}
+              iconType="circle"
+              wrapperStyle={{ paddingTop: '20px', fontSize: '12px', color: 'var(--on-surface-variant)' }}
+            />
           </PieChart>
         </ResponsiveContainer>
       </div>

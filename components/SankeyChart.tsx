@@ -6,42 +6,32 @@ interface SankeyChartProps {
   items: FinanceItem[];
 }
 
-const INCOME_COLOR = '#3d6652';
-const BUDGET_COLOR = '#273f49';
-const BALANCE_COLOR = '#3d6652';
-
-// Monochromatic expense palette
-const EXPENSE_PALETTE = [
-  '#1a1a1a',
-  '#3b3b3b',
-  '#474747',
-  '#5a5a5a',
-  '#6e6e6e',
-  '#828282',
-  '#969696',
-  '#aaaaaa',
-  '#bebebe',
-  '#c4c4c4',
-  '#d2d2d2',
-  '#e2e2e2',
-];
+// Color constants per color scheme
+const CHART_COLORS = {
+  light: {
+    income:  '#3d6652',
+    budget:  '#273f49',
+    balance: '#3d6652',
+    expense: ['#1a1a1a','#3b3b3b','#474747','#5a5a5a','#6e6e6e','#828282','#969696','#aaaaaa','#bebebe','#c4c4c4','#d2d2d2','#e2e2e2'],
+  },
+  dark: {
+    income:  '#4d8068',
+    budget:  '#3d6070',
+    balance: '#4d8068',
+    expense: ['#f0f0f0','#d4d4d4','#b8b8b8','#9c9c9c','#828282','#6a6a6a','#565656','#464646','#3a3a3a','#323232','#2c2c2c','#282828'],
+  },
+};
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value);
 
-// Stable color assignment: category name -> consistent index via simple hash
-const categoryColorCache = new Map<string, string>();
-const getExpenseColor = (name: string, index: number) => {
-  if (categoryColorCache.has(name)) return categoryColorCache.get(name)!;
-  const color = EXPENSE_PALETTE[index % EXPENSE_PALETTE.length];
-  categoryColorCache.set(name, color);
-  return color;
-};
+const getExpenseColor = (index: number, palette: string[]) =>
+  palette[index % palette.length];
 
 const truncate = (str: string, max: number) =>
   str.length > max ? str.slice(0, max - 1) + '\u2026' : str;
 
-const CustomNode = ({ x, y, width, height, payload, isMobile }: any) => {
+const CustomNode = ({ x, y, width, height, payload, isMobile, chartColors }: any) => {
   if (!payload || height < 1) return null;
 
   const isIncome = payload.nodeType === 'income';
@@ -49,10 +39,10 @@ const CustomNode = ({ x, y, width, height, payload, isMobile }: any) => {
   const isBalance = payload.nodeType === 'balance';
 
   let fill: string;
-  if (isIncome) fill = INCOME_COLOR;
-  else if (isBudget) fill = BUDGET_COLOR;
-  else if (isBalance) fill = BALANCE_COLOR;
-  else fill = getExpenseColor(payload.name, payload.expenseIndex ?? 0);
+  if (isIncome) fill = chartColors.income;
+  else if (isBudget) fill = chartColors.budget;
+  else if (isBalance) fill = chartColors.balance;
+  else fill = getExpenseColor(payload.expenseIndex ?? 0, chartColors.expense);
 
   const gap = isMobile ? 7 : 10;
   const labelX = isIncome ? x - gap : x + width + gap;
@@ -71,7 +61,7 @@ const CustomNode = ({ x, y, width, height, payload, isMobile }: any) => {
           y={y}
           width={width}
           height={Math.max(height, 3)}
-          fill={BALANCE_COLOR}
+          fill={chartColors.balance}
           fillOpacity={0.9}
           radius={[3, 3, 3, 3]}
         />
@@ -80,7 +70,7 @@ const CustomNode = ({ x, y, width, height, payload, isMobile }: any) => {
           y={y + height / 2 - labelSpacing}
           textAnchor={anchor}
           dominantBaseline="central"
-          fill={BALANCE_COLOR}
+          fill={chartColors.balance}
           fontSize={nameFontSize}
           fontWeight={700}
         >
@@ -91,7 +81,7 @@ const CustomNode = ({ x, y, width, height, payload, isMobile }: any) => {
           y={y + height / 2 + labelSpacing}
           textAnchor={anchor}
           dominantBaseline="central"
-          fill={BALANCE_COLOR}
+          fill={chartColors.balance}
           fontSize={valueFontSize}
           fontWeight={600}
         >
@@ -117,7 +107,7 @@ const CustomNode = ({ x, y, width, height, payload, isMobile }: any) => {
         y={y + height / 2 - labelSpacing}
         textAnchor={anchor}
         dominantBaseline="central"
-        fill="#1a1a1a"
+        style={{ fill: 'var(--on-surface)' }}
         fontSize={nameFontSize}
         fontWeight={700}
       >
@@ -139,16 +129,16 @@ const CustomNode = ({ x, y, width, height, payload, isMobile }: any) => {
 };
 
 const CustomLink = (props: any) => {
-  const { sourceX, sourceY, sourceControlX, targetX, targetY, targetControlX, linkWidth, payload } = props;
+  const { sourceX, sourceY, sourceControlX, targetX, targetY, targetControlX, linkWidth, payload, chartColors } = props;
   if (!linkWidth || linkWidth < 0.5) return null;
 
   const sourceType = payload?.source?.nodeType;
   const targetType = payload?.target?.nodeType;
 
   let color: string;
-  if (sourceType === 'income') color = INCOME_COLOR;
-  else if (targetType === 'balance') color = BALANCE_COLOR;
-  else color = getExpenseColor(payload?.target?.name || '', payload?.target?.expenseIndex ?? 0);
+  if (sourceType === 'income') color = chartColors.income;
+  else if (targetType === 'balance') color = chartColors.balance;
+  else color = getExpenseColor(payload?.target?.expenseIndex ?? 0, chartColors.expense);
 
   return (
     <Layer>
@@ -166,6 +156,18 @@ const CustomLink = (props: any) => {
 const CHART_W = 640;
 
 export const SankeyChart: React.FC<SankeyChartProps> = ({ items }) => {
+  const [isDark, setIsDark] = useState(() =>
+    typeof window !== 'undefined' ? window.matchMedia('(prefers-color-scheme: dark)').matches : false
+  );
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const handler = (e: MediaQueryListEvent) => setIsDark(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
+  const chartColors = isDark ? CHART_COLORS.dark : CHART_COLORS.light;
+
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(() =>
     typeof window !== 'undefined' ? window.innerWidth : 0
@@ -311,7 +313,6 @@ export const SankeyChart: React.FC<SankeyChartProps> = ({ items }) => {
     });
     const sortedCategories = Array.from(categoryTotals.entries()).sort((a, b) => b[1] - a[1]);
 
-    categoryColorCache.clear();
     sortedCategories.forEach(([cat], i) => {
       nodeMap.set(cat, nodes.length);
       nodes.push({ name: cat, nodeType: 'expense', expenseIndex: i });
@@ -386,8 +387,8 @@ export const SankeyChart: React.FC<SankeyChartProps> = ({ items }) => {
         <ResponsiveContainer width="100%" height="100%">
           <Sankey
             data={sankeyData}
-            node={<CustomNode isMobile={false} />}
-            link={<CustomLink />}
+            node={<CustomNode isMobile={false} chartColors={chartColors} />}
+            link={<CustomLink chartColors={chartColors} />}
             nodePadding={28}
             nodeWidth={10}
             margin={{ top: 32, right: 150, bottom: 100, left: 150 }}
