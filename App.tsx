@@ -139,7 +139,7 @@ const App: React.FC = () => {
             }
           };
           document.addEventListener('visibilitychange', handleVisibilityChange);
-          const updateInterval = setInterval(() => registration.update().catch(() => {}), 60 * 60 * 1000);
+          const updateInterval = setInterval(() => registration.update().catch(() => {}), 15 * 60 * 1000);
 
           cleanupRef.current = () => {
             document.removeEventListener('visibilitychange', handleVisibilityChange);
