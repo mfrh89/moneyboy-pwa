@@ -33,7 +33,10 @@ export const TransactionList: React.FC<TransactionListProps> = ({
   return (
     <div className="bg-surface-lowest rounded-ds-lg shadow-float overflow-hidden flex flex-col h-fit">
       <div className="p-4 bg-surface-low flex justify-between items-center shrink-0">
-        <h3 className={`font-semibold text-[1.25rem] ${accentColor}`}>{title}</h3>
+        <div className="flex items-center gap-2.5">
+          <div className={`w-2 h-2 rounded-full ${accentColor.replace('text-', 'bg-')}`} />
+          <h3 className="font-semibold text-[1.25rem] text-on-surface">{title}</h3>
+        </div>
         <div className="flex items-center gap-2">
             {showSubscriptionFilter && subscriptionCount > 0 && (
                 <button

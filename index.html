@@ -163,6 +163,11 @@
       .shadow-float {
         box-shadow: 0 20px 50px rgba(0, 0, 0, 0.04);
       }
+
+      /* Header safe-area padding for iOS */
+      .pt-header-safe {
+        padding-top: calc(env(safe-area-inset-top) + 12px);
+      }
     </style>
   <script type="importmap">
 {
