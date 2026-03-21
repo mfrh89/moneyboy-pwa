@@ -22,7 +22,7 @@ export const WohnenView: React.FC<WohnenViewProps> = ({ items, total, onEdit, on
 
   return (
     <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
-      <h2 className="text-[2.5rem] font-bold text-on-surface tracking-[-0.02em] leading-[1.15]">Wohnen</h2>
+      <h2 className="text-[2rem] md:text-[2.5rem] font-bold text-on-surface tracking-[-0.02em] leading-[1.15]">Wohnen</h2>
 
       <section className="relative overflow-hidden rounded-ds-xl bg-surface-lowest shadow-float p-8 flex flex-col items-center gap-3">
         <p className="text-[0.75rem] font-medium uppercase tracking-[0.05em] text-on-surface-variant">MONATLICHE WOHNKOSTEN</p>
