@@ -1,4 +1,9 @@
 /* eslint-disable no-undef */
+
+// Workbox precaching — manifest injected by vite-plugin-pwa at build time
+importScripts('https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-sw.js');
+workbox.precaching.precacheAndRoute(self.__WB_MANIFEST || []);
+
 importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
 
