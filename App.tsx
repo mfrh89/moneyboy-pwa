@@ -389,7 +389,7 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-surface text-on-surface-variant font-mono pb-24 md:pb-28">
       {/* Header */}
-      <header className="sticky top-0 z-30 glass px-4 pt-safe pb-4 md:px-8 flex flex-col">
+      <header className="sticky top-0 z-30 glass px-4 pt-header-safe pb-3 md:px-8 flex flex-col">
         <div className="flex justify-between items-center w-full max-w-7xl mx-auto">
             <div className="flex items-center gap-3">
             <div className="p-2 rounded-ds-sm bg-primary text-on-primary transition-colors">
