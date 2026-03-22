@@ -60,7 +60,7 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({ categories, on
         Kategorien verwalten
       </h3>
 
-      <div className="bg-surface-low rounded-ds-md p-4">
+      <div className="bg-surface-mid rounded-ds-md p-4">
         <p className="text-xs text-on-surface-variant mb-4">
           Tippe auf eine Kategorie, um sie umzubenennen. "X" löscht die Kategorie und verschiebt Einträge nach "Sonstiges".
         </p>
@@ -102,7 +102,7 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({ categories, on
                 type="text"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                className="w-full px-4 py-2 rounded-ds-md bg-surface-low text-on-surface focus:ring-2 focus:ring-primary focus:bg-surface-highest outline-none transition-all"
+                className="w-full px-4 py-2 rounded-ds-md bg-surface-mid text-on-surface focus:ring-2 focus:ring-primary focus:bg-surface-highest outline-none transition-all"
                 placeholder="Neuer Name"
               />
 

@@ -210,7 +210,7 @@ export const EditModal: React.FC<EditModalProps> = ({
                     className={`flex items-center gap-2 p-2 rounded-ds-md cursor-pointer transition-all ${
                         isFlexible
                         ? 'bg-surface-highest'
-                        : 'bg-surface-low hover:bg-surface-mid'
+                        : 'bg-surface-mid hover:bg-surface-high'
                     }`}
                 >
                     <div className={`w-4 h-4 rounded-ds-xs flex items-center justify-center transition-colors ${
@@ -229,7 +229,7 @@ export const EditModal: React.FC<EditModalProps> = ({
                     className={`flex items-center gap-2 p-2 rounded-ds-md cursor-pointer transition-all ${
                         isSplit
                         ? 'bg-surface-highest'
-                        : 'bg-surface-low hover:bg-surface-mid'
+                        : 'bg-surface-mid hover:bg-surface-high'
                     }`}
                 >
                     <div className={`w-4 h-4 rounded-ds-xs flex items-center justify-center transition-colors ${
@@ -248,7 +248,7 @@ export const EditModal: React.FC<EditModalProps> = ({
                     className={`flex items-center gap-2 p-2 rounded-ds-md cursor-pointer transition-all ${
                         isSubscription
                         ? 'bg-surface-highest'
-                        : 'bg-surface-low hover:bg-surface-mid'
+                        : 'bg-surface-mid hover:bg-surface-high'
                     }`}
                 >
                     <div className={`w-4 h-4 rounded-ds-xs flex items-center justify-center transition-colors ${
@@ -271,7 +271,7 @@ export const EditModal: React.FC<EditModalProps> = ({
               disabled={isSubmitting}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-4 py-2 rounded-ds-md bg-surface-low text-on-surface placeholder-outline-variant focus:ring-2 focus:ring-primary focus:bg-surface-highest outline-none transition-all disabled:bg-surface-mid disabled:opacity-50"
+              className="w-full px-4 py-2 rounded-ds-md bg-surface-mid text-on-surface placeholder-outline-variant focus:ring-2 focus:ring-primary focus:bg-surface-highest outline-none transition-all disabled:bg-surface-low disabled:opacity-50"
               placeholder={type === 'income' ? 'z.B. Gehalt' : 'z.B. Miete, Netflix'}
             />
           </div>
@@ -289,7 +289,7 @@ export const EditModal: React.FC<EditModalProps> = ({
                     disabled={isSubmitting}
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
-                    className="w-full px-4 py-2 rounded-ds-md bg-surface-low text-on-surface placeholder-outline-variant focus:ring-2 focus:ring-secondary focus:bg-surface-highest outline-none transition-all disabled:bg-surface-mid disabled:opacity-50"
+                    className="w-full px-4 py-2 rounded-ds-md bg-surface-mid text-on-surface placeholder-outline-variant focus:ring-2 focus:ring-secondary focus:bg-surface-highest outline-none transition-all disabled:bg-surface-low disabled:opacity-50"
                     placeholder="Gesamtkosten"
                   />
                </div>
@@ -314,7 +314,7 @@ export const EditModal: React.FC<EditModalProps> = ({
                 disabled={isSubmitting}
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                className="w-full px-4 py-2 rounded-ds-md bg-surface-low text-on-surface placeholder-outline-variant focus:ring-2 focus:ring-primary focus:bg-surface-highest outline-none transition-all disabled:bg-surface-mid disabled:opacity-50"
+                className="w-full px-4 py-2 rounded-ds-md bg-surface-mid text-on-surface placeholder-outline-variant focus:ring-2 focus:ring-primary focus:bg-surface-highest outline-none transition-all disabled:bg-surface-low disabled:opacity-50"
                 placeholder="0.00"
                 />
             </div>
@@ -334,7 +334,7 @@ export const EditModal: React.FC<EditModalProps> = ({
                         setShowSuggestions(true);
                     }}
                     onFocus={() => setShowSuggestions(true)}
-                    className="w-full px-4 py-2 rounded-ds-md bg-surface-low text-on-surface focus:ring-2 focus:ring-primary focus:bg-surface-highest outline-none transition-all disabled:bg-surface-mid disabled:opacity-50 placeholder-outline-variant"
+                    className="w-full px-4 py-2 rounded-ds-md bg-surface-mid text-on-surface focus:ring-2 focus:ring-primary focus:bg-surface-highest outline-none transition-all disabled:bg-surface-low disabled:opacity-50 placeholder-outline-variant"
                     placeholder="Wähle oder erstelle..."
                     autoComplete="off"
                 />
@@ -380,7 +380,7 @@ export const EditModal: React.FC<EditModalProps> = ({
 
           {/* Subscription Details */}
           {type === 'expense' && isSubscription && (
-            <div className="space-y-4 p-4 rounded-ds-md bg-surface-low animate-in slide-in-from-top-2 duration-200">
+            <div className="space-y-4 p-4 rounded-ds-md bg-surface-high animate-in slide-in-from-top-2 duration-200">
               <div className="flex items-center gap-2 mb-2">
                 <Repeat className="w-4 h-4 text-status-info" />
                 <span className="text-[0.6875rem] font-medium text-status-info uppercase tracking-[0.08em]">ABO-DETAILS</span>
@@ -399,7 +399,7 @@ export const EditModal: React.FC<EditModalProps> = ({
                       className={`py-2 px-3 rounded-ds-md text-xs font-bold transition-all ${
                         subscriptionCycle === cycle
                           ? 'bg-primary text-on-primary'
-                          : 'bg-surface-mid text-on-surface-variant hover:bg-surface-high'
+                          : 'bg-surface-highest text-on-surface-variant hover:bg-surface-highest'
                       }`}
                     >
                       {cycle === 'monthly' ? 'Monatlich' : cycle === 'quarterly' ? 'Quartalsweise' : 'Jährlich'}
