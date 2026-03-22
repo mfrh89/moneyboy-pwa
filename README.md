@@ -43,5 +43,3 @@ VITE_FIREBASE_API_KEY=your_key
 ## Deployment
 
 Automatic — every push to `main` triggers the GitHub Actions workflow (`.github/workflows/deploy-pages.yml`), builds the app, and deploys to the `gh-pages` branch.
-
-Live at **[geld.mfrh.xyz](https://geld.mfrh.xyz)**
