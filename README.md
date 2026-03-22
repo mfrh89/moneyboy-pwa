@@ -1,35 +1,47 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
-
 # Moneyboy
 
-Monthly finance manager PWA with Catppuccin Mocha theme. Track income, fixed and variable expenses, split costs, and visualize your cash flow.
+Personal budget PWA for monthly cash flow management. Track income, fixed and variable expenses, visualize spending with Sankey and pie charts, and sync data across devices via Firebase.
 
 ## Features
 
-- Dashboard with budget calculation (income - fixed - variable expenses)
-- CRUD for income/expenses with category autosuggest
-- Split costs (50/50)
-- Sankey chart for cash flow visualization (income → budget → expense categories)
-- Pie chart analysis by expense category
-- Category management (rename, delete)
-- Firebase Firestore sync or offline localStorage mode
-- Authentication (Firebase Auth or local demo mode)
-- Docker deployment via nginx
+- Dashboard with live budget calculation (income − fixed − variable)
+- CRUD for income and expenses with category autosuggest
+- 50/50 split cost support
+- Sankey chart (income → budget → expense categories) and pie chart analysis
+- Category management (rename, delete, merge)
+- Firebase Firestore sync with offline localStorage fallback
+- PWA — installable, works offline
 
-## Run Locally
+## Tech Stack
 
-**Prerequisites:** Node.js
+| Layer | Tech |
+|---|---|
+| Build | Vite + TypeScript |
+| UI | React, Tailwind CSS |
+| Charts | Recharts |
+| Backend | Firebase Auth + Firestore |
+| Notifications | Firebase Cloud Messaging |
+| Deployment | GitHub Pages via GitHub Actions |
 
-1. Install dependencies:
-   `npm install`
-2. Run the app:
-   `npm run dev`
+## Design
 
-## Docker
+Custom monochromatic design system ("Technical Alchemist") — JetBrains Mono, surface-token hierarchy, glassmorphism on floating elements. No third-party component library.
+
+## Local Development
 
 ```bash
-docker build -t moneyboy .
-docker run -p 80:80 moneyboy
+npm install
+npm run dev
 ```
+
+Requires a `.env.local` with:
+
+```
+VITE_FIREBASE_API_KEY=your_key
+```
+
+## Deployment
+
+Automatic — every push to `main` triggers the GitHub Actions workflow (`.github/workflows/deploy-pages.yml`), builds the app, and deploys to the `gh-pages` branch.
+
+Live at **[geld.mfrh.xyz](https://geld.mfrh.xyz)**
