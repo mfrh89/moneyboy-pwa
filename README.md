@@ -21,7 +21,7 @@ Personal budget PWA for monthly cash flow management. Track income, fixed and va
 | Charts | Recharts |
 | Backend | Firebase Auth + Firestore |
 | Notifications | Firebase Cloud Messaging |
-| Deployment | GitHub Pages via GitHub Actions |
+| Deployment | Coolify (Git-based, Dockerfile) |
 
 ## Design
 
@@ -42,4 +42,4 @@ VITE_FIREBASE_API_KEY=your_key
 
 ## Deployment
 
-Automatic — every push to `main` triggers the GitHub Actions workflow (`.github/workflows/deploy-pages.yml`), builds the app, and deploys to the `gh-pages` branch.
+Hosted on Coolify. Every push to `main` triggers an automatic build and deploy via the project's Dockerfile — no manual steps required.
