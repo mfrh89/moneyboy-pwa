@@ -51,8 +51,8 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
 
   const handleTestNotification = () => {
     if (permissionStatus === 'granted') {
-      new Notification('Moneyboy Test', {
-        body: 'Push-Benachrichtigungen funktionieren!',
+      new Notification('[Test] 💳 Abo-Verlängerung', {
+        body: 'Beispiel-Abo verlängert sich in 2 Tagen',
         icon: '/icon-192.png',
         badge: '/icon-192.png'
       });
@@ -160,6 +160,13 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
             </button>
           )}
         </div>
+      </div>
+
+      {/* Notification Timing Info */}
+      <div className="bg-surface-low rounded-ds-md p-4">
+        <p className="text-xs text-on-surface-variant">
+          Benachrichtigungen werden 2 Tage vor dem Datum gesendet, das im Feld <span className="font-bold text-on-surface">Wird verlängert am</span> gespeichert ist.
+        </p>
       </div>
 
       {/* Info Box */}

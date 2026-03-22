@@ -160,8 +160,8 @@ export const EditModal: React.FC<EditModalProps> = ({
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/10 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-surface-lowest rounded-ds-xl w-full max-w-md shadow-float animate-in fade-in zoom-in duration-200 my-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/10 backdrop-blur-sm">
+      <div className="bg-surface-lowest rounded-ds-xl w-full max-w-md shadow-float animate-in fade-in zoom-in duration-200 max-h-[calc(100dvh-4rem)] flex flex-col">
         <div className="flex justify-between items-center p-4 bg-surface-low rounded-t-[24px] sticky top-0 z-10">
           <h2 className="text-[1.25rem] font-semibold text-on-surface pl-2">
             {initialItem ? 'Eintrag bearbeiten' : 'Neuer Eintrag'}
@@ -175,7 +175,7 @@ export const EditModal: React.FC<EditModalProps> = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto flex-1">
 
           {/* Toggle Type */}
           <div className="flex bg-surface-mid p-1 rounded-ds-md">
@@ -419,7 +419,7 @@ export const EditModal: React.FC<EditModalProps> = ({
 
               {/* Cancellation Deadline */}
               <DatePicker
-                label="Kündigungsfrist (optional)"
+                label="Wird verlängert am (optional)"
                 value={subscriptionCancellationDeadline}
                 onChange={setSubscriptionCancellationDeadline}
                 disabled={isSubmitting}
