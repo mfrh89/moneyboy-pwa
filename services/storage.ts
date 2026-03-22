@@ -118,7 +118,7 @@ const initFirebase = () => {
       
       if (auth && db) {
         const isCustom = localStorage.getItem(LOCAL_CONFIG_KEY) !== null;
-        console.log(`Firebase initialized successfully (${isCustom ? 'Custom' : 'Default'}) connected to:`, currentConfig.projectId);
+        // Firebase initialized successfully
       } else {
         // If either essential service failed, force offline mode completely to prevent partial failures
         console.log('Firebase services incomplete. Forcing Offline Mode.');
