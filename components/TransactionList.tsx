@@ -78,7 +78,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
               <div
                 key={item.id}
                 onClick={() => onEdit(item)}
-                className="group flex items-center justify-between p-3 rounded-ds-md can-hover:hover:bg-surface-low transition-all cursor-pointer"
+                className="group flex items-center justify-between p-3 rounded-ds-md can-hover:hover:bg-surface-mid transition-all cursor-pointer"
               >
                 <div className="flex flex-col">
                   <div className="flex items-center gap-2">
