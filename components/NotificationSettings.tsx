@@ -51,8 +51,8 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
 
   const handleTestNotification = () => {
     if (permissionStatus === 'granted') {
-      new Notification('Moneyboy Test', {
-        body: 'Push-Benachrichtigungen funktionieren!',
+      new Notification('[Test] 💳 Abo-Verlängerung', {
+        body: 'Beispiel-Abo verlängert sich in 2 Tagen',
         icon: '/icon-192.png',
         badge: '/icon-192.png'
       });
@@ -89,10 +89,10 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
       {/* Status Card */}
       <div className={`rounded-ds-md p-4 ${
         permissionStatus === 'granted'
-          ? 'bg-surface-low'
-          : permissionStatus === 'denied'
           ? 'bg-surface-high'
-          : 'bg-surface-low'
+          : permissionStatus === 'denied'
+          ? 'bg-surface-highest'
+          : 'bg-surface-high'
       }`}>
         <div className="flex items-center gap-3 mb-3">
           {permissionStatus === 'granted' ? (
@@ -162,6 +162,13 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
         </div>
       </div>
 
+      {/* Notification Timing Info */}
+      <div className="bg-surface-low rounded-ds-md p-4">
+        <p className="text-xs text-on-surface-variant">
+          Benachrichtigungen werden 2 Tage vor dem Datum gesendet, das im Feld <span className="font-bold text-on-surface">Wird verlängert am</span> gespeichert ist.
+        </p>
+      </div>
+
       {/* Info Box */}
       {!isFirebaseActive && (
         <div className="bg-surface-high rounded-ds-md p-4">
@@ -181,7 +188,7 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
 
       {/* iOS Warning */}
       {/iPhone|iPad|iPod/.test(navigator.userAgent) && (
-        <div className="bg-surface-low rounded-ds-md p-4">
+        <div className="bg-surface-high rounded-ds-md p-4">
           <div className="flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-status-info flex-shrink-0 mt-0.5" />
             <div>

@@ -494,7 +494,7 @@ const App: React.FC = () => {
                     {/* User Section */}
                     <div>
                         <h3 className="text-[1.25rem] font-semibold text-on-surface mb-3">Benutzerkonto</h3>
-                        <div className="p-4 bg-surface-low rounded-ds-md flex items-center justify-between">
+                        <div className="p-4 bg-surface-high rounded-ds-md flex items-center justify-between">
                              <div className="flex items-center gap-3">
                                  <div className="w-10 h-10 rounded-full bg-surface-high flex items-center justify-center text-on-surface font-bold">
                                      {user.email ? user.email[0].toUpperCase() : '?'}
@@ -530,7 +530,7 @@ const App: React.FC = () => {
                             {!isLive && (
                                 <button
                                 onClick={() => setIsConfigOpen(true)}
-                                className="w-full flex items-center justify-between p-4 bg-surface-low hover:bg-surface-mid rounded-ds-md transition-colors group"
+                                className="w-full flex items-center justify-between p-4 bg-surface-mid hover:bg-surface-high rounded-ds-md transition-colors group"
                                 >
                                 <div className="flex items-center gap-3">
                                     <Cloud className="w-5 h-5 text-status-info" />
@@ -546,7 +546,7 @@ const App: React.FC = () => {
                             {isLive && (
                                 <button
                                 onClick={handleDisconnect}
-                                className="w-full flex items-center justify-between p-4 bg-surface-low hover:bg-surface-mid rounded-ds-md transition-colors group"
+                                className="w-full flex items-center justify-between p-4 bg-surface-mid hover:bg-surface-high rounded-ds-md transition-colors group"
                                 >
                                 <div className="flex items-center gap-3">
                                     <Cloud className="w-5 h-5 text-status-info" />

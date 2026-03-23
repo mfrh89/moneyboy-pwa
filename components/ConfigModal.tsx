@@ -53,20 +53,20 @@ export const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, onSav
         </div>
 
         <div className="p-6 space-y-4">
-          <div className="bg-surface-low p-4 rounded-ds-md text-sm text-on-surface">
+          <div className="bg-surface-high p-4 rounded-ds-md text-sm text-on-surface">
             <p className="font-semibold mb-1 text-status-info">So geht's:</p>
             <ol className="list-decimal pl-4 space-y-1 text-on-surface-variant">
                 <li>Erstelle ein Projekt auf <a href="https://console.firebase.google.com" target="_blank" className="underline text-status-info">console.firebase.google.com</a></li>
                 <li>Aktiviere <strong>Authentication</strong> (Email/Password)</li>
                 <li>Aktiviere <strong>Firestore Database</strong></li>
-                <li>Gehe zu Projekteinstellungen, erstelle eine Web App und kopiere die <code className="bg-surface-high px-1 rounded-ds-xs">firebaseConfig</code> hier rein.</li>
+                <li>Gehe zu Projekteinstellungen, erstelle eine Web App und kopiere die <code className="bg-surface-highest px-1 rounded-ds-xs">firebaseConfig</code> hier rein.</li>
             </ol>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-on-surface-variant mb-1">Firebase Config (JSON)</label>
             <textarea
-              className="w-full h-40 font-mono text-xs p-3 rounded-ds-md bg-surface-low text-on-surface focus:ring-2 focus:ring-primary focus:bg-surface-highest outline-none transition-all"
+              className="w-full h-40 font-mono text-xs p-3 rounded-ds-md bg-surface-mid text-on-surface focus:ring-2 focus:ring-primary focus:bg-surface-highest outline-none transition-all"
               placeholder={'{ "apiKey": "...", "authDomain": "...", ... }'}
               value={jsonConfig}
               onChange={(e) => {

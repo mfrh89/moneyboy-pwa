@@ -37,7 +37,7 @@ export const SubscriptionAlert: React.FC<SubscriptionAlertProps> = ({ subscripti
           const cancellationDeadline = sub.subscriptionCancellationDeadline;
 
           const relevantDate = cancellationDeadline && cancellationDeadline < (nextBilling || Infinity)
-            ? { timestamp: cancellationDeadline, label: 'Kündigen bis', isCancellation: true }
+            ? { timestamp: cancellationDeadline, label: 'Wird verlängert am', isCancellation: true }
             : { timestamp: nextBilling!, label: 'Verlängerung', isCancellation: false };
 
           const timeDiff = getTimeDiffText(relevantDate.timestamp);
