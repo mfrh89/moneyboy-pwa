@@ -160,7 +160,14 @@ export const EditModal: React.FC<EditModalProps> = ({
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/10 backdrop-blur-sm overflow-y-auto">
+    <div
+      className="fixed inset-0 z-50 bg-primary/10 backdrop-blur-sm touch-none"
+      onTouchMove={(e) => e.preventDefault()}
+    >
+      <div
+        className="flex items-center justify-center p-4 overflow-y-auto h-full overscroll-contain touch-pan-y"
+        onTouchMove={(e) => e.stopPropagation()}
+      >
       <div className="bg-surface-lowest rounded-ds-xl w-full max-w-md shadow-float animate-in fade-in zoom-in duration-200 my-8">
         <div className="flex justify-between items-center p-4 bg-surface-low rounded-t-[24px] sticky top-0 z-10">
           <h2 className="text-[1.25rem] font-semibold text-on-surface pl-2">
@@ -459,6 +466,7 @@ export const EditModal: React.FC<EditModalProps> = ({
             </button>
           </div>
         </form>
+      </div>
       </div>
     </div>
   );
