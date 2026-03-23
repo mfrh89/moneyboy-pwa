@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Save, Trash2, Loader2, CreditCard, Users, ChevronDown, Check, Repeat, Calendar, AlertTriangle } from 'lucide-react';
+import { X, Save, Trash2, Loader2, CreditCard, Users, ChevronDown, Check, Repeat } from 'lucide-react';
 import { FinanceItem, TransactionType, SubscriptionCycle } from '../types';
 import { DatePicker } from './DatePicker';
 
@@ -36,7 +36,6 @@ export const EditModal: React.FC<EditModalProps> = ({
 
   // Subscription state
   const [isSubscription, setIsSubscription] = useState(false);
-  const [subscriptionNextBilling, setSubscriptionNextBilling] = useState('');
   const [subscriptionCancellationDeadline, setSubscriptionCancellationDeadline] = useState('');
   const [subscriptionCycle, setSubscriptionCycle] = useState<SubscriptionCycle>('monthly');
 
@@ -56,7 +55,6 @@ export const EditModal: React.FC<EditModalProps> = ({
         setIsFlexible(!!initialItem.isFlexible);
         setIsSplit(!!initialItem.isSplit);
         setIsSubscription(!!initialItem.isSubscription);
-        setSubscriptionNextBilling(initialItem.subscriptionNextBilling ? new Date(initialItem.subscriptionNextBilling).toISOString().split('T')[0] : '');
         setSubscriptionCancellationDeadline(initialItem.subscriptionCancellationDeadline ? new Date(initialItem.subscriptionCancellationDeadline).toISOString().split('T')[0] : '');
         setSubscriptionCycle(initialItem.subscriptionCycle || 'monthly');
       } else {
@@ -67,7 +65,6 @@ export const EditModal: React.FC<EditModalProps> = ({
         setIsFlexible(defaultIsFlexible);
         setIsSplit(false);
         setIsSubscription(defaultIsSubscription);
-        setSubscriptionNextBilling('');
         setSubscriptionCancellationDeadline('');
         setSubscriptionCycle('monthly');
       }
@@ -120,9 +117,6 @@ export const EditModal: React.FC<EditModalProps> = ({
         isSplit: type === 'expense' ? isSplit : false,
         createdAt: initialItem?.createdAt || Date.now(),
         isSubscription: type === 'expense' ? isSubscription : false,
-        subscriptionNextBilling: (type === 'expense' && isSubscription && subscriptionNextBilling)
-          ? new Date(subscriptionNextBilling).getTime()
-          : undefined,
         subscriptionCancellationDeadline: (type === 'expense' && isSubscription && subscriptionCancellationDeadline)
           ? new Date(subscriptionCancellationDeadline).getTime()
           : undefined,
@@ -407,15 +401,6 @@ export const EditModal: React.FC<EditModalProps> = ({
                   ))}
                 </div>
               </div>
-
-              {/* Next Billing Date */}
-              <DatePicker
-                label="Nächste Abbuchung"
-                value={subscriptionNextBilling}
-                onChange={setSubscriptionNextBilling}
-                disabled={isSubmitting}
-                placeholder="Datum wählen"
-              />
 
               {/* Cancellation Deadline */}
               <DatePicker
