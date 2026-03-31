@@ -183,7 +183,7 @@ export const EditModal: React.FC<EditModalProps> = ({
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div className="flex items-center justify-center p-4 h-full">
-      <div className="bg-surface-lowest rounded-ds-xl w-full max-w-md shadow-float animate-in fade-in zoom-in duration-200 flex flex-col max-h-[calc(100vh-2rem)]">
+      <div className="bg-surface-lowest rounded-ds-xl w-full max-w-md shadow-float animate-in fade-in zoom-in duration-200 flex flex-col max-h-[min(680px,85vh)]">
         <div className="flex justify-between items-center p-4 bg-surface-low rounded-t-[24px] shrink-0">
           <h2 className="text-[1.25rem] font-semibold text-on-surface pl-2">
             {initialItem ? 'Eintrag bearbeiten' : 'Neuer Eintrag'}
