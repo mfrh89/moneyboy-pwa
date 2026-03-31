@@ -179,19 +179,12 @@ export const EditModal: React.FC<EditModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-primary/10 backdrop-blur-sm overflow-y-auto overscroll-none"
-      onTouchMove={(e) => {
-        // Only allow scrolling within the modal content
-        if (!e.currentTarget.contains(e.target as Node)) {
-          e.preventDefault();
-        }
-      }}
+      className="fixed inset-0 z-50 bg-primary/10 backdrop-blur-sm"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div
-        className="flex items-center justify-center p-4 min-h-full"
-      >
-      <div className="bg-surface-lowest rounded-ds-xl w-full max-w-md shadow-float animate-in fade-in zoom-in duration-200 my-8">
-        <div className="flex justify-between items-center p-4 bg-surface-low rounded-t-[24px] sticky top-0 z-10">
+      <div className="flex items-center justify-center p-4 h-full">
+      <div className="bg-surface-lowest rounded-ds-xl w-full max-w-md shadow-float animate-in fade-in zoom-in duration-200 flex flex-col max-h-[calc(100vh-2rem)]">
+        <div className="flex justify-between items-center p-4 bg-surface-low rounded-t-[24px] shrink-0">
           <h2 className="text-[1.25rem] font-semibold text-on-surface pl-2">
             {initialItem ? 'Eintrag bearbeiten' : 'Neuer Eintrag'}
           </h2>
@@ -204,7 +197,7 @@ export const EditModal: React.FC<EditModalProps> = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto overscroll-contain [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden">
 
           {/* Toggle Type */}
           <div className="flex bg-surface-mid p-1 rounded-ds-md">
