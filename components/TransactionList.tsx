@@ -1,13 +1,14 @@
 
 import React, { useState } from 'react';
 import { FinanceItem } from '../types';
-import { Pencil, Plus, Users, Home, Repeat, Filter } from 'lucide-react';
+import { Plus, Users, Home, Repeat, Filter, Eye, EyeOff } from 'lucide-react';
 
 interface TransactionListProps {
   title: string;
   items: FinanceItem[];
   onEdit: (item: FinanceItem) => void;
   onAdd?: () => void;
+  onToggleExcluded?: (item: FinanceItem) => void;
   emptyMessage: string;
   accentColor?: string;
   showSubscriptionFilter?: boolean;
@@ -18,6 +19,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
   items,
   onEdit,
   onAdd,
+  onToggleExcluded,
   emptyMessage,
   accentColor = 'text-on-surface',
   showSubscriptionFilter = false
@@ -67,7 +69,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
         </div>
       </div>
 
-      <div className="p-3">
+      <div className="py-3">
         {filteredItems.length === 0 ? (
           <div className="p-8 text-center text-outline-variant text-sm">
             {showOnlySubscriptions ? 'Keine Abos vorhanden' : emptyMessage}
@@ -78,7 +80,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
               <div
                 key={item.id}
                 onClick={() => onEdit(item)}
-                className="group flex items-center justify-between p-3 rounded-ds-md can-hover:hover:bg-surface-mid transition-all cursor-pointer"
+                className={`group flex items-center justify-between py-3 px-4 rounded-ds-md can-hover:hover:bg-surface-mid transition-all cursor-pointer ${item.excluded ? 'opacity-50' : ''}`}
               >
                 <div className="flex flex-col">
                   <div className="flex items-center gap-2">
@@ -100,8 +102,20 @@ export const TransactionList: React.FC<TransactionListProps> = ({
                   <span className="text-[0.6875rem] text-on-surface-variant font-medium tracking-[0.08em] uppercase">{item.category}</span>
                 </div>
                 <div className="flex items-center gap-2">
+                  {onToggleExcluded && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onToggleExcluded(item); }}
+                      className={`transition-opacity ${item.excluded ? 'opacity-60' : 'opacity-0 can-hover:group-hover:opacity-30'}`}
+                      title={item.excluded ? 'Aus Berechnung ausgeschlossen' : 'Aus Berechnung ausschließen'}
+                    >
+                      {item.excluded
+                        ? <EyeOff className="w-3.5 h-3.5 text-on-surface-variant" />
+                        : <Eye className="w-3.5 h-3.5 text-on-surface-variant" />
+                      }
+                    </button>
+                  )}
                   <div className="flex flex-col items-end">
-                    <span className={`font-mono font-bold text-sm ${item.type === 'income' ? 'text-status-success' : 'text-on-surface'}`}>
+                    <span className={`font-mono font-bold text-sm ${item.type === 'income' ? 'text-status-success' : 'text-on-surface'} ${item.excluded ? 'line-through' : ''}`}>
                       {item.type === 'expense' ? '-' : '+'}
                       {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(item.amount)}
                     </span>
@@ -111,7 +125,6 @@ export const TransactionList: React.FC<TransactionListProps> = ({
                       </span>
                     )}
                   </div>
-                  <Pencil className="w-3 h-3 text-outline-variant opacity-0 can-hover:group-hover:opacity-100 transition-opacity" />
                 </div>
               </div>
             ))}

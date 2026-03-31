@@ -7,9 +7,10 @@ interface WohnenViewProps {
   total: number;
   onEdit: (item: FinanceItem) => void;
   onAdd: () => void;
+  onToggleExcluded?: (item: FinanceItem) => void;
 }
 
-export const WohnenView: React.FC<WohnenViewProps> = ({ items, total, onEdit, onAdd }) => {
+export const WohnenView: React.FC<WohnenViewProps> = ({ items, total, onEdit, onAdd, onToggleExcluded }) => {
   const format = (val: number) => new Intl.NumberFormat('de-DE', {
     style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2,
   }).format(val);
@@ -42,6 +43,7 @@ export const WohnenView: React.FC<WohnenViewProps> = ({ items, total, onEdit, on
         items={items}
         onEdit={onEdit}
         onAdd={onAdd}
+        onToggleExcluded={onToggleExcluded}
         emptyMessage="Noch keine Wohnkosten erfasst."
         accentColor="text-status-info"
       />

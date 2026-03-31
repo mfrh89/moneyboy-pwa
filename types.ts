@@ -14,6 +14,8 @@ export interface FinanceItem {
   isWohnkosten?: boolean; // True if part of housing costs
   createdAt: number;
   
+  excluded?: boolean; // True if excluded from sum calculations
+
   // Subscription properties
   isSubscription?: boolean;
   subscriptionNextBilling?: number; // Timestamp of next billing date

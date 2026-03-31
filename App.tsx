@@ -210,9 +210,9 @@ const App: React.FC = () => {
 
   // Derived State
   const summary = useMemo(() => {
-    const income = items.filter(i => i.type === 'income').reduce((sum, i) => sum + i.amount, 0);
-    const fixedExpenses = items.filter(i => i.type === 'expense' && !i.isFlexible).reduce((sum, i) => sum + i.amount, 0);
-    const flexibleExpenses = items.filter(i => i.type === 'expense' && i.isFlexible).reduce((sum, i) => sum + i.amount, 0);
+    const income = items.filter(i => i.type === 'income' && !i.excluded).reduce((sum, i) => sum + i.amount, 0);
+    const fixedExpenses = items.filter(i => i.type === 'expense' && !i.isFlexible && !i.excluded).reduce((sum, i) => sum + i.amount, 0);
+    const flexibleExpenses = items.filter(i => i.type === 'expense' && i.isFlexible && !i.excluded).reduce((sum, i) => sum + i.amount, 0);
     const totalExpenses = fixedExpenses + flexibleExpenses;
 
     return {
@@ -233,7 +233,7 @@ const App: React.FC = () => {
   [items]);
 
   const wohnkostenTotal = useMemo(() =>
-    wohnkostenItems.reduce((sum, i) => sum + i.amount, 0),
+    wohnkostenItems.filter(i => !i.excluded).reduce((sum, i) => sum + i.amount, 0),
   [wohnkostenItems]);
 
   const aboItems = useMemo(() =>
@@ -241,7 +241,7 @@ const App: React.FC = () => {
   [items]);
 
   const aboTotal = useMemo(() =>
-    aboItems.reduce((sum, i) => sum + i.amount, 0),
+    aboItems.filter(i => !i.excluded).reduce((sum, i) => sum + i.amount, 0),
   [aboItems]);
 
   const WOHNKOSTEN_SUMMARY_ID = '__wohnkosten_summary__';
@@ -309,6 +309,10 @@ const App: React.FC = () => {
         ...(isAboModal ? { isSubscription: true } : {}),
       });
     }
+  };
+
+  const handleToggleExcluded = async (item: FinanceItem) => {
+    await updateItem(user, { ...item, excluded: !item.excluded });
   };
 
   const handleDelete = async (id: string) => {
@@ -588,6 +592,7 @@ const App: React.FC = () => {
             total={wohnkostenTotal}
             onEdit={openEditModal}
             onAdd={openAddWohnkostenModal}
+            onToggleExcluded={handleToggleExcluded}
           />
         )}
 
@@ -598,6 +603,7 @@ const App: React.FC = () => {
             total={aboTotal}
             onEdit={openEditModal}
             onAdd={openAddAboModal}
+            onToggleExcluded={handleToggleExcluded}
           />
         )}
 
@@ -664,6 +670,7 @@ const App: React.FC = () => {
                         items={incomeItems}
                         onEdit={openEditModal}
                         onAdd={() => openAddModal('income')}
+                        onToggleExcluded={handleToggleExcluded}
                         emptyMessage="Keine Einkünfte eingetragen."
                         accentColor="text-status-success"
                      />
@@ -672,6 +679,7 @@ const App: React.FC = () => {
                         items={fixedExpenseItems}
                         onEdit={openEditModal}
                         onAdd={() => openAddModal('expense', false)}
+                        onToggleExcluded={handleToggleExcluded}
                         emptyMessage="Keine Fixkosten eingetragen."
                         accentColor="text-status-error"
                         showSubscriptionFilter={true}
@@ -681,6 +689,7 @@ const App: React.FC = () => {
                         items={flexibleExpenseItems}
                         onEdit={openEditModal}
                         onAdd={() => openAddModal('expense', true)}
+                        onToggleExcluded={handleToggleExcluded}
                         emptyMessage="Keine variablen Ausgaben."
                         accentColor="text-status-warning"
                         showSubscriptionFilter={true}
