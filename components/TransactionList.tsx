@@ -55,7 +55,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
                 </button>
             )}
             <span className="text-xs font-bold px-2 py-1 bg-surface-high text-on-surface rounded-ds-md min-w-[28px] h-[26px] flex items-center justify-center">
-                {filteredItems.length}
+                {items.length}
             </span>
             {onAdd && (
                 <button
@@ -105,7 +105,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
                   {onToggleExcluded && (
                     <button
                       onClick={(e) => { e.stopPropagation(); onToggleExcluded(item); }}
-                      className="transition-opacity opacity-100"
+                      className={`w-11 h-11 flex items-center justify-center transition-opacity ${item.excluded ? 'opacity-60' : 'opacity-0 can-hover:group-hover:opacity-30'}`}
                       title={item.excluded ? 'Aus Berechnung ausgeschlossen' : 'Aus Berechnung ausschließen'}
                     >
                       {item.excluded
