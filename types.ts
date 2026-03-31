@@ -1,7 +1,7 @@
 
 export type TransactionType = 'income' | 'expense';
 
-export type SubscriptionCycle = 'monthly' | 'yearly' | 'quarterly';
+export type SubscriptionCycle = 'monthly' | 'yearly';
 
 export interface FinanceItem {
   id: string;

@@ -79,8 +79,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
 
   const handleDateSelect = (day: number) => {
     const { year, month } = getDaysInMonth(currentMonth);
-    const selectedDate = new Date(year, month, day);
-    const isoString = selectedDate.toISOString().split('T')[0];
+    const isoString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     onChange(isoString);
     setIsOpen(false);
   };
@@ -203,7 +202,8 @@ export const DatePicker: React.FC<DatePickerProps> = ({
             <button
               type="button"
               onClick={() => {
-                const today = new Date().toISOString().split('T')[0];
+                const now = new Date();
+                const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
                 onChange(today);
                 setIsOpen(false);
               }}

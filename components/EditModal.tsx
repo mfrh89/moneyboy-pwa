@@ -45,6 +45,24 @@ export const EditModal: React.FC<EditModalProps> = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Lock body scroll when modal is open (prevents iOS scroll chaining)
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.top = `-${window.scrollY}px`;
+    }
+    return () => {
+      const scrollY = document.body.style.top;
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.top = '';
+      window.scrollTo(0, parseInt(scrollY || '0') * -1);
+    };
+  }, [isOpen]);
+
   useEffect(() => {
     if (isOpen) {
       if (initialItem) {
@@ -161,12 +179,16 @@ export const EditModal: React.FC<EditModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-primary/10 backdrop-blur-sm touch-none"
-      onTouchMove={(e) => e.preventDefault()}
+      className="fixed inset-0 z-50 bg-primary/10 backdrop-blur-sm overflow-y-auto overscroll-none"
+      onTouchMove={(e) => {
+        // Only allow scrolling within the modal content
+        if (!e.currentTarget.contains(e.target as Node)) {
+          e.preventDefault();
+        }
+      }}
     >
       <div
-        className="flex items-center justify-center p-4 overflow-y-auto h-full overscroll-contain touch-pan-y"
-        onTouchMove={(e) => e.stopPropagation()}
+        className="flex items-center justify-center p-4 min-h-full"
       >
       <div className="bg-surface-lowest rounded-ds-xl w-full max-w-md shadow-float animate-in fade-in zoom-in duration-200 my-8">
         <div className="flex justify-between items-center p-4 bg-surface-low rounded-t-[24px] sticky top-0 z-10">
@@ -396,8 +418,8 @@ export const EditModal: React.FC<EditModalProps> = ({
               {/* Billing Cycle */}
               <div>
                 <label className="block text-sm font-bold text-on-surface-variant mb-1">Abrechnungszyklus</label>
-                <div className="grid grid-cols-3 gap-2">
-                  {(['monthly', 'quarterly', 'yearly'] as SubscriptionCycle[]).map((cycle) => (
+                <div className="grid grid-cols-2 gap-2">
+                  {(['monthly', 'yearly'] as SubscriptionCycle[]).map((cycle) => (
                     <button
                       key={cycle}
                       type="button"
@@ -409,7 +431,7 @@ export const EditModal: React.FC<EditModalProps> = ({
                           : 'bg-surface-mid text-on-surface-variant hover:bg-surface-high'
                       }`}
                     >
-                      {cycle === 'monthly' ? 'Monatlich' : cycle === 'quarterly' ? 'Quartalsweise' : 'Jährlich'}
+                      {cycle === 'monthly' ? 'Monatlich' : 'Jährlich'}
                     </button>
                   ))}
                 </div>
