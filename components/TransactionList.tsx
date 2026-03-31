@@ -105,7 +105,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
                   {onToggleExcluded && (
                     <button
                       onClick={(e) => { e.stopPropagation(); onToggleExcluded(item); }}
-                      className={`transition-opacity ${item.excluded ? 'opacity-60' : 'opacity-0 can-hover:group-hover:opacity-30'}`}
+                      className="transition-opacity opacity-100"
                       title={item.excluded ? 'Aus Berechnung ausgeschlossen' : 'Aus Berechnung ausschließen'}
                     >
                       {item.excluded
