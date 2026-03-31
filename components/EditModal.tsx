@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Save, Trash2, Loader2, CreditCard, Users, ChevronDown, Check, Repeat } from 'lucide-react';
+import { X, Save, Trash2, Loader2, CreditCard, Users, ChevronDown, Check, Repeat, Calendar, AlertTriangle } from 'lucide-react';
 import { FinanceItem, TransactionType, SubscriptionCycle } from '../types';
 import { DatePicker } from './DatePicker';
 
@@ -36,6 +36,7 @@ export const EditModal: React.FC<EditModalProps> = ({
 
   // Subscription state
   const [isSubscription, setIsSubscription] = useState(false);
+  const [subscriptionNextBilling, setSubscriptionNextBilling] = useState('');
   const [subscriptionCancellationDeadline, setSubscriptionCancellationDeadline] = useState('');
   const [subscriptionCycle, setSubscriptionCycle] = useState<SubscriptionCycle>('monthly');
 
@@ -55,6 +56,7 @@ export const EditModal: React.FC<EditModalProps> = ({
         setIsFlexible(!!initialItem.isFlexible);
         setIsSplit(!!initialItem.isSplit);
         setIsSubscription(!!initialItem.isSubscription);
+        setSubscriptionNextBilling(initialItem.subscriptionNextBilling ? new Date(initialItem.subscriptionNextBilling).toISOString().split('T')[0] : '');
         setSubscriptionCancellationDeadline(initialItem.subscriptionCancellationDeadline ? new Date(initialItem.subscriptionCancellationDeadline).toISOString().split('T')[0] : '');
         setSubscriptionCycle(initialItem.subscriptionCycle || 'monthly');
       } else {
@@ -65,6 +67,7 @@ export const EditModal: React.FC<EditModalProps> = ({
         setIsFlexible(defaultIsFlexible);
         setIsSplit(false);
         setIsSubscription(defaultIsSubscription);
+        setSubscriptionNextBilling('');
         setSubscriptionCancellationDeadline('');
         setSubscriptionCycle('monthly');
       }
@@ -117,6 +120,9 @@ export const EditModal: React.FC<EditModalProps> = ({
         isSplit: type === 'expense' ? isSplit : false,
         createdAt: initialItem?.createdAt || Date.now(),
         isSubscription: type === 'expense' ? isSubscription : false,
+        subscriptionNextBilling: (type === 'expense' && isSubscription && subscriptionNextBilling)
+          ? new Date(subscriptionNextBilling).getTime()
+          : undefined,
         subscriptionCancellationDeadline: (type === 'expense' && isSubscription && subscriptionCancellationDeadline)
           ? new Date(subscriptionCancellationDeadline).getTime()
           : undefined,
@@ -154,8 +160,15 @@ export const EditModal: React.FC<EditModalProps> = ({
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/10 backdrop-blur-sm" onTouchMove={(e) => e.preventDefault()} style={{ touchAction: 'none' }}>
-      <div className="bg-surface-lowest rounded-ds-xl w-full max-w-md shadow-float animate-in fade-in zoom-in duration-200 max-h-[calc(100dvh-4rem)] flex flex-col">
+    <div
+      className="fixed inset-0 z-50 bg-primary/10 backdrop-blur-sm touch-none"
+      onTouchMove={(e) => e.preventDefault()}
+    >
+      <div
+        className="flex items-center justify-center p-4 overflow-y-auto h-full overscroll-contain touch-pan-y"
+        onTouchMove={(e) => e.stopPropagation()}
+      >
+      <div className="bg-surface-lowest rounded-ds-xl w-full max-w-md shadow-float animate-in fade-in zoom-in duration-200 my-8">
         <div className="flex justify-between items-center p-4 bg-surface-low rounded-t-[24px] sticky top-0 z-10">
           <h2 className="text-[1.25rem] font-semibold text-on-surface pl-2">
             {initialItem ? 'Eintrag bearbeiten' : 'Neuer Eintrag'}
@@ -169,7 +182,7 @@ export const EditModal: React.FC<EditModalProps> = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto overscroll-contain flex-1">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
 
           {/* Toggle Type */}
           <div className="flex bg-surface-mid p-1 rounded-ds-md">
@@ -204,7 +217,7 @@ export const EditModal: React.FC<EditModalProps> = ({
                     className={`flex items-center gap-2 p-2 rounded-ds-md cursor-pointer transition-all ${
                         isFlexible
                         ? 'bg-surface-highest'
-                        : 'bg-surface-mid hover:bg-surface-high'
+                        : 'bg-surface-low hover:bg-surface-mid'
                     }`}
                 >
                     <div className={`w-4 h-4 rounded-ds-xs flex items-center justify-center transition-colors ${
@@ -223,7 +236,7 @@ export const EditModal: React.FC<EditModalProps> = ({
                     className={`flex items-center gap-2 p-2 rounded-ds-md cursor-pointer transition-all ${
                         isSplit
                         ? 'bg-surface-highest'
-                        : 'bg-surface-mid hover:bg-surface-high'
+                        : 'bg-surface-low hover:bg-surface-mid'
                     }`}
                 >
                     <div className={`w-4 h-4 rounded-ds-xs flex items-center justify-center transition-colors ${
@@ -242,7 +255,7 @@ export const EditModal: React.FC<EditModalProps> = ({
                     className={`flex items-center gap-2 p-2 rounded-ds-md cursor-pointer transition-all ${
                         isSubscription
                         ? 'bg-surface-highest'
-                        : 'bg-surface-mid hover:bg-surface-high'
+                        : 'bg-surface-low hover:bg-surface-mid'
                     }`}
                 >
                     <div className={`w-4 h-4 rounded-ds-xs flex items-center justify-center transition-colors ${
@@ -265,7 +278,7 @@ export const EditModal: React.FC<EditModalProps> = ({
               disabled={isSubmitting}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-4 py-2 rounded-ds-md bg-surface-mid text-on-surface placeholder-outline-variant focus:ring-2 focus:ring-primary focus:bg-surface-highest outline-none transition-all disabled:bg-surface-low disabled:opacity-50"
+              className="w-full px-4 py-2 rounded-ds-md bg-surface-low text-on-surface placeholder-outline-variant focus:ring-2 focus:ring-primary focus:bg-surface-highest outline-none transition-all disabled:bg-surface-mid disabled:opacity-50"
               placeholder={type === 'income' ? 'z.B. Gehalt' : 'z.B. Miete, Netflix'}
             />
           </div>
@@ -283,7 +296,7 @@ export const EditModal: React.FC<EditModalProps> = ({
                     disabled={isSubmitting}
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
-                    className="w-full px-4 py-2 rounded-ds-md bg-surface-mid text-on-surface placeholder-outline-variant focus:ring-2 focus:ring-secondary focus:bg-surface-highest outline-none transition-all disabled:bg-surface-low disabled:opacity-50"
+                    className="w-full px-4 py-2 rounded-ds-md bg-surface-low text-on-surface placeholder-outline-variant focus:ring-2 focus:ring-secondary focus:bg-surface-highest outline-none transition-all disabled:bg-surface-mid disabled:opacity-50"
                     placeholder="Gesamtkosten"
                   />
                </div>
@@ -308,7 +321,7 @@ export const EditModal: React.FC<EditModalProps> = ({
                 disabled={isSubmitting}
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                className="w-full px-4 py-2 rounded-ds-md bg-surface-mid text-on-surface placeholder-outline-variant focus:ring-2 focus:ring-primary focus:bg-surface-highest outline-none transition-all disabled:bg-surface-low disabled:opacity-50"
+                className="w-full px-4 py-2 rounded-ds-md bg-surface-low text-on-surface placeholder-outline-variant focus:ring-2 focus:ring-primary focus:bg-surface-highest outline-none transition-all disabled:bg-surface-mid disabled:opacity-50"
                 placeholder="0.00"
                 />
             </div>
@@ -328,7 +341,7 @@ export const EditModal: React.FC<EditModalProps> = ({
                         setShowSuggestions(true);
                     }}
                     onFocus={() => setShowSuggestions(true)}
-                    className="w-full px-4 py-2 rounded-ds-md bg-surface-mid text-on-surface focus:ring-2 focus:ring-primary focus:bg-surface-highest outline-none transition-all disabled:bg-surface-low disabled:opacity-50 placeholder-outline-variant"
+                    className="w-full px-4 py-2 rounded-ds-md bg-surface-low text-on-surface focus:ring-2 focus:ring-primary focus:bg-surface-highest outline-none transition-all disabled:bg-surface-mid disabled:opacity-50 placeholder-outline-variant"
                     placeholder="Wähle oder erstelle..."
                     autoComplete="off"
                 />
@@ -374,7 +387,7 @@ export const EditModal: React.FC<EditModalProps> = ({
 
           {/* Subscription Details */}
           {type === 'expense' && isSubscription && (
-            <div className="space-y-4 p-4 rounded-ds-md bg-surface-high animate-in slide-in-from-top-2 duration-200">
+            <div className="space-y-4 p-4 rounded-ds-md bg-surface-low animate-in slide-in-from-top-2 duration-200">
               <div className="flex items-center gap-2 mb-2">
                 <Repeat className="w-4 h-4 text-status-info" />
                 <span className="text-[0.6875rem] font-medium text-status-info uppercase tracking-[0.08em]">ABO-DETAILS</span>
@@ -393,7 +406,7 @@ export const EditModal: React.FC<EditModalProps> = ({
                       className={`py-2 px-3 rounded-ds-md text-xs font-bold transition-all ${
                         subscriptionCycle === cycle
                           ? 'bg-primary text-on-primary'
-                          : 'bg-surface-highest text-on-surface-variant hover:bg-surface-highest'
+                          : 'bg-surface-mid text-on-surface-variant hover:bg-surface-high'
                       }`}
                     >
                       {cycle === 'monthly' ? 'Monatlich' : cycle === 'quarterly' ? 'Quartalsweise' : 'Jährlich'}
@@ -402,9 +415,18 @@ export const EditModal: React.FC<EditModalProps> = ({
                 </div>
               </div>
 
+              {/* Next Billing Date */}
+              <DatePicker
+                label="Nächste Abbuchung"
+                value={subscriptionNextBilling}
+                onChange={setSubscriptionNextBilling}
+                disabled={isSubmitting}
+                placeholder="Datum wählen"
+              />
+
               {/* Cancellation Deadline */}
               <DatePicker
-                label="Wird verlängert am (optional)"
+                label="Kündigungsfrist (optional)"
                 value={subscriptionCancellationDeadline}
                 onChange={setSubscriptionCancellationDeadline}
                 disabled={isSubmitting}
@@ -444,6 +466,7 @@ export const EditModal: React.FC<EditModalProps> = ({
             </button>
           </div>
         </form>
+      </div>
       </div>
     </div>
   );
