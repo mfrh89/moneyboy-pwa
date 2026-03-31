@@ -2,14 +2,20 @@
 
 // Workbox precaching — manifest injected by vite-plugin-pwa at build time
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-sw.js');
+workbox.precaching.cleanupOutdatedCaches();
 workbox.precaching.precacheAndRoute(self.__WB_MANIFEST || []);
 
 importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
 
-// Skip waiting immediately on install so new SW activates on next page load
-self.addEventListener('install', () => {
-  self.skipWaiting();
+// Skip waiting immediately — new SW becomes active without delay
+self.addEventListener('install', (event) => {
+  event.waitUntil(self.skipWaiting());
+});
+
+// Claim all open clients immediately so controllerchange fires → App.tsx triggers reload
+self.addEventListener('activate', (event) => {
+  event.waitUntil(self.clients.claim());
 });
 
 // This will be dynamically set by the app
