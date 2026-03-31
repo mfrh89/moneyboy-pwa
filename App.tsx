@@ -119,16 +119,25 @@ const App: React.FC = () => {
           });
 
           // PWA update detection
+          const trackInstalling = (worker: ServiceWorker) => {
+            worker.addEventListener('statechange', () => {
+              if (worker.state === 'installed' && navigator.serviceWorker.controller) {
+                setWaitingWorker(worker);
+              }
+            });
+          };
+
           if (registration.waiting && navigator.serviceWorker.controller) {
             setWaitingWorker(registration.waiting);
           }
+          // Handle SW already installing when this effect runs (race condition fix)
+          if (registration.installing) {
+            trackInstalling(registration.installing);
+          }
           registration.addEventListener('updatefound', () => {
-            const newWorker = registration.installing;
-            newWorker?.addEventListener('statechange', () => {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                setWaitingWorker(newWorker);
-              }
-            });
+            if (registration.installing) {
+              trackInstalling(registration.installing);
+            }
           });
 
           // Check for updates immediately on start + on every foreground + hourly
