@@ -104,7 +104,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
                   {onToggleExcluded && (
                     <button
                       onClick={(e) => { e.stopPropagation(); onToggleExcluded(item); }}
-                      className={`w-11 h-11 flex items-center justify-center transition-opacity ${item.excluded ? 'opacity-60' : 'opacity-0 can-hover:group-hover:opacity-30'}`}
+                      className={`w-11 h-11 flex items-center justify-center transition-opacity ${item.excluded ? 'opacity-60' : 'opacity-20 can-hover:opacity-0 can-hover:group-hover:opacity-30'}`}
                       title={item.excluded ? 'Aus Berechnung ausgeschlossen' : 'Aus Berechnung ausschließen'}
                     >
                       {item.excluded
