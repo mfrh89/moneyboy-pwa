@@ -78,8 +78,6 @@ const App: React.FC = () => {
   const [showMigrationBanner, setShowMigrationBanner] = useState(false);
   const [isMigrating, setIsMigrating] = useState(false);
 
-  // PWA Update State
-  const [waitingWorker, setWaitingWorker] = useState<ServiceWorker | null>(null);
   const cleanupRef = useRef<(() => void) | null>(null);
 
   const isLive = isFirebaseActive();
@@ -116,28 +114,6 @@ const App: React.FC = () => {
               type: 'FIREBASE_CONFIG',
               config: firebaseConfig
             });
-          });
-
-          // PWA update detection
-          const trackInstalling = (worker: ServiceWorker) => {
-            worker.addEventListener('statechange', () => {
-              if (worker.state === 'installed' && navigator.serviceWorker.controller) {
-                setWaitingWorker(worker);
-              }
-            });
-          };
-
-          if (registration.waiting && navigator.serviceWorker.controller) {
-            setWaitingWorker(registration.waiting);
-          }
-          // Handle SW already installing when this effect runs (race condition fix)
-          if (registration.installing) {
-            trackInstalling(registration.installing);
-          }
-          registration.addEventListener('updatefound', () => {
-            if (registration.installing) {
-              trackInstalling(registration.installing);
-            }
           });
 
           // Check for updates immediately on start + on every foreground + hourly
@@ -460,21 +436,6 @@ const App: React.FC = () => {
             </div>
         </div>
       </header>
-
-      {/* PWA Update Banner */}
-      {waitingWorker && (
-        <div className="bg-primary text-on-primary p-3 px-4 md:px-8 flex items-center justify-between animate-in slide-in-from-top duration-300">
-          <div className="flex items-center gap-2 text-sm font-medium">
-            <span>Update verfügbar</span>
-          </div>
-          <button
-            onClick={() => waitingWorker.postMessage({ type: 'SKIP_WAITING' })}
-            className="bg-on-primary text-primary px-3 py-1.5 rounded-ds-md text-xs font-bold hover:bg-surface-highest transition-colors"
-          >
-            Jetzt aktualisieren
-          </button>
-        </div>
-      )}
 
       {/* Migration Banner */}
       {showMigrationBanner && (

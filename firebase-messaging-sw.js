@@ -7,11 +7,9 @@ workbox.precaching.precacheAndRoute(self.__WB_MANIFEST || []);
 importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
 
-// Handle skip waiting for PWA updates
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
+// Skip waiting immediately on install so new SW activates on next page load
+self.addEventListener('install', () => {
+  self.skipWaiting();
 });
 
 // This will be dynamically set by the app
