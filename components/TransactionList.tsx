@@ -79,10 +79,9 @@ export const TransactionList: React.FC<TransactionListProps> = ({
             {filteredItems.map((item) => (
               <div
                 key={item.id}
-                onClick={() => onEdit(item)}
-                className={`group flex items-center justify-between py-3 px-4 rounded-ds-md can-hover:hover:bg-surface-mid transition-all cursor-pointer ${item.excluded ? 'opacity-50' : ''}`}
+                className={`group flex items-center justify-between py-3 px-4 rounded-ds-md can-hover:hover:bg-surface-mid transition-all ${item.excluded ? 'opacity-50' : ''}`}
               >
-                <div className="flex flex-col">
+                <div className="flex flex-col flex-1 min-w-0 cursor-pointer" onClick={() => onEdit(item)}>
                   <div className="flex items-center gap-2">
                     {item.isWohnkosten && (
                       <div className="p-0.5 rounded-ds-xs bg-surface-high text-status-info">
@@ -101,7 +100,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
                   </div>
                   <span className="text-[0.6875rem] text-on-surface-variant font-medium tracking-[0.08em] uppercase">{item.category}</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 shrink-0">
                   {onToggleExcluded && (
                     <button
                       onClick={(e) => { e.stopPropagation(); onToggleExcluded(item); }}
