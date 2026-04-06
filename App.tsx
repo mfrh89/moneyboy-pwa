@@ -26,11 +26,12 @@ import { CategoryManager } from './components/CategoryManager';
 import { SankeyChart } from './components/SankeyChart';
 import { WohnenView } from './components/WohnenView';
 import { AboView } from './components/AboView';
+import { WhatIfView } from './components/WhatIfView';
 import { SubscriptionAlert } from './components/SubscriptionAlert';
 import { NotificationSettings } from './components/NotificationSettings';
 import { checkAndNotifySubscriptions } from './services/subscriptionChecker';
 import { setupForegroundMessageHandler } from './services/notifications';
-import { LayoutDashboard, Plus, Settings, LogOut, Database, Cloud, Wifi, WifiOff, UploadCloud, Loader2, WalletCards, PieChart, Home, Repeat } from 'lucide-react';
+import { LayoutDashboard, Plus, Settings, LogOut, Database, Cloud, Wifi, WifiOff, UploadCloud, Loader2, WalletCards, PieChart, Home, Repeat, Lightbulb } from 'lucide-react';
 
 const DEFAULT_CATEGORIES = [
   'Wohnen',
@@ -585,6 +586,11 @@ const App: React.FC = () => {
             </div>
         )}
 
+        {/* What If View */}
+        {view === ViewState.WHATIF && (
+          <WhatIfView items={items} />
+        )}
+
         {/* Dashboard View */}
         {view === ViewState.DASHBOARD && (
             <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -674,7 +680,7 @@ const App: React.FC = () => {
         <div className="flex justify-around items-center max-w-lg mx-auto h-16 relative">
             <button
                 onClick={() => setView(ViewState.DASHBOARD)}
-                className={`flex flex-col items-center gap-1 w-20 transition-colors ${view === ViewState.DASHBOARD ? 'text-primary' : 'text-outline-variant can-hover:hover:text-on-surface-variant'}`}
+                className={`flex flex-col items-center gap-1 w-16 transition-colors ${view === ViewState.DASHBOARD ? 'text-primary' : 'text-outline-variant can-hover:hover:text-on-surface-variant'}`}
             >
                 <LayoutDashboard className="w-6 h-6" />
                 <span className="text-[10px] font-bold">Übersicht</span>
@@ -682,7 +688,7 @@ const App: React.FC = () => {
 
             <button
                 onClick={() => setView(ViewState.WOHNEN)}
-                className={`flex flex-col items-center gap-1 w-20 transition-colors ${view === ViewState.WOHNEN ? 'text-primary' : 'text-outline-variant can-hover:hover:text-on-surface-variant'}`}
+                className={`flex flex-col items-center gap-1 w-16 transition-colors ${view === ViewState.WOHNEN ? 'text-primary' : 'text-outline-variant can-hover:hover:text-on-surface-variant'}`}
             >
                 <Home className="w-6 h-6" />
                 <span className="text-[10px] font-bold">Wohnen</span>
@@ -690,7 +696,7 @@ const App: React.FC = () => {
 
             <button
                 onClick={() => setView(ViewState.ABOS)}
-                className={`flex flex-col items-center gap-1 w-20 transition-colors ${view === ViewState.ABOS ? 'text-primary' : 'text-outline-variant can-hover:hover:text-on-surface-variant'}`}
+                className={`flex flex-col items-center gap-1 w-16 transition-colors ${view === ViewState.ABOS ? 'text-primary' : 'text-outline-variant can-hover:hover:text-on-surface-variant'}`}
             >
                 <Repeat className="w-6 h-6" />
                 <span className="text-[10px] font-bold">Abos</span>
@@ -698,15 +704,23 @@ const App: React.FC = () => {
 
             <button
                 onClick={() => setView(ViewState.ANALYSIS)}
-                className={`flex flex-col items-center gap-1 w-20 transition-colors ${view === ViewState.ANALYSIS ? 'text-primary' : 'text-outline-variant can-hover:hover:text-on-surface-variant'}`}
+                className={`flex flex-col items-center gap-1 w-16 transition-colors ${view === ViewState.ANALYSIS ? 'text-primary' : 'text-outline-variant can-hover:hover:text-on-surface-variant'}`}
             >
                 <PieChart className="w-6 h-6" />
                 <span className="text-[10px] font-bold">Analyse</span>
             </button>
 
             <button
+                onClick={() => setView(ViewState.WHATIF)}
+                className={`flex flex-col items-center gap-1 w-16 transition-colors ${view === ViewState.WHATIF ? 'text-primary' : 'text-outline-variant can-hover:hover:text-on-surface-variant'}`}
+            >
+                <Lightbulb className="w-6 h-6" />
+                <span className="text-[10px] font-bold">Was wäre</span>
+            </button>
+
+            <button
                 onClick={() => setView(ViewState.SETTINGS)}
-                className={`flex flex-col items-center gap-1 w-20 transition-colors ${view === ViewState.SETTINGS ? 'text-primary' : 'text-outline-variant can-hover:hover:text-on-surface-variant'}`}
+                className={`flex flex-col items-center gap-1 w-16 transition-colors ${view === ViewState.SETTINGS ? 'text-primary' : 'text-outline-variant can-hover:hover:text-on-surface-variant'}`}
             >
                 <Settings className="w-6 h-6" />
                 <span className="text-[10px] font-bold">Settings</span>

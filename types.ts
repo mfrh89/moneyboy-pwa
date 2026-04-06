@@ -34,7 +34,8 @@ export enum ViewState {
   ANALYSIS = 'ANALYSIS',
   WOHNEN = 'WOHNEN',
   ABOS = 'ABOS',
-  SETTINGS = 'SETTINGS'
+  SETTINGS = 'SETTINGS',
+  WHATIF = 'WHATIF'
 }
 
 export interface FirebaseConfig {
