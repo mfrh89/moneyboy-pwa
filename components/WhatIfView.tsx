@@ -1,21 +1,11 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { FinanceItem, TransactionType } from '../types';
+import { subscribeToScenario, saveScenario } from '../services/storage';
 import { Plus, RotateCcw, Pencil, X, Check, Trash2, TrendingUp, TrendingDown, Minus } from 'lucide-react';
-
-const WHATIF_KEY = 'moneyboy_whatif_scenario';
-
-function loadScenario() {
-  try {
-    const raw = localStorage.getItem(WHATIF_KEY);
-    if (!raw) return null;
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
-}
 
 interface WhatIfViewProps {
   items: FinanceItem[];
+  user: any;
 }
 
 function calcSummary(items: FinanceItem[]) {
@@ -43,11 +33,11 @@ const fmt = (n: number) =>
     minimumFractionDigits: 0,
   }).format(n);
 
-export const WhatIfView: React.FC<WhatIfViewProps> = ({ items }) => {
-  const saved = loadScenario();
-  const [overrides, setOverrides] = useState<Record<string, number>>(saved?.overrides ?? {});
-  const [scenarioExcluded, setScenarioExcluded] = useState<Set<string>>(new Set(saved?.excluded ?? []));
-  const [additions, setAdditions] = useState<FinanceItem[]>(saved?.additions ?? []);
+export const WhatIfView: React.FC<WhatIfViewProps> = ({ items, user }) => {
+  const [overrides, setOverrides] = useState<Record<string, number>>({});
+  const [scenarioExcluded, setScenarioExcluded] = useState<Set<string>>(new Set());
+  const [additions, setAdditions] = useState<FinanceItem[]>([]);
+  const [loaded, setLoaded] = useState(false);
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
@@ -58,13 +48,28 @@ export const WhatIfView: React.FC<WhatIfViewProps> = ({ items }) => {
   const [newType, setNewType] = useState<TransactionType>('expense');
   const [newIsFlexible, setNewIsFlexible] = useState(false);
 
+  // Load scenario from Firebase (or localStorage fallback) on mount
   useEffect(() => {
-    localStorage.setItem(WHATIF_KEY, JSON.stringify({
+    const unsub = subscribeToScenario(user, (data) => {
+      if (!loaded) {
+        setOverrides(data?.overrides ?? {});
+        setScenarioExcluded(new Set(data?.excluded ?? []));
+        setAdditions(data?.additions ?? []);
+        setLoaded(true);
+      }
+    });
+    return unsub;
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Persist to Firebase (or localStorage fallback) on every change
+  useEffect(() => {
+    if (!loaded) return;
+    saveScenario(user, {
       overrides,
       excluded: [...scenarioExcluded],
       additions,
-    }));
-  }, [overrides, scenarioExcluded, additions]);
+    });
+  }, [overrides, scenarioExcluded, additions, loaded]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const currentSummary = useMemo(() => calcSummary(items), [items]);
 
@@ -89,6 +94,7 @@ export const WhatIfView: React.FC<WhatIfViewProps> = ({ items }) => {
     setScenarioExcluded(new Set());
     setAdditions([]);
     setEditingId(null);
+    saveScenario(user, null);
   };
 
   const startEdit = (item: FinanceItem) => {

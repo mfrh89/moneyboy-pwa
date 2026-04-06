@@ -373,6 +373,54 @@ export const syncLocalToFirebase = async (user: any) => {
   window.dispatchEvent(new CustomEvent('local-data-changed'));
 };
 
+// --- WHAT-IF SCENARIO ---
+
+const WHATIF_KEY = 'moneyboy_whatif_scenario';
+
+export interface ScenarioData {
+  overrides: Record<string, number>;
+  excluded: string[];
+  additions: FinanceItem[];
+}
+
+export const subscribeToScenario = (
+  user: any,
+  callback: (scenario: ScenarioData | null) => void
+): (() => void) => {
+  const isLocalUser = !user || user.uid === 'local-user';
+  if (!isFirebaseActive() || !db || isLocalUser) {
+    try {
+      const raw = localStorage.getItem(WHATIF_KEY);
+      callback(raw ? JSON.parse(raw) : null);
+    } catch {
+      callback(null);
+    }
+    return () => {};
+  }
+  const ref = doc(db, 'users', user.uid, 'scenarios', 'whatif');
+  return onSnapshot(ref, (snap) => {
+    callback(snap.exists() ? (snap.data() as ScenarioData) : null);
+  });
+};
+
+export const saveScenario = async (user: any, scenario: ScenarioData | null): Promise<void> => {
+  const isLocalUser = !user || user.uid === 'local-user';
+  if (!isFirebaseActive() || !db || isLocalUser) {
+    if (scenario) {
+      localStorage.setItem(WHATIF_KEY, JSON.stringify(scenario));
+    } else {
+      localStorage.removeItem(WHATIF_KEY);
+    }
+    return;
+  }
+  const ref = doc(db, 'users', user.uid, 'scenarios', 'whatif');
+  if (scenario) {
+    await setDoc(ref, scenario);
+  } else {
+    await deleteDoc(ref);
+  }
+};
+
 // --- LOCAL HELPERS ---
 const getLocalItems = (): FinanceItem[] => {
     try {

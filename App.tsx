@@ -588,7 +588,7 @@ const App: React.FC = () => {
 
         {/* What If View */}
         {view === ViewState.WHATIF && (
-          <WhatIfView items={items} />
+          <WhatIfView items={items} user={user} />
         )}
 
         {/* Dashboard View */}
