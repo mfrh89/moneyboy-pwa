@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { FinanceItem, TransactionType } from '../types';
-import { subscribeToScenario, saveScenario } from '../services/storage';
+import { loadScenario, saveScenario } from '../services/storage';
 import { Plus, RotateCcw, Pencil, X, Check, Trash2, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 interface WhatIfViewProps {
@@ -50,15 +50,12 @@ export const WhatIfView: React.FC<WhatIfViewProps> = ({ items, user }) => {
 
   // Load scenario from Firebase (or localStorage fallback) on mount
   useEffect(() => {
-    const unsub = subscribeToScenario(user, (data) => {
-      if (!loaded) {
-        setOverrides(data?.overrides ?? {});
-        setScenarioExcluded(new Set(data?.excluded ?? []));
-        setAdditions(data?.additions ?? []);
-        setLoaded(true);
-      }
+    loadScenario(user).then((data) => {
+      setOverrides(data?.overrides ?? {});
+      setScenarioExcluded(new Set(data?.excluded ?? []));
+      setAdditions(data?.additions ?? []);
+      setLoaded(true);
     });
-    return unsub;
   }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Persist to Firebase (or localStorage fallback) on every change

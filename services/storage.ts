@@ -15,6 +15,7 @@ import {
   collection,
   addDoc,
   doc,
+  getDoc,
   onSnapshot,
   query,
   orderBy,
@@ -383,24 +384,19 @@ export interface ScenarioData {
   additions: FinanceItem[];
 }
 
-export const subscribeToScenario = (
-  user: any,
-  callback: (scenario: ScenarioData | null) => void
-): (() => void) => {
+export const loadScenario = async (user: any): Promise<ScenarioData | null> => {
   const isLocalUser = !user || user.uid === 'local-user';
   if (!isFirebaseActive() || !db || isLocalUser) {
     try {
       const raw = localStorage.getItem(WHATIF_KEY);
-      callback(raw ? JSON.parse(raw) : null);
+      return raw ? JSON.parse(raw) : null;
     } catch {
-      callback(null);
+      return null;
     }
-    return () => {};
   }
   const ref = doc(db, 'users', user.uid, 'scenarios', 'whatif');
-  return onSnapshot(ref, (snap) => {
-    callback(snap.exists() ? (snap.data() as ScenarioData) : null);
-  });
+  const snap = await getDoc(ref);
+  return snap.exists() ? (snap.data() as ScenarioData) : null;
 };
 
 export const saveScenario = async (user: any, scenario: ScenarioData | null): Promise<void> => {
