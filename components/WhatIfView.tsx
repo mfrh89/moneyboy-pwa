@@ -50,12 +50,18 @@ export const WhatIfView: React.FC<WhatIfViewProps> = ({ items, user }) => {
 
   // Load scenario from Firebase (or localStorage fallback) on mount
   useEffect(() => {
-    loadScenario(user).then((data) => {
-      setOverrides(data?.overrides ?? {});
-      setScenarioExcluded(new Set(data?.excluded ?? []));
-      setAdditions(data?.additions ?? []);
-      setLoaded(true);
-    });
+    loadScenario(user)
+      .then((data) => {
+        setOverrides(data?.overrides ?? {});
+        setScenarioExcluded(new Set(data?.excluded ?? []));
+        setAdditions(data?.additions ?? []);
+      })
+      .catch((err) => {
+        console.error('Failed to load scenario:', err);
+      })
+      .finally(() => {
+        setLoaded(true);
+      });
   }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Persist to Firebase (or localStorage fallback) on every change
@@ -65,6 +71,8 @@ export const WhatIfView: React.FC<WhatIfViewProps> = ({ items, user }) => {
       overrides,
       excluded: [...scenarioExcluded],
       additions,
+    }).catch((err) => {
+      console.error('Failed to save scenario:', err);
     });
   }, [overrides, scenarioExcluded, additions, loaded]); // eslint-disable-line react-hooks/exhaustive-deps
 
