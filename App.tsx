@@ -676,53 +676,53 @@ const App: React.FC = () => {
       </main>
 
       {/* Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 glass border-t border-outline-variant/20 pb-safe pt-2 px-6 z-40">
+      <nav className="fixed bottom-0 left-0 right-0 glass border-t border-outline-variant/20 pb-safe pt-1 px-2 z-40">
         <div className="flex justify-around items-center max-w-lg mx-auto h-16 relative">
             <button
                 onClick={() => setView(ViewState.DASHBOARD)}
-                className={`flex flex-col items-center gap-1 w-16 transition-colors ${view === ViewState.DASHBOARD ? 'text-primary' : 'text-outline-variant can-hover:hover:text-on-surface-variant'}`}
+                className={`flex flex-col items-center justify-center gap-0.5 flex-1 h-full transition-colors ${view === ViewState.DASHBOARD ? 'text-primary' : 'text-outline-variant can-hover:hover:text-on-surface-variant'}`}
             >
-                <LayoutDashboard className="w-6 h-6" />
+                <LayoutDashboard className="w-5 h-5" />
                 <span className="text-[10px] font-bold">Übersicht</span>
             </button>
 
             <button
                 onClick={() => setView(ViewState.WOHNEN)}
-                className={`flex flex-col items-center gap-1 w-16 transition-colors ${view === ViewState.WOHNEN ? 'text-primary' : 'text-outline-variant can-hover:hover:text-on-surface-variant'}`}
+                className={`flex flex-col items-center justify-center gap-0.5 flex-1 h-full transition-colors ${view === ViewState.WOHNEN ? 'text-primary' : 'text-outline-variant can-hover:hover:text-on-surface-variant'}`}
             >
-                <Home className="w-6 h-6" />
+                <Home className="w-5 h-5" />
                 <span className="text-[10px] font-bold">Wohnen</span>
             </button>
 
             <button
                 onClick={() => setView(ViewState.ABOS)}
-                className={`flex flex-col items-center gap-1 w-16 transition-colors ${view === ViewState.ABOS ? 'text-primary' : 'text-outline-variant can-hover:hover:text-on-surface-variant'}`}
+                className={`flex flex-col items-center justify-center gap-0.5 flex-1 h-full transition-colors ${view === ViewState.ABOS ? 'text-primary' : 'text-outline-variant can-hover:hover:text-on-surface-variant'}`}
             >
-                <Repeat className="w-6 h-6" />
+                <Repeat className="w-5 h-5" />
                 <span className="text-[10px] font-bold">Abos</span>
             </button>
 
             <button
                 onClick={() => setView(ViewState.ANALYSIS)}
-                className={`flex flex-col items-center gap-1 w-16 transition-colors ${view === ViewState.ANALYSIS ? 'text-primary' : 'text-outline-variant can-hover:hover:text-on-surface-variant'}`}
+                className={`flex flex-col items-center justify-center gap-0.5 flex-1 h-full transition-colors ${view === ViewState.ANALYSIS ? 'text-primary' : 'text-outline-variant can-hover:hover:text-on-surface-variant'}`}
             >
-                <PieChart className="w-6 h-6" />
+                <PieChart className="w-5 h-5" />
                 <span className="text-[10px] font-bold">Analyse</span>
             </button>
 
             <button
                 onClick={() => setView(ViewState.WHATIF)}
-                className={`flex flex-col items-center gap-1 w-16 transition-colors ${view === ViewState.WHATIF ? 'text-primary' : 'text-outline-variant can-hover:hover:text-on-surface-variant'}`}
+                className={`flex flex-col items-center justify-center gap-0.5 flex-1 h-full transition-colors ${view === ViewState.WHATIF ? 'text-primary' : 'text-outline-variant can-hover:hover:text-on-surface-variant'}`}
             >
-                <Lightbulb className="w-6 h-6" />
+                <Lightbulb className="w-5 h-5" />
                 <span className="text-[10px] font-bold">Was wäre</span>
             </button>
 
             <button
                 onClick={() => setView(ViewState.SETTINGS)}
-                className={`flex flex-col items-center gap-1 w-16 transition-colors ${view === ViewState.SETTINGS ? 'text-primary' : 'text-outline-variant can-hover:hover:text-on-surface-variant'}`}
+                className={`flex flex-col items-center justify-center gap-0.5 flex-1 h-full transition-colors ${view === ViewState.SETTINGS ? 'text-primary' : 'text-outline-variant can-hover:hover:text-on-surface-variant'}`}
             >
-                <Settings className="w-6 h-6" />
+                <Settings className="w-5 h-5" />
                 <span className="text-[10px] font-bold">Settings</span>
             </button>
         </div>

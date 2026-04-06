@@ -1,6 +1,18 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { FinanceItem, TransactionType } from '../types';
 import { Plus, RotateCcw, Pencil, X, Check, Trash2, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+
+const WHATIF_KEY = 'moneyboy_whatif_scenario';
+
+function loadScenario() {
+  try {
+    const raw = localStorage.getItem(WHATIF_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
 
 interface WhatIfViewProps {
   items: FinanceItem[];
@@ -32,9 +44,10 @@ const fmt = (n: number) =>
   }).format(n);
 
 export const WhatIfView: React.FC<WhatIfViewProps> = ({ items }) => {
-  const [overrides, setOverrides] = useState<Record<string, number>>({});
-  const [scenarioExcluded, setScenarioExcluded] = useState<Set<string>>(new Set());
-  const [additions, setAdditions] = useState<FinanceItem[]>([]);
+  const saved = loadScenario();
+  const [overrides, setOverrides] = useState<Record<string, number>>(saved?.overrides ?? {});
+  const [scenarioExcluded, setScenarioExcluded] = useState<Set<string>>(new Set(saved?.excluded ?? []));
+  const [additions, setAdditions] = useState<FinanceItem[]>(saved?.additions ?? []);
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
@@ -44,6 +57,14 @@ export const WhatIfView: React.FC<WhatIfViewProps> = ({ items }) => {
   const [newAmount, setNewAmount] = useState('');
   const [newType, setNewType] = useState<TransactionType>('expense');
   const [newIsFlexible, setNewIsFlexible] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem(WHATIF_KEY, JSON.stringify({
+      overrides,
+      excluded: [...scenarioExcluded],
+      additions,
+    }));
+  }, [overrides, scenarioExcluded, additions]);
 
   const currentSummary = useMemo(() => calcSummary(items), [items]);
 
@@ -180,10 +201,10 @@ export const WhatIfView: React.FC<WhatIfViewProps> = ({ items }) => {
                 className="w-24 text-right bg-surface-mid border border-primary rounded-ds-sm px-2 py-1 text-sm font-mono text-on-surface focus:outline-none"
                 autoFocus
               />
-              <button onClick={() => confirmEdit(item.id)} className="p-1 text-status-success">
+              <button onClick={() => confirmEdit(item.id)} className="w-11 h-11 flex items-center justify-center text-status-success">
                 <Check className="w-4 h-4" />
               </button>
-              <button onClick={() => setEditingId(null)} className="p-1 text-on-surface-variant">
+              <button onClick={() => setEditingId(null)} className="w-11 h-11 flex items-center justify-center text-on-surface-variant">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -205,7 +226,7 @@ export const WhatIfView: React.FC<WhatIfViewProps> = ({ items }) => {
             {isAddition ? (
               <button
                 onClick={() => removeAddition(item.id)}
-                className="p-2 text-on-surface-variant hover:text-status-error transition-colors"
+                className="w-11 h-11 flex items-center justify-center text-on-surface-variant hover:text-status-error transition-colors"
                 title="Entfernen"
               >
                 <Trash2 className="w-4 h-4" />
@@ -214,7 +235,7 @@ export const WhatIfView: React.FC<WhatIfViewProps> = ({ items }) => {
               <>
                 <button
                   onClick={() => startEdit(item)}
-                  className="p-2 text-on-surface-variant hover:text-on-surface transition-colors"
+                  className="w-11 h-11 flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors"
                   title="Betrag anpassen"
                 >
                   <Pencil className="w-4 h-4" />
@@ -222,7 +243,7 @@ export const WhatIfView: React.FC<WhatIfViewProps> = ({ items }) => {
                 {hasAmountChange && (
                   <button
                     onClick={() => resetOverride(item.id)}
-                    className="p-2 text-on-surface-variant hover:text-on-surface transition-colors"
+                    className="w-11 h-11 flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors"
                     title="Zurücksetzen"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
@@ -231,7 +252,7 @@ export const WhatIfView: React.FC<WhatIfViewProps> = ({ items }) => {
                 {!isOriginallyExcluded && (
                   <button
                     onClick={() => toggleScenarioExcluded(item.id)}
-                    className={`p-2 transition-colors ${
+                    className={`w-11 h-11 flex items-center justify-center transition-colors ${
                       scenarioExcluded.has(item.id)
                         ? 'text-primary'
                         : 'text-on-surface-variant hover:text-on-surface'
