@@ -407,17 +407,15 @@ export const loadScenario = async (user: any): Promise<ScenarioData | null> => {
   if (!isFirebaseActive() || !db || isLocalUser) {
     return getLocalScenario();
   }
-  // Firebase mode: try Firestore, fall back to localStorage
+  // Firebase mode: read from user document field (uses existing rule for users/{userId})
   try {
-    const ref = doc(db, 'users', user.uid, 'scenarios', 'whatif');
+    const ref = doc(db, 'users', user.uid);
     const snap = await getDoc(ref);
-    if (snap.exists()) {
-      const data = snap.data() as ScenarioData;
-      // Keep localStorage in sync so tab-switches don't lose data
+    if (snap.exists() && snap.data()?.scenario) {
+      const data = snap.data()!.scenario as ScenarioData;
       setLocalScenario(data);
       return data;
     }
-    // Firestore empty — maybe a previous save failed, use localStorage copy
     return getLocalScenario();
   } catch (err) {
     console.error('loadScenario Firestore error:', err);
@@ -432,11 +430,10 @@ export const saveScenario = async (user: any, scenario: ScenarioData | null): Pr
   const isLocalUser = !user || user.uid === 'local-user';
   if (!isFirebaseActive() || !db || isLocalUser) return;
 
-  // Then persist to Firestore for cross-device sync
+  // Persist to user document field — uses the already-working users/{userId} rule
   try {
-    const ref = doc(db, 'users', user.uid, 'scenarios', 'whatif');
+    const ref = doc(db, 'users', user.uid);
     if (scenario) {
-      // Sanitize additions to remove undefined fields that Firestore rejects
       const sanitized: ScenarioData = {
         overrides: scenario.overrides,
         excluded: scenario.excluded,
@@ -454,14 +451,13 @@ export const saveScenario = async (user: any, scenario: ScenarioData | null): Pr
           createdAt: item.createdAt,
         })),
       };
-      await setDoc(ref, sanitized);
+      await setDoc(ref, { scenario: sanitized }, { merge: true });
     } else {
-      await deleteDoc(ref);
+      await setDoc(ref, { scenario: null }, { merge: true });
     }
   } catch (err) {
     console.error('saveScenario Firestore error:', err);
-    // localStorage already saved above — data is not lost
-    throw err; // re-throw so UI can show error
+    throw err;
   }
 };
 
