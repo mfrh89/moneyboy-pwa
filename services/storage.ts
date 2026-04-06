@@ -403,24 +403,25 @@ const setLocalScenario = (scenario: ScenarioData | null) => {
 
 export const loadScenario = async (user: any): Promise<ScenarioData | null> => {
   const isLocalUser = !user || user.uid === 'local-user';
-  // Local-only mode: read from localStorage
-  if (!isFirebaseActive() || !db || isLocalUser) {
-    return getLocalScenario();
-  }
-  // Firebase mode: read from user document field (uses existing rule for users/{userId})
+
+  // localStorage is always the primary source — it's always up to date
+  const local = getLocalScenario();
+  if (local) return local;
+
+  // localStorage empty (e.g. after cache clear) — try Firestore as fallback
+  if (!isFirebaseActive() || !db || isLocalUser) return null;
   try {
     const ref = doc(db, 'users', user.uid);
     const snap = await getDoc(ref);
     if (snap.exists() && snap.data()?.scenario) {
       const data = snap.data()!.scenario as ScenarioData;
-      setLocalScenario(data);
+      setLocalScenario(data); // restore local cache from Firestore
       return data;
     }
-    return getLocalScenario();
   } catch (err) {
     console.error('loadScenario Firestore error:', err);
-    return getLocalScenario();
   }
+  return null;
 };
 
 export const saveScenario = async (user: any, scenario: ScenarioData | null): Promise<void> => {
