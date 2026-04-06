@@ -384,36 +384,84 @@ export interface ScenarioData {
   additions: FinanceItem[];
 }
 
+const getLocalScenario = (): ScenarioData | null => {
+  try {
+    const raw = localStorage.getItem(WHATIF_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+};
+
+const setLocalScenario = (scenario: ScenarioData | null) => {
+  if (scenario) {
+    localStorage.setItem(WHATIF_KEY, JSON.stringify(scenario));
+  } else {
+    localStorage.removeItem(WHATIF_KEY);
+  }
+};
+
 export const loadScenario = async (user: any): Promise<ScenarioData | null> => {
   const isLocalUser = !user || user.uid === 'local-user';
+  // Local-only mode: read from localStorage
   if (!isFirebaseActive() || !db || isLocalUser) {
-    try {
-      const raw = localStorage.getItem(WHATIF_KEY);
-      return raw ? JSON.parse(raw) : null;
-    } catch {
-      return null;
-    }
+    return getLocalScenario();
   }
-  const ref = doc(db, 'users', user.uid, 'scenarios', 'whatif');
-  const snap = await getDoc(ref);
-  return snap.exists() ? (snap.data() as ScenarioData) : null;
+  // Firebase mode: try Firestore, fall back to localStorage
+  try {
+    const ref = doc(db, 'users', user.uid, 'scenarios', 'whatif');
+    const snap = await getDoc(ref);
+    if (snap.exists()) {
+      const data = snap.data() as ScenarioData;
+      // Keep localStorage in sync so tab-switches don't lose data
+      setLocalScenario(data);
+      return data;
+    }
+    // Firestore empty — maybe a previous save failed, use localStorage copy
+    return getLocalScenario();
+  } catch (err) {
+    console.error('loadScenario Firestore error:', err);
+    return getLocalScenario();
+  }
 };
 
 export const saveScenario = async (user: any, scenario: ScenarioData | null): Promise<void> => {
+  // Always save locally first — instant and reliable
+  setLocalScenario(scenario);
+
   const isLocalUser = !user || user.uid === 'local-user';
-  if (!isFirebaseActive() || !db || isLocalUser) {
+  if (!isFirebaseActive() || !db || isLocalUser) return;
+
+  // Then persist to Firestore for cross-device sync
+  try {
+    const ref = doc(db, 'users', user.uid, 'scenarios', 'whatif');
     if (scenario) {
-      localStorage.setItem(WHATIF_KEY, JSON.stringify(scenario));
+      // Sanitize additions to remove undefined fields that Firestore rejects
+      const sanitized: ScenarioData = {
+        overrides: scenario.overrides,
+        excluded: scenario.excluded,
+        additions: scenario.additions.map(item => ({
+          id: item.id,
+          title: item.title,
+          amount: item.amount,
+          type: item.type,
+          category: item.category,
+          isFlexible: item.isFlexible ?? false,
+          isSplit: item.isSplit ?? false,
+          isWohnkosten: item.isWohnkosten ?? false,
+          excluded: item.excluded ?? false,
+          isSubscription: item.isSubscription ?? false,
+          createdAt: item.createdAt,
+        })),
+      };
+      await setDoc(ref, sanitized);
     } else {
-      localStorage.removeItem(WHATIF_KEY);
+      await deleteDoc(ref);
     }
-    return;
-  }
-  const ref = doc(db, 'users', user.uid, 'scenarios', 'whatif');
-  if (scenario) {
-    await setDoc(ref, scenario);
-  } else {
-    await deleteDoc(ref);
+  } catch (err) {
+    console.error('saveScenario Firestore error:', err);
+    // localStorage already saved above — data is not lost
+    throw err; // re-throw so UI can show error
   }
 };
 

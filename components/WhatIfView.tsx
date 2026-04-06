@@ -42,6 +42,8 @@ export const WhatIfView: React.FC<WhatIfViewProps> = ({ items, user }) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
 
+  const [saveError, setSaveError] = useState<string | null>(null);
+
   const [showAddForm, setShowAddForm] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newAmount, setNewAmount] = useState('');
@@ -67,12 +69,14 @@ export const WhatIfView: React.FC<WhatIfViewProps> = ({ items, user }) => {
   // Persist to Firebase (or localStorage fallback) on every change
   useEffect(() => {
     if (!loaded) return;
+    setSaveError(null);
     saveScenario(user, {
       overrides,
       excluded: [...scenarioExcluded],
       additions,
     }).catch((err) => {
-      console.error('Failed to save scenario:', err);
+      console.error('Failed to save scenario to Firestore:', err);
+      setSaveError('Cloud-Sync fehlgeschlagen (lokal gespeichert): ' + (err?.message ?? String(err)));
     });
   }, [overrides, scenarioExcluded, additions, loaded]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -307,6 +311,13 @@ export const WhatIfView: React.FC<WhatIfViewProps> = ({ items, user }) => {
           </button>
         )}
       </div>
+
+      {/* Firestore sync error (data is still saved locally) */}
+      {saveError && (
+        <div className="bg-status-error/10 border border-status-error/30 rounded-ds-md px-4 py-3 text-xs text-status-error">
+          ⚠️ {saveError}
+        </div>
+      )}
 
       {/* Comparison Cards */}
       <div className="grid grid-cols-2 gap-4">

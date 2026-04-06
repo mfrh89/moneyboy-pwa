@@ -586,10 +586,10 @@ const App: React.FC = () => {
             </div>
         )}
 
-        {/* What If View */}
-        {view === ViewState.WHATIF && (
+        {/* What If View — always mounted to preserve state across tab switches */}
+        <div className={view !== ViewState.WHATIF ? 'hidden' : ''}>
           <WhatIfView items={items} user={user} />
-        )}
+        </div>
 
         {/* Dashboard View */}
         {view === ViewState.DASHBOARD && (
