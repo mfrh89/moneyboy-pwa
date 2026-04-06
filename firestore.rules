@@ -1,11 +1,11 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
+
     // Regel für die User-Collection
     // WICHTIG: {userId} ist eine Variable, die die ID des Dokuments repräsentiert
     match /users/{userId} {
-      
+
       // 1. Zugriff auf das User-Profil selbst (z.B. lastLogin speichern)
       // Erlauben, wenn der eingeloggte User (request.auth.uid) genau der userId des Pfades entspricht
       allow read, write: if request.auth != null && request.auth.uid == userId;
@@ -19,6 +19,11 @@ service cloud.firestore {
       // 3. Zugriff auf die Unter-Sammlung "fcmTokens" (Push Notification Tokens)
       // Erlaubt dem User das Speichern und Verwalten seiner eigenen FCM Tokens
       match /fcmTokens/{tokenId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+
+      // 4. Zugriff auf die Unter-Sammlung "scenarios" (Was-wäre-wenn Szenarien)
+      match /scenarios/{scenarioId} {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
     }
